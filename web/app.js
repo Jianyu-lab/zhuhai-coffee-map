@@ -298,6 +298,7 @@
          FADE_OUT_SLOW 260ms —— 被筛选掉的桶，慢慢退场，用户能看见"之前的点"走了。 */
     const anim = new Map();
     let lastT = 0;
+    let prevView = null;      // 上一帧视野，用来判断这一帧是不是在拖动/缩放
     let settleUntil = 0;      // 结构变化后的自续帧截止时间，防止空转
     const ANIM_TAU = 130;
     const FADE_TAU = 320;
@@ -396,7 +397,7 @@
       // 热力图模式或结果为空：不画店点，但定位点要留着
       if (!data.length) {
         // 结果被筛空：圆点没了，标签也得跟着淡出，不能凭空消失
-        drawLabels(EMPTY, alpha, easeA, easeOutSlow, ease);
+        drawLabels(EMPTY, alpha, easeA, easeOutSlow, ease, true);
         ctx.globalAlpha = 1;
         drawMe(z);
         if (labelBusy && now < settleUntil) schedule();
@@ -458,6 +459,13 @@
 
       ctx.globalAlpha = alpha;
 
+      /* 这一帧视野动过没有（拖动/缩放）。位置缓动只该在视野静止时生效：
+         平移时每帧都有店进出视口，桶的质心跟着变，若还缓动，圆点就会拖在
+         底图后面 —— 正是最早那个"拖动延时"的毛病。所以视野一动就吸附。 */
+      const viewMoved = !prevView || prevView.lng !== sw.lng || prevView.lat !== sw.lat ||
+        prevView.z !== z;
+      prevView = { lng: sw.lng, lat: sw.lat, z };
+
       if (clusterMode) {
         const dr = dotRadius(z);
         const seen = new Set();
@@ -499,15 +507,20 @@
 
           /* 位置也缓动：簇的成员一增一减，质心就会跳一格，硬切看着像"点瞬移"。
              缓动的是「地理质心」而不是屏幕坐标 —— 屏幕坐标缓动会让圆点在平移时
-             拖在底图后面（就是最早那个"拖动延时"的毛病）；地理质心在平移时不变，
-             投影出来天然贴着地图走，只有成员变化时才有位移。 */
-          const moved = Math.abs(st.glng - tglng) + Math.abs(st.glat - tglat) > 2e-7;
-          st.glng += (tglng - st.glng) * ease;
-          st.glat += (tglat - st.glat) * ease;
+             拖在底图后面；地理质心在平移时不变，投影出来天然贴着地图走。
+             但视野本身在动的那几帧必须吸附：那时质心变化是"店进出视口"造成的，
+             缓动只会让圆点追不上底图。 */
           let px = cx, py = cy;
-          if (moved) {
-            const q = map.lngLatToContainer([st.glng, st.glat]);
-            if (q) { px = q.x; py = q.y; }
+          if (viewMoved) {
+            st.glng = tglng; st.glat = tglat;
+          } else {
+            const moved = Math.abs(st.glng - tglng) + Math.abs(st.glat - tglat) > 2e-7;
+            st.glng += (tglng - st.glng) * ease;
+            st.glat += (tglat - st.glat) * ease;
+            if (moved) {
+              const q = map.lngLatToContainer([st.glng, st.glat]);
+              if (q) { px = q.x; py = q.y; }
+            }
           }
           st.tglng = tglng; st.tglat = tglat;
 
@@ -642,9 +655,9 @@
       // 标签压在圆点之上；蓝点（我自己）最后画，保证永远可见。
       // 标签关掉/缩得太小时也走一遍，让已经画出来的标签淡出而不是凭空消失。
       if (labelOn && z >= LABEL_MIN_Z && lab.length) {
-        drawLabels(lab, alpha, easeA, easeOutSlow, ease);
+        drawLabels(lab, alpha, easeA, easeOutSlow, ease, viewMoved);
       } else {
-        drawLabels(EMPTY, alpha, easeA, easeOutSlow, ease);
+        drawLabels(EMPTY, alpha, easeA, easeOutSlow, ease, true);
       }
       drawMeCore(z);
       if (labelBusy && now < settleUntil) schedule();
@@ -707,7 +720,7 @@
        跟着点一起浮出来），放不下就向 0 缓动，淡到看不见才删。
        掉队的标签不是钉在原地，而是继续贴着自己的圆点飘 —— 否则地图一拖，
        残影似的几行字会留在半空。 */
-    function drawLabels(list, alpha, easeIn, easeOut, easePos) {
+    function drawLabels(list, alpha, easeIn, easeOut, easePos, viewMoved) {
       // 近的优先占位；没有定位就按评分和图片数排
       list.sort((a, b) => {
         if (me) {
@@ -754,8 +767,13 @@
         /* 换边（右边放不下改放左边/上边）时不能硬跳。
            缓动的是「相对圆点的偏移」，不是绝对坐标 —— 平移地图时偏移不变，
            标签跟着点走、不会滞后；只有真的换边时才有位移，滑过去。 */
-        st.dx += (tdx - st.dx) * easePos;
-        st.dy += (tdy - st.dy) * easePos;
+        if (viewMoved) {
+          // 视野在动：吸附，别让字相对圆点飘（会看着像拖不动）
+          st.dx = tdx; st.dy = tdy;
+        } else {
+          st.dx += (tdx - st.dx) * easePos;
+          st.dy += (tdy - st.dy) * easePos;
+        }
         st.tdx = tdx; st.tdy = tdy;
         // 目标透明度压上圆点自己的透明度：点还在淡入时字不该先亮起来
         const tgt = it.a == null ? 1 : Math.min(1, it.a);
@@ -1927,16 +1945,23 @@
 
   /* 视野离开我周边、或又拖回来时，距离档的生效状态变了 —— 统计和列表要跟着重算，
      否则地图已经按"跟随视野"画了，面板还停在原来的数字。
-     只在跨过阈值的那一次触发，拖动过程中不会反复重建列表。 */
+     只在跨过阈值的那一次触发，拖动过程中不会反复重建列表。
+     必须延后一拍判断：moveend 回调里 map.getBounds() 有时还是移动前的视野，
+     当场判断会得出"没变化"，然后就不会再有机会重算了（实测拖走 4.8km，
+     计数仍停在 3km 档的 363）。 */
   let distWasActive = null;
+  let distTimer = 0;
   function syncDistScope() {
     if (!me) { distWasActive = null; return; }
-    const on = distActive();
-    if (on === distWasActive) return;
-    distWasActive = on;
-    suppressFly = true;        // 用户只是在拖地图，别自动飞走
-    apply();
-    suppressFly = false;
+    clearTimeout(distTimer);
+    distTimer = setTimeout(() => {
+      const on = distActive();
+      if (on === distWasActive) return;
+      distWasActive = on;
+      suppressFly = true;        // 用户只是在拖地图，别自动飞走
+      apply();
+      suppressFly = false;
+    }, 80);
   }
   map.on('moveend', syncDistScope);
   map.on('zoomend', syncDistScope);
@@ -1974,6 +1999,18 @@
     if (dist) state.dist = dist;
     else if (state.dist === '全部') state.dist = '1km';
     renderDist(); apply();
+  };
+
+  // 调试用：距离档的生效状态。自动化验证靠它判断"拖走以后档位有没有让路"。
+  window.__dist = () => {
+    const c = map.getCenter();
+    return {
+      lim: distLimit(),
+      active: distActive(),
+      meToView: me ? Math.round(distM(me.lng, me.lat, c.lng, c.lat)) : null,
+      total: currentList.length,
+      wasActive: distWasActive,
+    };
   };
 
   /* ══ 启动 ══════════════════════════════════════ */
