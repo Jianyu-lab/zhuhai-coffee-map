@@ -828,6 +828,7 @@
         const out = [];
         anim.forEach((st, k) => out.push({
           k, a: st.a, r: st.r, n: st.n, tgtR: st.tgtR, tgtN: st.tgtN,
+          x: st.cx, y: st.cy,
         }));
         return out;
       },
