@@ -1489,12 +1489,15 @@
       fitBox(me.lng - dlng, me.lat - dlat, me.lng + dlng, me.lat + dlat);
     }
 
-    // 缩得太小时标签画不出来，说清楚，别让用户以为又坏了
+    // 缩得太小时标签画不出来，说清楚，别让用户以为又坏了。
+    // 文案在这里就定下来：等到 540ms 之后才读 currentList，用户连点两档时
+    // 会弹出一条用新数字配旧档位的提示（实测"500m"选着、提示却写 5km 616 家）。
+    const scope = state.dist === '全部'
+      ? `共 ${currentList.length} 家`
+      : `${state.dist} 内 ${currentList.length} 家`;
+    const atDist = state.dist;
     setTimeout(() => {
-      if (!me || map.getZoom() >= 14) return;
-      const scope = state.dist === '全部'
-        ? `共 ${currentList.length} 家`
-        : `${state.dist} 内 ${currentList.length} 家`;
+      if (!me || state.dist !== atDist || map.getZoom() >= 14) return;
       toast(`${scope} · 放大到街区级可显示店名`);
     }, 540);
   }
