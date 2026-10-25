@@ -274,17 +274,24 @@
          FADE_TAU 透明度 —— 慢。这是用户唯一能明确「看见」的过渡，
                             320ms 时间常数 ≈ 1.3s 淡入到底，肉眼清楚。
          ANIM_TAU 半径/成员数 —— 快。跟着缩放走的东西拖太久会发飘。
-       淡出单独用 FADE_OUT_TAU 走快档：慢淡出会在地图平移时拖出一条残影。 */
+       淡出分两档：
+         FADE_OUT_TAU 90ms  —— 平移出视口的桶，快收，否则拖残影。
+         FADE_OUT_SLOW 260ms —— 被筛选掉的桶，慢慢退场，用户能看见"之前的点"走了。 */
     const anim = new Map();
     let lastT = 0;
     let settleUntil = 0;      // 结构变化后的自续帧截止时间，防止空转
     const ANIM_TAU = 130;
     const FADE_TAU = 320;
     const FADE_OUT_TAU = 90;
+    const FADE_OUT_SLOW = 260;
     // 上一帧的「店 → 视觉状态」，用来判断一个桶到底是不是「新冒出来的」。
     // 少了它，地图平移时圆点跨过分桶格子边界（键变了、店没变）也会被当成
     // 新点重新淡入一遍 —— 那正是之前满屏闪动的成因，等于把 bug 又引回来。
     let lastState = new Map();
+    // 非聚类模式（放得很大）下的单点淡入淡出，按店对象索引
+    const singleAnim = new Map();
+    // 常驻标签的淡入淡出，按店 id 索引
+    const labelAnim = new Map();
 
     /* ── 常驻标签 ──────────────────────────────────
        定位之后把附近店名直接铺在地图上，不用逐个点开。
@@ -298,8 +305,10 @@
     const FONT_B = '600 10.5px -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif';
     let labelOn = false;
     let lastLabels = 0;
+    let labelBusy = false;      // 还有标签没淡完，需要续帧
     let dimmed = false;
     const lcache = new Map();
+    const EMPTY = [];           // 标签关掉时传空表，让已有标签走淡出而不是硬消失
 
     function mount() {
       const host = document.querySelector('#map .amap-layers');
@@ -357,13 +366,21 @@
       lastT = now;
       const ease = 1 - Math.exp(-dt / ANIM_TAU);        // 半径、成员数
       const easeA = 1 - Math.exp(-dt / FADE_TAU);       // 淡入
-      const easeOut = 1 - Math.exp(-dt / FADE_OUT_TAU); // 淡出
+      const easeOut = 1 - Math.exp(-dt / FADE_OUT_TAU); // 淡出（出视口）
+      const easeOutSlow = 1 - Math.exp(-dt / FADE_OUT_SLOW); // 淡出（被筛掉）
 
       // 底图压暗只在"标签真的画出来"时生效，否则热力图/缩小时会白白变暗
       syncDim(z);
 
       // 热力图模式或结果为空：不画店点，但定位点要留着
-      if (!data.length) { ctx.globalAlpha = 1; lastLabels = 0; drawMe(z); return; }
+      if (!data.length) {
+        // 结果被筛空：圆点没了，标签也得跟着淡出，不能凭空消失
+        drawLabels(EMPTY, alpha, easeA, easeOutSlow);
+        ctx.globalAlpha = 1;
+        drawMe(z);
+        if (labelBusy && now < settleUntil) schedule();
+        return;
+      }
       if (!labelOn) lastLabels = 0;
 
       const clusterMode = z < CLUSTER_MAX_ZOOM;
@@ -449,6 +466,7 @@
           st.cx = cx; st.cy = cy;
           st.glng = b.lng / b.n; st.glat = b.lat / b.n;
           st.dmin = b.dmin; st.s = b.items[0];
+          st.items = b.items;             // 供下一帧判断这个桶有没有"接力者"
           for (let i = 0; i < b.items.length; i++) curState.set(b.items[i], st);
 
           const shownN = Math.round(st.n);
@@ -457,7 +475,7 @@
             // 单个点也要登记命中，否则这些点永远点不开
             drawDot(cx, cy, b.items[0], st.r, emph);
             hits.push({ type: 'dot', x: cx, y: cy, r: st.r + 2.5, s: b.items[0] });
-            lab.push({ s: b.items[0], x: cx, y: cy, r: st.r });
+            lab.push({ s: b.items[0], x: cx, y: cy, r: st.r, a: st.a });
             return;
           }
           const isHover = hoverItem && hoverItem.type === 'cluster' &&
@@ -469,15 +487,29 @@
           });
         });
 
-        // 本帧消失的桶：淡出后再删。位置用地理中心重新投影，
-        // 否则地图已经平移了，残影会跟底图脱节。
-        // 这里走快档淡出（90ms）：平移时桶会成片消失，慢淡出会拖出残影。
+        // 本帧消失的桶。分三种情况，混在一起处理会出两类毛病：
+        //   ① 接力（缩放换格、簇拆并）：同一批店换了个画法，不是消失。
+        //      这类必须立刻删 —— 留着淡出，缩放动画那 480ms 里每帧都新产生
+        //      一批"死桶"，实测切一次 5km 峰值堆到 6232 个（5993 个在淡出），
+        //      每个每帧还要重投影一次，画面成片残影、帧率也塌。
+        //   ② 真的被筛掉了：慢慢淡出，让"之前的点"看得见是怎么走的。
+        //   ③ 平移出视口：快速淡出，慢淡出会拖一条跟着地图滑的尾巴。
         anim.forEach((st, k) => {
           if (seen.has(k)) return;
           st.live = false;
-          st.a += (0 - st.a) * easeOut;
+
+          const its = st.items;
+          if (its) {
+            for (let i = 0; i < its.length; i++) {
+              if (curState.has(its[i])) { anim.delete(k); return; }
+            }
+          }
+
+          const inside = st.glng >= sw.lng && st.glng <= ne.lng &&
+                         st.glat >= sw.lat && st.glat <= ne.lat;
+          st.a += (0 - st.a) * (inside ? easeOutSlow : easeOut);
           if (st.a < 0.03) { anim.delete(k); return; }
-          settleUntil = Math.max(settleUntil, now + 400);
+          settleUntil = Math.max(settleUntil, now + (inside ? 1200 : 400));
           let q = null;
           try { q = map.lngLatToContainer([st.glng, st.glat]); } catch (e) { anim.delete(k); return; }
           if (!q) { anim.delete(k); return; }
@@ -502,27 +534,70 @@
         });
         if (busy && now < settleUntil) schedule();
       } else {
+        /* 放到街区级（z ≥ CLUSTER_MAX_ZOOM）就不分桶了，但淡入淡出不能跟着消失 ——
+           这一档恰好是标签全开、看得最仔细的时候，点突然冒出来/消失最扎眼。
+           这里按店对象存一份状态，规则和上面完全一致：新点淡入、被筛掉的慢淡出、
+           划出视口的快淡出；进出这一档时用 lastState 接力，不重新淡一遍。 */
         anim.clear();
-        lastState.clear();
         const dr = dotRadius(z);
+        const seenS = new Set();
+        const curSingle = new Map();
+
         for (let i = 0; i < singles.length; i++) {
           const it = singles[i];
-          ctx.globalAlpha = alpha * dim(it.s._d);
-          drawDot(it.x, it.y, it.s, dr, emph);
-          hits.push({ type: 'dot', x: it.x, y: it.y, r: dr + 2.5, s: it.s });
-          lab.push({ s: it.s, x: it.x, y: it.y, r: dr });
+          const s = it.s;
+          seenS.add(s);
+          let st = singleAnim.get(s);
+          if (!st) {
+            const pv = lastState.get(s);
+            st = pv
+              ? { a: pv.a, r: Math.min(pv.r, dr), x: it.x, y: it.y }
+              : { a: 0, r: dr * 0.55, x: it.x, y: it.y };
+            singleAnim.set(s, st);
+            if (!pv) settleUntil = now + 2400;
+          }
+          st.a += (1 - st.a) * easeA;
+          st.r += (dr - st.r) * ease;
+          st.x = it.x; st.y = it.y; st.live = true;
+          curSingle.set(s, st);
+          ctx.globalAlpha = alpha * st.a * dim(s._d);
+          drawDot(it.x, it.y, s, st.r, emph);
+          hits.push({ type: 'dot', x: it.x, y: it.y, r: st.r + 2.5, s });
+          lab.push({ s, x: it.x, y: it.y, r: st.r, a: st.a });
         }
+
+        singleAnim.forEach((st, s) => {
+          if (seenS.has(s)) return;
+          st.live = false;
+          const inside = s.lng >= sw.lng && s.lng <= ne.lng &&
+                         s.lat >= sw.lat && s.lat <= ne.lat;
+          st.a += (0 - st.a) * (inside ? easeOutSlow : easeOut);
+          if (st.a < 0.03) { singleAnim.delete(s); return; }
+          settleUntil = Math.max(settleUntil, now + (inside ? 1200 : 400));
+          ctx.globalAlpha = alpha * st.a * dim(s._d);
+          drawDot(st.x, st.y, s, st.r, false);
+        });
+
+        lastState = curSingle;
+
+        let busyS = false;
+        singleAnim.forEach((st) => {
+          if (st.a < 0.985 || Math.abs(st.r - dr) > 0.12) busyS = true;
+        });
+        if (busyS && now < settleUntil) schedule();
       }
 
       ctx.globalAlpha = 1;
       drawMeRing(z);
-      // 标签压在圆点之上；蓝点（我自己）最后画，保证永远可见
+      // 标签压在圆点之上；蓝点（我自己）最后画，保证永远可见。
+      // 标签关掉/缩得太小时也走一遍，让已经画出来的标签淡出而不是凭空消失。
       if (labelOn && z >= LABEL_MIN_Z && lab.length) {
-        drawLabels(lab, alpha);
+        drawLabels(lab, alpha, easeA, easeOutSlow);
       } else {
-        lastLabels = 0;
+        drawLabels(EMPTY, alpha, easeA, easeOutSlow);
       }
       drawMeCore(z);
+      if (labelBusy && now < settleUntil) schedule();
     }
 
     /* 标签文字组成：店名 + 距离 + 评分，超宽就截店名 */
@@ -575,7 +650,14 @@
       return true;
     }
 
-    function drawLabels(list, alpha) {
+    /* 标签也要淡入淡出。
+       之前是每帧重排完直接画：位置一变、或者被更近的店挤掉，就是「啪」
+       一下没了，跟圆点的柔和过渡完全不搭。这里给每个标签存一份透明度：
+       放得下就向 1 缓动（目标值还要压上它那个圆点自己的透明度，标签才会
+       跟着点一起浮出来），放不下就向 0 缓动，淡到看不见才删。
+       掉队的标签不是钉在原地，而是继续贴着自己的圆点飘 —— 否则地图一拖，
+       残影似的几行字会留在半空。 */
+    function drawLabels(list, alpha, easeIn, easeOut) {
       // 近的优先占位；没有定位就按评分和图片数排
       list.sort((a, b) => {
         if (me) {
@@ -587,8 +669,8 @@
       });
 
       const placed = [];
+      const seenL = new Set();
       let n = 0;
-      ctx.globalAlpha = alpha;
 
       for (let i = 0; i < list.length; i++) {
         if (n >= LABEL_MAX) break;
@@ -610,12 +692,54 @@
         if (!box) continue;
         placed.push(box);
         n++;
+
+        const id = it.s.id;
+        seenL.add(id);
+        let st = labelAnim.get(id);
+        if (!st) {
+          // 新标签从 0 起，但位置偏移先记下来，掉队时靠它贴着圆点走
+          st = { a: 0, box, L, s: it.s, dx: box.x - it.x, dy: box.y - it.y };
+          labelAnim.set(id, st);
+        }
+        // 目标透明度压上圆点自己的透明度：点还在淡入时字不该先亮起来
+        const tgt = it.a == null ? 1 : Math.min(1, it.a);
+        st.a += (tgt - st.a) * easeIn;
+        st.box = box; st.L = L; st.s = it.s;
+        st.dx = box.x - it.x; st.dy = box.y - it.y;
+        st.live = true;
+
+        ctx.globalAlpha = alpha * st.a;
         drawPill(box, L, it.s);
         // 标签本身也能点开
         hits.push({ type: 'dot', s: it.s, box });
       }
+
+      // 掉队的标签：淡出。位置用圆点的当前投影 + 上次的相对偏移重算，
+      // 这样地图平移时它跟着点走，不会留在原地变成"浮空的字"。
+      labelAnim.forEach((st, id) => {
+        if (seenL.has(id)) return;
+        st.live = false;
+        st.a += (0 - st.a) * easeOut;
+        if (st.a < 0.03) { labelAnim.delete(id); return; }
+        let q = null;
+        try { q = map.lngLatToContainer([st.s.lng, st.s.lat]); } catch (e) { labelAnim.delete(id); return; }
+        if (!q) { labelAnim.delete(id); return; }
+        const box = { x: q.x + st.dx, y: q.y + st.dy, w: st.box.w, h: st.box.h };
+        // 这一格已经被本帧的新标签占了就不画，否则两行字叠在一起更难认
+        if (!fits(box, placed)) return;
+        settleUntil = Math.max(settleUntil, performance.now() + 1400);
+        ctx.globalAlpha = alpha * st.a;
+        drawPill(box, st.L, st.s);
+      });
+
       lastLabels = n;
       ctx.globalAlpha = 1;
+
+      // 标签淡入淡出也得自己续帧：静止时没有 mapmove，否则字会停在半透明
+      let lb = false;
+      labelAnim.forEach((st) => { if (st.a < 0.985) lb = true; });
+      labelBusy = lb;
+      if (lb) settleUntil = Math.max(settleUntil, performance.now() + 2400);
     }
 
     function drawPill(b, L, s) {
@@ -832,6 +956,13 @@
           k, a: st.a, r: st.r, n: st.n, tgtR: st.tgtR, tgtN: st.tgtN,
           live: st.live, x: st.cx, y: st.cy,
         }));
+        return out;
+      },
+
+      // 调试用：标签的透明度状态。live=false 是正在淡出的掉队标签。
+      debugLabels() {
+        const out = [];
+        labelAnim.forEach((st, id) => out.push({ id, a: st.a, live: st.live }));
         return out;
       },
     };
@@ -1157,7 +1288,9 @@
     }
     const distChanged = group === 'dist';
     paintChips();
+    suppressFly = distChanged;   // 距离档自己会 fitToDist，别让自动飞行抢镜头
     apply();
+    suppressFly = false;
     // 距离档位变化要把视野带过去，否则范围外的店看不见
     if (distChanged && me) fitToDist();
   }
@@ -1250,6 +1383,7 @@
   /* ══ 主流程 ════════════════════════════════════ */
   let currentList = [];
   let lastLen = -1;
+  let suppressFly = false;    // 调用方自己会取景时，别让 apply 里的自动飞行插一脚
 
   /* 结果收敛时把地图带过去，避免"筛出 1 家却看不到点" */
   function flyTo(list) {
@@ -1381,7 +1515,10 @@
     // 数量发生变化且收敛到 20 家以内 → 自动定位（首次加载 lastLen=-1 不触发）
     const narrowed = lastLen >= 0 && list2.length !== lastLen && list2.length > 0 && list2.length <= 20;
     lastLen = list2.length;
-    if (narrowed) flyTo(list2);
+    // 切距离档时由 fitToDist 负责取景，这里不要再飞一次 ——
+    // 两个 setZoomAndCenter 叠在同一个 tick 里，后一个会打断前一个，
+    // 表现为切完范围画面先冲一下再改道，还会多弹一条 toast。
+    if (narrowed && !suppressFly) flyTo(list2);
 
     const ch = list2.filter((s) => s.brand).length;
     setCount($('#c-total'), list2.length);
@@ -1570,6 +1707,17 @@
       return;
     }
     if (me) {                        // 已定位：再点一次回到自己位置
+      // 档位要跟第一次定位一致。之前只有第一次会把「全部」收成 1km，
+      // 第二次不管：如果先把范围切到「全部」（视野被拉到全市），再按定位，
+      // 地图缩回街区级、面板却还写着 1303 家 —— 数字和画面对不上，
+      // 看着就像"定位之后显示错了"。
+      if (state.dist === '全部') {
+        state.dist = '1km';
+        renderDist();
+        suppressFly = true;
+        apply();
+        suppressFly = false;
+      }
       map.setZoomAndCenter(Math.max(map.getZoom(), 15.2), [me.lng, me.lat], false, 420);
       return;
     }
@@ -1606,7 +1754,9 @@
       layer.setLabels(true);
       syncLabelBtn();
       renderDist();
+      suppressFly = true;          // 下面马上 setZoomAndCenter，别让 flyTo 抢
       apply();
+      suppressFly = false;
       map.setZoomAndCenter(Math.max(map.getZoom(), 15.2), [me.lng, me.lat], false, 480);
       const n = currentList.length;
       toast(`已定位 · ${state.dist} 内 ${n} 家，店名已直接标在地图上`);
