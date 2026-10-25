@@ -34,10 +34,10 @@
   const saved = new Set(JSON.parse(localStorage.getItem(SAVED_KEY) || '[]'));
 
   /* ── 调色板 ─────────────────────────────────────
-     液态玻璃（Liquid Glass）风格：亮色底图 + 深色标记。
-     全局只有这一套色值，改这里就能整体换色；
-     绘制代码里不允许再出现硬编码色值。 */
-  const PAL = {
+     液态玻璃（Liquid Glass）风格，明暗两套。
+     绘制代码里只读 PAL.xxx，切换主题时换掉 PAL 指向的对象即可，
+     所以这里必须是 let，且不允许在别处解构缓存色值。 */
+  const PAL_LIGHT = {
     // 连锁 / 独立 / 收藏：亮底上要用深一档才立得住
     chain: '#C67A3D',
     indie: '#2E9E78',
@@ -76,6 +76,72 @@
     boundLabel: 'rgba(160,105,58,.85)',
     boundLabelShadow: '0 1px 6px rgba(255,255,255,.9)',
   };
+
+  /* 暗色：底图换成高德官方深色样式，标记要整体提亮一档才看得见；
+     店名胶囊从白玻璃翻成深玻璃，配浅色文字。 */
+  const PAL_DARK = {
+    chain: '#E8A863',
+    indie: '#54CFA0',
+    saved: '#FF6E8E',
+    // 深底上白边会发光过头，降到半透明只做分离
+    dotEdge: 'rgba(255,255,255,.62)',
+    dotRing: 'rgba(0,0,0,.45)',
+    emphFill: 'rgba(255,255,255,.10)',
+    emphEdge: 'rgba(255,255,255,.30)',
+    savedGlow: 'rgba(255,110,142,.40)',
+    hoverGlow: 'rgba(255,255,255,.18)',
+    cluster: 'rgba(226,166,90,.96)',
+    clusterHover: '#F5C67A',
+    clusterGlow: 'rgba(226,166,90,.32)',
+    clusterEdge: 'rgba(255,255,255,.5)',
+    clusterText: '#1B1611',
+    meFill: 'rgba(77,163,255,.18)',
+    meEdge: 'rgba(77,163,255,.52)',
+    meGlow: 'rgba(77,163,255,.32)',
+    me: '#4DA3FF',
+    meDotEdge: '#FFFFFF',
+    pillBg: 'rgba(26,22,18,.86)',
+    pillBgHl: 'rgba(40,34,27,.97)',
+    pillEdge: 'rgba(255,255,255,.13)',
+    pillEdgeHl: 'rgba(232,168,99,.8)',
+    pillText: '#EDE6DC',
+    pillTextHl: '#FFF8EE',
+    pillShadow: 'rgba(0,0,0,.55)',
+    distBadge: '#7FB2FF',
+    ratingBadge: '#E0A458',
+    bound: '#E8A863',
+    boundLabel: 'rgba(242,222,196,.82)',
+    boundLabelShadow: '0 1px 6px rgba(0,0,0,.9)',
+  };
+
+  let PAL = PAL_LIGHT;
+
+  /* ══ 主题（明 / 暗）════════════════════════════
+     暗色底图用高德官方深色样式，不走 CSS 反相 —— 反相会把路网颜色搞错，
+     而且玻璃要去折射一张被反相的图，色相全歪。
+     LiquidLens 的 --lg-tint-h / -a / --lg-spec 是 JS 写在 <html> 内联样式上的，
+     内联优先级高于样式表，所以切换主题必须走 LiquidGlass.set()；
+     --lg-tint-s / -l 这两个 JS 不碰，交给 CSS 的 :root[data-theme=dark] 覆盖。 */
+  const THEME_KEY = 'zh_coffee_theme_v1';
+  const THEME_CFG = {
+    light: { hue: 32, tintA: 0.40, spec: 0.95, sat: 1.9, mapStyle: 'amap://styles/normal' },
+    dark:  { hue: 28, tintA: 0.26, spec: 0.55, sat: 1.35, mapStyle: 'amap://styles/dark' },
+  };
+
+  // 首屏先定主题，避免「先亮一下再变暗」的闪烁。
+  // index.html 的 head 里已经同步设过 data-theme，以它为准，保证两边一致。
+  let theme = (function () {
+    const preset = document.documentElement.getAttribute('data-theme');
+    if (preset === 'dark' || preset === 'light') return preset;
+    let t = null;
+    try { t = localStorage.getItem(THEME_KEY); } catch (e) {}
+    if (t !== 'dark' && t !== 'light') {
+      t = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    return t;
+  })();
+  document.documentElement.setAttribute('data-theme', theme);
+  PAL = theme === 'dark' ? PAL_DARK : PAL_LIGHT;
 
   // 聚类：屏幕像素空间分桶。格子随缩放收缩，保证"放大到街道级只剩真正贴在一起的点才合并"
   const CLUSTER_MAX_ZOOM = 17.6;
@@ -720,6 +786,40 @@
   })();
 
   window.__layer = layer;   // 调试用
+
+  /* 主题落地：底图样式 + 玻璃令牌 + 画布调色板 三处一起换 */
+  let styleApplied = false;      // 亮色就是默认样式，首屏不必再 setMapStyle 一次（会闪）
+  function applyTheme(name, save) {
+    theme = name === 'dark' ? 'dark' : 'light';
+    const cfg = THEME_CFG[theme];
+    document.documentElement.setAttribute('data-theme', theme);
+    PAL = theme === 'dark' ? PAL_DARK : PAL_LIGHT;
+
+    if (theme === 'dark' || styleApplied) {
+      try { map.setMapStyle(cfg.mapStyle); styleApplied = true; } catch (e) {}
+    }
+    if (window.LiquidGlass) {
+      try {
+        LiquidGlass.set({
+          tintHue: cfg.hue, tintOpacity: cfg.tintA,
+          specular: cfg.spec, saturation: cfg.sat,
+        });
+      } catch (e) {}
+    }
+
+    const b = document.getElementById('theme-btn');
+    if (b) {
+      b.textContent = theme === 'dark' ? '☀' : '☾';
+      b.title = theme === 'dark' ? '切到浅色' : '切到深色';
+      b.setAttribute('aria-label', b.title);
+    }
+    if (save) { try { localStorage.setItem(THEME_KEY, theme); } catch (e) {} }
+    layer.schedule();
+  }
+
+  applyTheme(theme, false);
+  const themeBtn = document.getElementById('theme-btn');
+  if (themeBtn) themeBtn.onclick = () => applyTheme(theme === 'dark' ? 'light' : 'dark', true);
 
   let mounted = false;
   function tryMount() { if (!mounted) mounted = layer.mount(); }

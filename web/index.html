@@ -10,6 +10,19 @@
 <link rel="stylesheet" href="vendor/liquidlens/tokens.css">
 <link rel="stylesheet" href="vendor/liquidlens/liquid-glass.css">
 <link rel="stylesheet" href="style.css">
+<!-- 主题必须在样式表解析后、body 绘制前定好，否则深色用户会先看到一帧亮色加载画面。
+     app.js 在 body 末尾才执行，赶不上第一帧，所以这里先同步定一次。 -->
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem('zh_coffee_theme_v1');
+    if (t !== 'dark' && t !== 'light') {
+      t = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) { document.documentElement.setAttribute('data-theme', 'light'); }
+})();
+</script>
 </head>
 <body>
 
@@ -36,6 +49,7 @@
         <h1>珠海咖啡地图</h1>
         <p class="sub">ZHUHAI COFFEE MAP</p>
       </div>
+      <button id="theme-btn" title="切到深色">☾</button>
       <button id="collapse" title="收起面板">‹</button>
     </div>
     <div class="counts">

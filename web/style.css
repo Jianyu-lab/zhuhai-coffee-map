@@ -47,8 +47,93 @@
   --glass-sm-hi:rgba(255,255,255,.8);
   --glass-raise:linear-gradient(180deg,#fff,rgba(255,255,255,.9));  /* 选中/抬起态 */
   --shadow-sm:0 10px 26px -12px rgba(74,50,26,.3), 0 2px 8px -4px rgba(74,50,26,.14);
+  --ctrl-hover:rgba(255,255,255,.6);   /* 列表项 / 标签悬停底 */
+  --raise-edge:rgba(255,255,255,.95);  /* 选中态外描边 */
+  --raise-top:#fff;                    /* 选中态顶部内高光 */
+  --ring:rgba(255,255,255,.9);         /* 图例、排行小色点的白圈 */
+  --field-focus:rgba(255,255,255,.82); /* 搜索框聚焦底 */
+  --tip-bg:hsla(36,50%,98%,88);
+  --tip-ring:rgba(255,255,255,.85);
+  --card-bg:hsla(36,52%,98%,68);
+  --card-ring:rgba(255,255,255,.85);
+  --card-solid:rgba(247,242,234,.97);
+  --solid:#fff;
+  --copyright:rgba(58,46,36,.45);
+  --loader-bg:
+    radial-gradient(115% 85% at 14% 4%, #fffaf2 0%, rgba(255,250,242,0) 56%),
+    radial-gradient(95% 75% at 94% 98%, #f7e5cd 0%, rgba(247,229,205,0) 62%),
+    linear-gradient(158deg,#f5efe6,#e8dfd2);
+  --btn-top:rgba(255,255,255,.6);      /* 小圆钮顶部内高光 */
   --r-pill:999px;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   暗色主题
+   --------------------------------------------------------------
+   底图由 app.js 调 map.setMapStyle('amap://styles/dark') 换成高德
+   官方深色样式，不用 CSS 反相 —— 反相会让路网/水系的色相全错，
+   而且玻璃折射的是一张被反相过的图，颜色更歪。
+
+   这里只覆盖令牌。注意 --lg-tint-h / -a / --lg-spec 是 JS 写在
+   <html> 内联样式上的（LiquidGlass.setVars），内联优先级更高，
+   所以那三个值由 app.js 的 applyTheme() 负责，本文件不写。
+   本文件只管 JS 不碰的：--lg-tint-s / -l、前景色、阴影、项目色。
+   ══════════════════════════════════════════════════════════════ */
+:root[data-theme="dark"]{
+  /* 深玻璃：饱和度压很低，否则 tint 会泛灰紫；明度 16% 接近纯黑玻璃 */
+  --lg-fg:#F0EAE1;
+  --lg-fg-dim:rgba(240,234,225,.60);
+  --lg-tint-s:20%;
+  --lg-tint-l:16%;
+  /* 深色下阴影要更重更黑，内高光要更弱，不然玻璃会显得发白 */
+  --lg-shadow-drop:0 26px 64px -20px rgba(0,0,0,.68), 0 8px 22px -12px rgba(0,0,0,.5);
+  --lg-shadow-inner:inset 0 1px 1px rgba(255,255,255,.13), inset 0 -1px 1px rgba(255,255,255,.05);
+  --lg-chroma-cool:rgba(120,170,255,.22);
+  --lg-chroma-warm:rgba(255,150,110,.18);
+
+  --ink:#14110e;                       /* 瓦片没画出来时的底色 */
+  --txt:#F0EAE1;
+  --dim:rgba(232,224,212,.62);
+  --dim-2:rgba(232,224,212,.42);
+  --faint:rgba(232,224,212,.22);
+  /* 强调色在深底上要提亮一档，否则压不住 */
+  --accent:#E8A863;
+  --accent-deep:#F5C089;
+  --accent-soft:rgba(232,168,99,.16);
+  --accent-line:rgba(232,168,99,.42);
+  --chain:#E8A863;
+  --indie:#54CFA0;
+  --saved:#FF6E8E;
+  --blue:#4DA3FF;
+  --blue-deep:#9CCBFF;
+  --green-deep:#6FDDB0;
+  --edge:rgba(255,255,255,.11);
+  --glass-sm:rgba(255,255,255,.07);
+  --glass-sm-hi:rgba(255,255,255,.15);
+  --glass-raise:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.07));
+  --shadow-sm:0 10px 26px -12px rgba(0,0,0,.62), 0 2px 8px -4px rgba(0,0,0,.4);
+  --ctrl-hover:rgba(255,255,255,.12);
+  --raise-edge:rgba(255,255,255,.24);
+  --raise-top:rgba(255,255,255,.18);
+  --ring:rgba(255,255,255,.34);
+  --field-focus:rgba(255,255,255,.13);
+  --tip-bg:hsla(30,14%,13%,92);
+  --tip-ring:rgba(255,255,255,.14);
+  --card-bg:hsla(30,16%,15%,86);
+  --card-ring:rgba(255,255,255,.16);
+  --card-solid:rgba(24,20,17,.98);
+  --solid:rgba(255,255,255,.17);
+  --copyright:rgba(232,224,212,.42);
+  --loader-bg:
+    radial-gradient(115% 85% at 14% 4%, #2b241d 0%, rgba(43,36,29,0) 56%),
+    radial-gradient(95% 75% at 94% 98%, #1c1916 0%, rgba(28,25,22,0) 62%),
+    linear-gradient(158deg,#181512,#0e0c0a);
+  --btn-top:rgba(255,255,255,.09);
+}
+
+/* 开标签时压暗底图：暗色底图本身已经很低对比，反相逻辑不适用，改成再压一层 */
+:root[data-theme="dark"] #map.labels .amap-layers > canvas.amap-layer,
+:root[data-theme="dark"] #map.labels .amap-layers img{filter:saturate(.62) brightness(.82)}
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
@@ -63,15 +148,12 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
 #map.labels .amap-layers > canvas.amap-layer,
 #map.labels .amap-layers img{filter:saturate(.82) brightness(.99)}
 #map .amap-logo img{opacity:.42}
-#map .amap-copyright{opacity:.45;color:rgba(58,46,36,.45)!important}
+#map .amap-copyright{opacity:.45;color:var(--copyright)!important}
 
 /* ── 加载画面 ───────────────────────── */
 /* 内联在 HTML 里、样式也写在 head 前段，保证脚本还没跑就画出来 */
 #loader{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;
-  background:
-    radial-gradient(115% 85% at 14% 4%, #fffaf2 0%, rgba(255,250,242,0) 56%),
-    radial-gradient(95% 75% at 94% 98%, #f7e5cd 0%, rgba(247,229,205,0) 62%),
-    linear-gradient(158deg,#f5efe6,#e8dfd2);
+  background:var(--loader-bg);
   transition:opacity .45s ease,visibility .45s}
 #loader.done{opacity:0;visibility:hidden;pointer-events:none}
 .ld-inner{--lg-radius:30px;display:flex;flex-direction:column;align-items:center;padding:40px 48px 34px}
@@ -120,11 +202,13 @@ header.brand{padding:20px 20px 15px;border-bottom:1px solid rgba(116,92,66,.12);
   border:2px solid rgba(255,255,255,.92);border-top-color:transparent;transform:rotate(-30deg)}
 h1{margin:0;font-size:17px;font-weight:600;letter-spacing:.02em;color:var(--txt)}
 .sub{margin:3px 0 0;font-size:10px;letter-spacing:.17em;color:var(--dim-2);font-weight:500}
-#collapse{margin-left:auto;width:28px;height:28px;border-radius:9px;flex:none;
+#collapse,#theme-btn{width:28px;height:28px;border-radius:9px;flex:none;
   background:var(--glass-sm);border:1px solid var(--edge);color:var(--dim);
-  font-size:16px;line-height:1;cursor:pointer;transition:.16s;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
-#collapse:hover{background:var(--glass-sm-hi);color:var(--txt)}
+  font-size:15px;line-height:1;cursor:pointer;transition:.16s;
+  box-shadow:inset 0 1px 0 var(--btn-top)}
+#theme-btn{margin-left:auto;font-size:14px}
+#collapse{margin-left:6px;font-size:16px}
+#collapse:hover,#theme-btn:hover{background:var(--glass-sm-hi);color:var(--txt)}
 .counts{display:flex;align-items:center;gap:8px;margin-top:15px;font-size:12px;color:var(--dim)}
 .counts b{color:var(--txt);font-weight:600;font-size:13px}
 .dot-sep{width:3px;height:3px;border-radius:50%;background:var(--faint)}
@@ -142,9 +226,9 @@ h1{margin:0;font-size:17px;font-weight:600;letter-spacing:.02em;color:var(--txt)
 #q{width:100%;padding:10px 32px 10px 35px;border-radius:var(--r-pill);
   background:var(--glass-sm);border:1px solid var(--edge);
   color:var(--txt);font-size:13px;outline:none;transition:.16s;font-family:inherit;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+  box-shadow:inset 0 1px 0 var(--btn-top)}
 #q::placeholder{color:var(--faint)}
-#q:focus{border-color:var(--accent-line);background:rgba(255,255,255,.82)}
+#q:focus{border-color:var(--accent-line);background:var(--field-focus)}
 #q::-webkit-search-cancel-button{display:none}
 #q-clear{position:absolute;right:9px;top:50%;transform:translateY(-50%);
   width:20px;height:20px;border:0;border-radius:50%;background:rgba(116,92,66,.14);
@@ -164,18 +248,18 @@ h2{margin:0 0 10px;font-size:11px;font-weight:600;letter-spacing:.1em;
 .chip{padding:6px 12px;border-radius:var(--r-pill);font-size:12px;cursor:pointer;
   background:var(--glass-sm);border:1px solid var(--edge);color:var(--dim);
   transition:.16s;user-select:none;font-family:inherit;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.65)}
+  box-shadow:inset 0 1px 0 var(--btn-top)}
 .chip:hover{background:var(--glass-sm-hi);color:var(--txt)}
-.chip.on{background:var(--glass-raise);border-color:rgba(255,255,255,.95);
+.chip.on{background:var(--glass-raise);border-color:var(--raise-edge);
   color:var(--accent-deep);font-weight:600;
-  box-shadow:0 3px 10px -3px rgba(74,50,26,.26), inset 0 1px 0 #fff}
+  box-shadow:0 3px 10px -3px rgba(74,50,26,.26), inset 0 1px 0 var(--raise-top)}
 .chip .n{opacity:.5;margin-left:4px;font-size:11px;font-variant-numeric:tabular-nums}
 
 /* ── 品牌 ─────────────────────────── */
 .brands{display:flex;flex-direction:column;gap:1px}
 .brand-item{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:10px;
   cursor:pointer;font-size:12.5px;color:var(--dim);transition:.14s}
-.brand-item:hover{background:rgba(255,255,255,.6);color:var(--txt)}
+.brand-item:hover{background:var(--ctrl-hover);color:var(--txt)}
 .brand-item.on{background:var(--accent-soft);color:var(--accent-deep);font-weight:500}
 .brand-item .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .brand-item .ct{font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
@@ -195,7 +279,7 @@ h2{margin:0 0 10px;font-size:11px;font-weight:600;letter-spacing:.1em;
 .mylist{margin-top:22px}
 .ghost{width:100%;padding:11px;border-radius:var(--r-pill);font-size:12.5px;cursor:pointer;
   background:var(--glass-sm);border:1px solid var(--edge);color:var(--dim);
-  transition:.16s;font-family:inherit;box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+  transition:.16s;font-family:inherit;box-shadow:inset 0 1px 0 var(--btn-top)}
 .ghost:hover{background:var(--glass-sm-hi);color:var(--txt)}
 .ghost.on{background:rgba(214,71,107,.12);border-color:rgba(214,71,107,.38);color:#B93354;font-weight:500}
 .ghost b{font-weight:600}
@@ -232,18 +316,18 @@ body.pcollapsed #toolbar{left:16px;top:58px}
 #rank-collapse{width:26px;height:26px;border-radius:8px;flex:none;
   background:var(--glass-sm);border:1px solid var(--edge);color:var(--dim);
   font-size:15px;line-height:1;cursor:pointer;transition:.16s;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+  box-shadow:inset 0 1px 0 var(--btn-top)}
 #rank-collapse:hover{background:var(--glass-sm-hi);color:var(--txt)}
 .rk-sub{margin-top:9px;font-size:10.5px;color:var(--dim-2);letter-spacing:.02em}
 .rk-sub b{color:var(--dim);font-weight:600;font-variant-numeric:tabular-nums}
 .rk-sort{display:flex;gap:5px;margin-top:12px}
 .rk-sort button{flex:1;padding:7px 0;border-radius:var(--r-pill);font-size:11.5px;cursor:pointer;
   font-family:inherit;transition:.16s;background:var(--glass-sm);
-  border:1px solid var(--edge);color:var(--dim);box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+  border:1px solid var(--edge);color:var(--dim);box-shadow:inset 0 1px 0 var(--btn-top)}
 .rk-sort button:hover{background:var(--glass-sm-hi);color:var(--txt)}
-.rk-sort button.on{background:var(--glass-raise);border-color:rgba(255,255,255,.95);
+.rk-sort button.on{background:var(--glass-raise);border-color:var(--raise-edge);
   color:var(--accent-deep);font-weight:600;
-  box-shadow:0 3px 10px -3px rgba(74,50,26,.26), inset 0 1px 0 #fff}
+  box-shadow:0 3px 10px -3px rgba(74,50,26,.26), inset 0 1px 0 var(--raise-top)}
 
 .rk-scroll{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:7px 9px 9px}
 .rk-scroll::-webkit-scrollbar{width:6px}
@@ -252,12 +336,12 @@ body.pcollapsed #toolbar{left:16px;top:58px}
 
 .rrow{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:12px;cursor:pointer;
   transition:background .14s;position:relative}
-.rrow:hover,.rrow.hl{background:rgba(255,255,255,.62)}
+.rrow:hover,.rrow.hl{background:var(--ctrl-hover)}
 .rrow .rk{width:19px;flex:none;text-align:center;font-size:11px;color:var(--faint);
   font-variant-numeric:tabular-nums;font-weight:600}
 .rrow:nth-child(1) .rk,.rrow:nth-child(2) .rk,.rrow:nth-child(3) .rk{color:var(--accent);font-weight:700}
 .rrow .dot{width:9px;height:9px;border-radius:50%;flex:none;
-  box-shadow:0 0 0 1.5px rgba(255,255,255,.9), 0 1px 3px rgba(74,50,26,.25)}
+  box-shadow:0 0 0 1.5px var(--ring), 0 1px 3px rgba(74,50,26,.25)}
 .rrow .dot.chain{background:var(--chain)}
 .rrow .dot.indie{background:var(--indie)}
 .rrow .mid{flex:1;min-width:0}
@@ -280,7 +364,7 @@ body.pcollapsed #toolbar{left:16px;top:58px}
   z-index:15;display:flex;gap:15px;padding:9px 15px;font-size:11px;color:var(--dim);font-weight:500}
 #legend span{display:flex;align-items:center;gap:5px}
 .lg{width:9px;height:9px;border-radius:50%;display:inline-block;
-  box-shadow:0 0 0 1.5px rgba(255,255,255,.9), 0 1px 3px rgba(74,50,26,.22)}
+  box-shadow:0 0 0 1.5px var(--ring), 0 1px 3px rgba(74,50,26,.22)}
 .lg.chain{background:var(--chain)}
 .lg.indie{background:var(--indie)}
 .lg.saved{background:var(--saved)}
@@ -308,9 +392,9 @@ body.pcollapsed #toolbar{left:16px;top:58px}
 /* 已开启但当前缩放太小、标签画不出来 */
 #btn-label.active.sub{--lg-tint-h:34;--lg-tint-a:.2;--lg-tint-l:97%;color:var(--dim-2);font-weight:500}
 #sec-dist.hidden{display:none}
-#sec-dist .chip.on{background:var(--glass-raise);border-color:rgba(255,255,255,.95);
+#sec-dist .chip.on{background:var(--glass-raise);border-color:var(--raise-edge);
   color:var(--blue-deep);font-weight:600;
-  box-shadow:0 3px 10px -3px rgba(74,50,26,.26), inset 0 1px 0 #fff}
+  box-shadow:0 3px 10px -3px rgba(74,50,26,.26), inset 0 1px 0 var(--raise-top)}
 
 /* ── Canvas 标记层 ────────────────── */
 .coffee-canvas{position:absolute;left:0;top:0;pointer-events:none;z-index:1}
@@ -321,8 +405,8 @@ body.pcollapsed #toolbar{left:16px;top:58px}
    每次重算位移贴图不划算，纯 CSS 的描边+高光就够"玻璃"了 */
 .tip{--lg-radius:12px;position:absolute;z-index:30;pointer-events:none;transform:translate(-50%,-165%);
   padding:7px 11px;font-size:11.5px;color:var(--txt);white-space:nowrap;line-height:1.35;
-  background:hsla(36,50%,98%,88);
-  box-shadow:var(--shadow-sm), inset 0 0 0 1px rgba(255,255,255,.85);
+  background:var(--tip-bg);
+  box-shadow:var(--shadow-sm), inset 0 0 0 1px var(--tip-ring);
   opacity:0;transition:opacity .12s}
 .tip.on{opacity:1}
 .tip b{font-weight:600}
@@ -343,9 +427,9 @@ body.pcollapsed #toolbar{left:16px;top:58px}
 .amap-info-contentContainer .card{
   --lg-radius:20px;
   width:264px;padding:17px 18px 15px;
-  background:hsla(36,52%,98%,68)!important;
+  background:var(--card-bg)!important;
   box-shadow:0 26px 64px -24px rgba(74,50,26,.34), 0 8px 22px -12px rgba(74,50,26,.18),
-             inset 0 0 0 1px rgba(255,255,255,.85)!important;
+             inset 0 0 0 1px var(--card-ring)!important;
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif!important;
   color:var(--txt)!important;text-align:left}
 .amap-info-contentContainer .card *{box-sizing:border-box}
@@ -372,17 +456,17 @@ body.pcollapsed #toolbar{left:16px;top:58px}
 .amap-info-contentContainer .card .hrs b.cl{background:rgba(116,92,66,.1)!important;color:var(--dim-2)!important}
 .amap-info-contentContainer .card .tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
 .amap-info-contentContainer .card .tag{font-size:10px;padding:3px 8px;border-radius:7px;
-  background:rgba(255,255,255,.62)!important;color:var(--dim)!important;
+  background:var(--ctrl-hover)!important;color:var(--dim)!important;
   border:1px solid var(--edge)!important;white-space:nowrap}
 .amap-info-contentContainer .card .tag.br{background:var(--accent-soft)!important;
   color:var(--accent-deep)!important;border-color:var(--accent-line)!important}
 .amap-info-contentContainer .card .acts{display:flex;gap:7px}
 .amap-info-contentContainer .card .acts a,.amap-info-contentContainer .card .acts button{flex:1;text-align:center;
   padding:8px 0;border-radius:var(--r-pill);font-size:11.5px;text-decoration:none;cursor:pointer;
-  font-family:inherit;transition:.16s;background:rgba(255,255,255,.62)!important;
+  font-family:inherit;transition:.16s;background:var(--ctrl-hover)!important;
   border:1px solid var(--edge)!important;color:var(--dim)!important}
 .amap-info-contentContainer .card .acts a:hover,.amap-info-contentContainer .card .acts button:hover{
-  background:#fff!important;color:var(--txt)!important}
+  background:var(--solid)!important;color:var(--txt)!important}
 .amap-info-contentContainer .card .acts .pri{background:linear-gradient(180deg,#C67A3D,#A9632A)!important;
   border-color:transparent!important;color:#fff!important;font-weight:600;
   box-shadow:0 4px 12px -4px rgba(140,86,32,.5), inset 0 1px 0 rgba(255,255,255,.28)}
@@ -417,7 +501,7 @@ body.pcollapsed #toolbar{left:16px;top:58px}
    backdrop-filter 要 !important——JS 会写 inline style，普通声明盖不过它 */
 @media (prefers-reduced-transparency: reduce){
   .lg-glass{
-    background:rgba(247,242,234,.97)!important;
+    background:var(--card-solid)!important;
     -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
     box-shadow:0 8px 24px rgba(74,50,26,.18), inset 0 0 0 1px rgba(116,92,66,.16)!important;
   }
