@@ -789,14 +789,29 @@
 
   /* 主题落地：底图样式 + 玻璃令牌 + 画布调色板 三处一起换 */
   let styleApplied = false;      // 亮色就是默认样式，首屏不必再 setMapStyle 一次（会闪）
+  let styleTries = 0;
+
+  // 冷启动进暗色时地图还没 ready，这时候 setMapStyle 会被静默丢掉
+  // （实测：面板已经变暗、底图还是亮的）。所以除了当场调一次，
+  // 还要挂到 complete 上补。最多补 3 次 —— setMapStyle 自己也可能再触发
+  // complete，不封顶会死循环。
+  function pushDarkStyle() {
+    if (theme !== 'dark' || styleTries >= 3) return;
+    styleTries++;
+    try { map.setMapStyle(THEME_CFG.dark.mapStyle); styleApplied = true; } catch (e) {}
+  }
+
   function applyTheme(name, save) {
     theme = name === 'dark' ? 'dark' : 'light';
     const cfg = THEME_CFG[theme];
     document.documentElement.setAttribute('data-theme', theme);
     PAL = theme === 'dark' ? PAL_DARK : PAL_LIGHT;
 
-    if (theme === 'dark' || styleApplied) {
-      try { map.setMapStyle(cfg.mapStyle); styleApplied = true; } catch (e) {}
+    if (theme === 'dark') {
+      styleTries = 0;
+      pushDarkStyle();
+    } else if (styleApplied) {
+      try { map.setMapStyle(THEME_CFG.light.mapStyle); styleApplied = false; } catch (e) {}
     }
     if (window.LiquidGlass) {
       try {
@@ -817,6 +832,7 @@
     layer.schedule();
   }
 
+  map.on('complete', pushDarkStyle);
   applyTheme(theme, false);
   const themeBtn = document.getElementById('theme-btn');
   if (themeBtn) themeBtn.onclick = () => applyTheme(theme === 'dark' ? 'light' : 'dark', true);
