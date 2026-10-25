@@ -752,6 +752,13 @@
     setTimeout(() => {
       const root = document.querySelector('.amap-info-contentContainer');
       if (!root) return;
+      // 信息卡是动态插入的，LiquidLens 的 MutationObserver 抓不到它
+      // （实测 lgId 始终为空，backdrop-filter 停在纯模糊），这里显式补一次折射。
+      // 卡高矮随店家标签数变化，每次开卡都要重新生成位移贴图，所以不能缓存。
+      const cardEl = root.querySelector('.card');
+      if (cardEl && window.LiquidGlass) {
+        try { LiquidGlass.apply(cardEl); } catch (e) { /* 引擎缺席就退回 CSS 模糊 */ }
+      }
       const star = root.querySelector('.star');
       if (star) {
         star.onclick = () => {
