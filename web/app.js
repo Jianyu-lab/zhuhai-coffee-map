@@ -269,11 +269,22 @@
          a 透明度（新出现的从 0 淡入，消失的淡出后再删）
          r 半径（1 家 ↔ 多家的圆点/圆环之间平滑长大缩小）
          n 成员数（用浮点插值，取整后才显示）
-       时间常数 70ms，大约 200ms 收敛完，比硬切自然得多。 */
+
+       两个时间常数分开走，因为两件事的观感要求相反：
+         FADE_TAU 透明度 —— 慢。这是用户唯一能明确「看见」的过渡，
+                            320ms 时间常数 ≈ 1.3s 淡入到底，肉眼清楚。
+         ANIM_TAU 半径/成员数 —— 快。跟着缩放走的东西拖太久会发飘。
+       淡出单独用 FADE_OUT_TAU 走快档：慢淡出会在地图平移时拖出一条残影。 */
     const anim = new Map();
     let lastT = 0;
     let settleUntil = 0;      // 结构变化后的自续帧截止时间，防止空转
-    const ANIM_TAU = 70;
+    const ANIM_TAU = 130;
+    const FADE_TAU = 320;
+    const FADE_OUT_TAU = 90;
+    // 上一帧的「店 → 视觉状态」，用来判断一个桶到底是不是「新冒出来的」。
+    // 少了它，地图平移时圆点跨过分桶格子边界（键变了、店没变）也会被当成
+    // 新点重新淡入一遍 —— 那正是之前满屏闪动的成因，等于把 bug 又引回来。
+    let lastState = new Map();
 
     /* ── 常驻标签 ──────────────────────────────────
        定位之后把附近店名直接铺在地图上，不用逐个点开。
@@ -344,7 +355,9 @@
       // 帧间隔按实际时间算，掉帧时缓动不会变慢；上限 64ms 防止切标签页回来猛跳
       const dt = lastT ? Math.min(64, now - lastT) : 16;
       lastT = now;
-      const ease = 1 - Math.exp(-dt / ANIM_TAU);
+      const ease = 1 - Math.exp(-dt / ANIM_TAU);        // 半径、成员数
+      const easeA = 1 - Math.exp(-dt / FADE_TAU);       // 淡入
+      const easeOut = 1 - Math.exp(-dt / FADE_OUT_TAU); // 淡出
 
       // 底图压暗只在"标签真的画出来"时生效，否则热力图/缩小时会白白变暗
       syncDim(z);
@@ -398,6 +411,7 @@
       if (clusterMode) {
         const dr = dotRadius(z);
         const seen = new Set();
+        const curState = new Map();     // 本帧重建：店 → 状态
 
         buckets.forEach((b, k) => {
           seen.add(k);
@@ -405,18 +419,36 @@
           const tgtR = b.n === 1 ? dr : Math.min(radiusFor(b.n), cell * 0.45);
           let st = anim.get(k);
           if (!st) {
-            // 新出现的桶：透明度从 0 淡入，半径直接给目标值（不从一点炸开）
-            st = { a: 0, r: tgtR, n: b.n, tgtR, tgtN: b.n };
+            /* 这个桶没有历史状态。它可能是「真的新冒出来的」，也可能只是
+               圆点跨过了分桶格子边界 —— 后者必须当成没变，否则平移时
+               每个越界的点都要重新淡入，整屏又在闪。
+               判据看「店里有没有上一帧就在的」：取成员里上一帧最亮的那个
+               状态的透明度和半径接着往下走，完全没交集才从 0 淡入。
+               半径只继承到 tgtR 为上限（Math.min）：几个点并成簇时长上来
+               很好看，但反过来簇裂成一堆单点时，若每个点都继承簇的半径，
+               会先闪出一片大圆点再缩下去 —— 那个方向只取目标值。 */
+            let pv = null;
+            for (let i = 0; i < b.items.length; i++) {
+              const q = lastState.get(b.items[i]);
+              if (q && (!pv || q.a > pv.a)) pv = q;
+            }
+            st = pv
+              ? { a: pv.a, r: Math.min(pv.r, tgtR), n: pv.n, tgtR, tgtN: b.n }
+              : { a: 0, r: tgtR * 0.55, n: b.n, tgtR, tgtN: b.n };
             anim.set(k, st);
-            settleUntil = now + 1200;
+            if (!pv) settleUntil = now + 2400;   // 淡入要 1.3s 才到底，窗口得留够
           }
-          st.a += (1 - st.a) * ease;
+          st.a += (1 - st.a) * easeA;
           st.r += (tgtR - st.r) * ease;
           st.n += (b.n - st.n) * ease;
+          // 单点不插值成员数。簇散成单点时继承来的 n 可能还是 5，
+          // 插值会让它先以「圈里写 5」的样子存在半秒，然后再变成圆点。
+          if (b.n === 1) st.n = 1;
           st.tgtR = tgtR; st.tgtN = b.n;
           st.cx = cx; st.cy = cy;
           st.glng = b.lng / b.n; st.glat = b.lat / b.n;
           st.dmin = b.dmin; st.s = b.items[0];
+          for (let i = 0; i < b.items.length; i++) curState.set(b.items[i], st);
 
           const shownN = Math.round(st.n);
           ctx.globalAlpha = alpha * st.a * dim(b.dmin);
@@ -438,11 +470,12 @@
 
         // 本帧消失的桶：淡出后再删。位置用地理中心重新投影，
         // 否则地图已经平移了，残影会跟底图脱节。
+        // 这里走快档淡出（90ms）：平移时桶会成片消失，慢淡出会拖出残影。
         anim.forEach((st, k) => {
           if (seen.has(k)) return;
-          st.a += (0 - st.a) * ease;
-          settleUntil = now + 1200;      // 淡出也要有帧才能走完
+          st.a += (0 - st.a) * easeOut;
           if (st.a < 0.03) { anim.delete(k); return; }
+          settleUntil = Math.max(settleUntil, now + 400);
           let q = null;
           try { q = map.lngLatToContainer([st.glng, st.glat]); } catch (e) { anim.delete(k); return; }
           if (!q) { anim.delete(k); return; }
@@ -452,17 +485,23 @@
           else drawCluster(q.x, q.y, st.r, shownN, false);
         });
 
+        // 供下一帧判断「这家店上一帧在哪、亮到多少」
+        lastState = curState;
+
         // 静止时不再有 mapmove，过渡没收敛就得自己续帧，
         // 否则新出现的簇会永远停在半透明、改过成员的簇停在旧半径。
+        // 阈值取 0.985 而不是 0.99：淡入时间常数放到 320ms 后，
+        // 收尾那段每帧只涨零点几个百分点，卡在 0.99 会白烧几十帧。
         let busy = false;
         anim.forEach((st) => {
-          if (st.a < 0.99) busy = true;
-          else if (Math.abs(st.r - st.tgtR) > 0.1) busy = true;
-          else if (Math.abs(st.n - st.tgtN) > 0.05) busy = true;
+          if (st.a < 0.985) busy = true;
+          else if (Math.abs(st.r - st.tgtR) > 0.12) busy = true;
+          else if (Math.abs(st.n - st.tgtN) > 0.06) busy = true;
         });
         if (busy && now < settleUntil) schedule();
       } else {
         anim.clear();
+        lastState.clear();
         const dr = dotRadius(z);
         for (let i = 0; i < singles.length; i++) {
           const it = singles[i];
@@ -782,6 +821,16 @@
         schedule();
       },
       clearHover() { this.setHover(null); },
+
+      // 调试用：导出簇的瞬时视觉状态。自动化测试靠它判断「淡入到底有没有在渐」，
+      // 从画布上量 alpha 会被基础淡入、距离衰减、主题调色板一起干扰，量不准。
+      debug() {
+        const out = [];
+        anim.forEach((st, k) => out.push({
+          k, a: st.a, r: st.r, n: st.n, tgtR: st.tgtR, tgtN: st.tgtN,
+        }));
+        return out;
+      },
     };
   })();
 
