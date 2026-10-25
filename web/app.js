@@ -33,6 +33,50 @@
   const $$ = (s) => Array.from(document.querySelectorAll(s));
   const saved = new Set(JSON.parse(localStorage.getItem(SAVED_KEY) || '[]'));
 
+  /* ── 调色板 ─────────────────────────────────────
+     液态玻璃（Liquid Glass）风格：亮色底图 + 深色标记。
+     全局只有这一套色值，改这里就能整体换色；
+     绘制代码里不允许再出现硬编码色值。 */
+  const PAL = {
+    // 连锁 / 独立 / 收藏：亮底上要用深一档才立得住
+    chain: '#C67A3D',
+    indie: '#2E9E78',
+    saved: '#D6476B',
+    // 圆点靠白边 + 深色柔环在亮底上分层
+    dotEdge: 'rgba(255,255,255,.92)',
+    dotRing: 'rgba(42,33,25,.12)',
+    emphFill: 'rgba(42,33,25,.05)',
+    emphEdge: 'rgba(42,33,25,.20)',
+    savedGlow: 'rgba(214,71,107,.26)',
+    hoverGlow: 'rgba(42,33,25,.09)',
+    // 聚类保留品牌金，只把描边和数字换成亮底版本
+    cluster: 'rgba(224,164,88,.94)',
+    clusterHover: '#EFB966',
+    clusterGlow: 'rgba(224,164,88,.20)',
+    clusterEdge: 'rgba(255,255,255,.8)',
+    clusterText: '#241C15',
+    // 定位：Apple 蓝
+    meFill: 'rgba(10,132,255,.12)',
+    meEdge: 'rgba(10,132,255,.32)',
+    meGlow: 'rgba(10,132,255,.18)',
+    me: '#0A84FF',
+    meDotEdge: '#FFFFFF',
+    // 店名胶囊：白玻璃，必须配柔影才从亮色地图上分出来
+    pillBg: 'rgba(255,255,255,.88)',
+    pillBgHl: 'rgba(255,255,255,.99)',
+    pillEdge: 'rgba(42,33,25,.10)',
+    pillEdgeHl: 'rgba(198,122,61,.85)',
+    pillText: '#241C15',
+    pillTextHl: '#171310',
+    pillShadow: 'rgba(60,40,20,.22)',
+    distBadge: '#5B8DEF',
+    ratingBadge: '#A87428',
+    // 区界
+    bound: '#C67A3D',
+    boundLabel: 'rgba(160,105,58,.85)',
+    boundLabelShadow: '0 1px 6px rgba(255,255,255,.9)',
+  };
+
   // 聚类：屏幕像素空间分桶。格子随缩放收缩，保证"放大到街道级只剩真正贴在一起的点才合并"
   const CLUSTER_MAX_ZOOM = 17.6;
   const CELL_BASE = 62, CELL_MIN = 30;
@@ -151,10 +195,6 @@
     let hoverItem = null;
     let born = 0;
     let raf = 0;
-
-    const CHAIN = '#E0A458';
-    const INDIE = '#6FBF9B';
-    const SAVED = '#E2607A';
 
     /* ── 常驻标签 ──────────────────────────────────
        定位之后把附近店名直接铺在地图上，不用逐个点开。
@@ -306,8 +346,8 @@
     /* 标签文字组成：店名 + 距离 + 评分，超宽就截店名 */
     function buildLabel(s) {
       const badges = [];
-      if (s._d != null) badges.push({ t: fmtDist(s._d), c: '#8CB8FF' });
-      if (s.rating >= 4.0) badges.push({ t: '★' + s.rating.toFixed(1), c: '#E8B36A' });
+      if (s._d != null) badges.push({ t: fmtDist(s._d), c: PAL.distBadge });
+      if (s.rating >= 4.0) badges.push({ t: '★' + s.rating.toFixed(1), c: PAL.ratingBadge });
 
       let bw = 0;
       ctx.font = FONT_B;
@@ -407,10 +447,18 @@
       ctx.arcTo(b.x, b.y + b.h, b.x, b.y, rad);
       ctx.arcTo(b.x, b.y, b.x + b.w, b.y, rad);
       ctx.closePath();
-      ctx.fillStyle = hl ? 'rgba(52,41,29,.97)' : 'rgba(13,11,9,.90)';
+      // 液态玻璃版给胶囊加一层柔影，白底才从亮色地图上分出来
+      if (PAL.pillShadow) {
+        ctx.save();
+        ctx.shadowColor = PAL.pillShadow;
+        ctx.shadowBlur = 14;
+        ctx.shadowOffsetY = 4;
+      }
+      ctx.fillStyle = hl ? PAL.pillBgHl : PAL.pillBg;
       ctx.fill();
+      if (PAL.pillShadow) ctx.restore();
       ctx.lineWidth = 1;
-      ctx.strokeStyle = hl ? 'rgba(224,164,88,.9)' : 'rgba(255,255,255,.16)';
+      ctx.strokeStyle = hl ? PAL.pillEdgeHl : PAL.pillEdge;
       ctx.stroke();
 
       const cy = b.y + b.h / 2 + 0.5;
@@ -418,7 +466,7 @@
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.font = FONT_N;
-      ctx.fillStyle = hl ? '#FFF7EC' : '#E8E2D9';
+      ctx.fillStyle = hl ? PAL.pillTextHl : PAL.pillText;
       ctx.fillText(L.name, tx, cy);
       tx += L.nw;
       ctx.font = FONT_B;
@@ -449,10 +497,10 @@
       const { p, ar } = m;
       ctx.beginPath();
       ctx.arc(p.x, p.y, ar, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(59,130,246,.10)';
+      ctx.fillStyle = PAL.meFill;
       ctx.fill();
       ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(59,130,246,.30)';
+      ctx.strokeStyle = PAL.meEdge;
       ctx.stroke();
     }
 
@@ -464,15 +512,15 @@
 
       ctx.beginPath();
       ctx.arc(p.x, p.y, 17, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(59,130,246,.18)';
+      ctx.fillStyle = PAL.meGlow;
       ctx.fill();
 
       ctx.beginPath();
       ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
-      ctx.fillStyle = '#3B82F6';
+      ctx.fillStyle = PAL.me;
       ctx.fill();
       ctx.lineWidth = 2.5;
-      ctx.strokeStyle = '#FFFFFF';
+      ctx.strokeStyle = PAL.meDotEdge;
       ctx.stroke();
     }
 
@@ -482,18 +530,18 @@
       if (isHover) {
         ctx.beginPath();
         ctx.arc(x, y, r + 5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(224,164,88,.16)';
+        ctx.fillStyle = PAL.clusterGlow;
         ctx.fill();
       }
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fillStyle = isHover ? '#F0B869' : 'rgba(224,164,88,.92)';
+      ctx.fillStyle = isHover ? PAL.clusterHover : PAL.cluster;
       ctx.fill();
       ctx.lineWidth = 1.5;
-      ctx.strokeStyle = 'rgba(255,255,255,.5)';
+      ctx.strokeStyle = PAL.clusterEdge;
       ctx.stroke();
 
-      ctx.fillStyle = '#17130f';
+      ctx.fillStyle = PAL.clusterText;
       ctx.font = '600 ' + (n > 999 ? 10 : n > 99 ? 11 : 12) + 'px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -501,7 +549,7 @@
     }
 
     function drawDot(x, y, s, base, emph) {
-      const color = s.brand ? CHAIN : INDIE;
+      const color = s.brand ? PAL.chain : PAL.indie;
       const isHover = hoverItem && hoverItem.type === 'dot' && hoverItem.s === s;
       const r = isHover ? base + 2.2 : base;
 
@@ -509,10 +557,10 @@
       if (emph) {
         ctx.beginPath();
         ctx.arc(x, y, r + 9, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255,255,255,.07)';
+        ctx.fillStyle = PAL.emphFill;
         ctx.fill();
         ctx.lineWidth = 1.5;
-        ctx.strokeStyle = 'rgba(255,255,255,.5)';
+        ctx.strokeStyle = PAL.emphEdge;
         ctx.stroke();
       }
 
@@ -520,14 +568,14 @@
       if (saved.has(s.id)) {
         ctx.beginPath();
         ctx.arc(x, y, r + 5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(226,96,122,.30)';
+        ctx.fillStyle = PAL.savedGlow;
         ctx.fill();
       }
-      // 悬停：白色光晕
+      // 悬停：同色系深色光晕
       if (isHover) {
         ctx.beginPath();
         ctx.arc(x, y, r + 4.5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255,255,255,.22)';
+        ctx.fillStyle = PAL.hoverGlow;
         ctx.fill();
       }
 
@@ -537,14 +585,14 @@
       ctx.fillStyle = color;
       ctx.fill();
       ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(11,10,9,.85)';
+      ctx.strokeStyle = PAL.dotEdge;
       ctx.stroke();
 
-      // 外圈高光，提升暗底上的辨识度
+      // 外圈柔环，提升亮底上的层次
       ctx.beginPath();
       ctx.arc(x, y, r + 1.6, 0, Math.PI * 2);
       ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(255,255,255,.20)';
+      ctx.strokeStyle = PAL.dotRing;
       ctx.stroke();
     }
 
@@ -610,11 +658,11 @@
       polys.forEach((poly) => {
         const p = new AMap.Polygon({
           path: poly[0].map((c) => [c[0], c[1]]),
-          strokeColor: '#E0A458',
+          strokeColor: PAL.bound,
           strokeWeight: 1.2,
           strokeOpacity: 0.5,
           strokeStyle: 'dashed',
-          fillColor: '#E0A458',
+          fillColor: PAL.bound,
           fillOpacity: 0.012,
           bubble: true,
           cursor: 'default',
@@ -628,8 +676,8 @@
         el.className = 'dlabel';
         el.textContent = f.properties.name;
         el.style.cssText =
-          'font-size:11px;letter-spacing:.22em;color:rgba(224,164,88,.6);' +
-          'text-shadow:0 1px 6px #000;pointer-events:none;font-weight:500';
+          'font-size:11px;letter-spacing:.22em;color:' + PAL.boundLabel + ';' +
+          'text-shadow:' + PAL.boundLabelShadow + ';pointer-events:none;font-weight:500';
         new AMap.Marker({
           position: f.properties.center, content: el,
           offset: new AMap.Pixel(-18, -8), map, zIndex: 60,
@@ -675,7 +723,7 @@
     const navi = `https://uri.amap.com/marker?position=${s.lng},${s.lat}` +
       `&name=${encodeURIComponent(s.name)}&src=zhuhai-coffee-map&coordinate=gaode&callnative=1`;
 
-    return `<div class="card">
+    return `<div class="card lg-glass" data-glass>
       <div class="top">
         <h3>${esc(s.name)}</h3>
         <button class="star ${isSaved ? 'on' : ''}" data-id="${esc(s.id)}"
@@ -730,7 +778,9 @@
 
   /* ══ 悬停浮层 ══════════════════════════════════ */
   const tip = document.createElement('div');
-  tip.className = 'tip';
+  // 只加 lg-glass 不加 data-glass：悬停浮层随指针高频移动，
+  // 每次重算位移贴图不划算，用纯 CSS 的描边+高光就够"玻璃"了
+  tip.className = 'tip lg-glass';
   document.getElementById('map').appendChild(tip);
 
   function showTip(it, px, py) {

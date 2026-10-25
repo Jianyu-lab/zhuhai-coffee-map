@@ -26,8 +26,13 @@ zhuhai-coffee-map/
 └── web/
     ├── index.html
     ├── config.js                 # 高德 Key 注入产物（已 gitignore）
-    ├── style.css
-    ├── app.js
+    ├── style.css                 # 液态玻璃皮肤 + 布局
+    ├── app.js                    # 逻辑 + 画布调色板 PAL
+    ├── vendor/liquidlens/        # LiquidLens（MIT）液态玻璃材质引擎
+    │   ├── liquid-glass.js       #   边缘折射：SVG feDisplacementMap
+    │   ├── liquid-glass.css      #   材质分层（折射/高光/色散/内光）
+    │   ├── tokens.css            #   设计令牌 --lg-*
+    │   └── LICENSE
     └── data/
         ├── coffee.js              # 内嵌数据（file:// 也能打开）
         └── districts.js
@@ -57,6 +62,49 @@ python scripts/gen_config.py
 cd web && python -m http.server 8080
 # 打开 http://localhost:8080
 ```
+
+> **本地预览先确认高德 Key 的域名白名单**。JS API 的 Key 如果在高德控制台配了白名单，
+> 本地 `localhost` / `127.0.0.1` 不在名单里时，`webapi.amap.com/maps` 会返回
+> `{"info":"INVALID_USER_DOMAIN","infocode":"10006"}` 且 `Content-Type: application/json`，
+> Chrome 的 ORB 会把它当脚本响应拦掉，表现为加载画面停在"地图引擎加载失败"。
+> 去控制台把 `localhost` 一起加进白名单即可（生产只放 `*.github.io`）。
+
+## 液态玻璃材质
+
+界面是 Apple Liquid Glass 风格，材质来自 [LiquidLens](https://github.com/DevBehindYou/LiquidLens)（MIT，
+vendor 在 `web/vendor/liquidlens/`）。它的核心主张是：**液态玻璃 ≠ 背景模糊，关键是边缘折射**——
+用 SVG `feDisplacementMap` 按凸超椭圆边缘 + Snell 定律（空气 n=1 → 玻璃 n=1.5）把玻璃背后的
+背景像通过透镜一样弯折放大。所以 `blur` 必须压在 0–4，一高折射就被糊掉了。
+
+接入方式：
+
+```html
+<link rel="stylesheet" href="vendor/liquidlens/tokens.css">       <!-- 必须在 liquid-glass.css 前 -->
+<link rel="stylesheet" href="vendor/liquidlens/liquid-glass.css">
+<link rel="stylesheet" href="style.css">                            <!-- 自己的样式最后，方便覆盖 -->
+
+<div id="panel" class="lg-glass" data-glass>…</div>
+
+<script src="vendor/liquidlens/liquid-glass.js"></script>
+<script>LiquidGlass.init({ refraction:20, bezel:26, blur:2, saturation:1.9,
+                           specular:.95, tintHue:32, tintOpacity:.40, quality:420 });</script>
+```
+
+几个针对本项目的取舍：
+
+- **只有大面板走真折射**（`#panel` / `#rank` / 工具栏按钮 / 图例 / toast / 信息卡，共 11 个位移贴图）。
+  筛选区一次能冒出三四十个 chip，每个都生成一张贴图会把 init 拖慢，视觉上也看不出差别，
+  所以 chip、品牌行、排序钮用同色系的纯 CSS 玻璃（库文档同样建议"少量大面板"优先）
+- **悬停浮层只加 `lg-glass` 不加 `data-glass`**：它随指针高频移动，每次重算贴图不划算
+- **亮色主题必须改 `--lg-fg`**：库默认玻璃上的文字是白色（配深色玻璃），这里改成 `#211c16`
+- **选中态用库自己的 tint 机制**（`--lg-tint-h/a/l` 写在单个元素上），不整块盖掉背景
+- **`prefers-reduced-transparency` 的降级要单独改**：库自带的是深色不透明，亮色主题下会变成一块突兀的黑卡，
+  且 `backdrop-filter` 得加 `!important`——JS 会写 inline style，普通声明盖不过它
+- **折射只在 Chromium 生效**，Safari / Firefox 自动降级成"模糊 + 高光"，观感仍然成立
+
+画布上那些标记（圆点、聚类、店名胶囊、定位蓝点）的颜色集中在 `app.js` 顶部的 `PAL` 对象里，
+和 `style.css` 的 `--chain` / `--indie` / `--saved` 是同一套语义，改一边要记得改另一边。
+
 
 ## 部署到 GitHub Pages
 
@@ -165,6 +213,7 @@ GitHub 的 `AMAP_JS_KEY` / `AMAP_JS_SECURITY` 两个 secret。
 
 ## 已实现
 
+- **液态玻璃皮肤**：整套界面换成 Apple Liquid Glass 风格，材质用 LiquidLens（MIT）做**真边缘折射**而不是单纯模糊——玻璃背后的地图会像通过透镜一样在边缘被弯折放大。亮色底图 + 暖白玻璃 + 深色文字，选中态靠单个元素的 tint 色相切换，指针移动时高光会跟着走
 - **加载画面**：高德 JS API 的网络链路（`maps` → `migrate` → `init` → `checkredirect` → `icons`×5）实测要 1.6s，这期间页面是全黑的，用户很容易以为卡死而关掉或反复刷新。首屏先盖一层品牌加载页，按真实进度分段提示（「正在加载地图引擎」→「已载入 1303 家 · 正在绘制」），数据和底图都就绪后淡出。另有三重保护：最短显示 420ms 防闪烁、12s 硬兜底强制撤除遮罩（不让用户被锁在全屏遮罩后面）、以及高德脚本没加载上时**区分两种原因**给出明确错误 + 「重新加载」按钮——没配 Key 提示去跑 `gen_config.py`，配了但网络不通才提示检查网络
 - **Canvas 自绘标记层**：零 DOM 标记，随地图逐帧重绘，聚合/散点连续切换
 - **定位 + 就近优先**：右上角「定位」调用浏览器定位（失败回退 IP），画蓝点 + 精度圈；定位后自动切到「1km」档，近处的点全亮、远处按距离压暗，悬停与信息卡显示「距我 524m」
@@ -206,6 +255,7 @@ GitHub 的 `AMAP_JS_KEY` / `AMAP_JS_SECURITY` 两个 secret。
 - **加侧栏后面板会互相打架**。右侧排面板加上后，原来在右上角的工具栏在 ≤1000px 时会压住左面板。最终方案是工具栏竖排夹在两个面板之间（`left:372px`），筛选面板收起时用 `body.pcollapsed` 把它挪到最左；≤1000px 时右面板改成浮层且默认收起（左距 444px，避开工具栏），≤760px 时变成底部抽屉
 - **`setBounds` 的 avoid 边距必须把所有可见面板都算进去**，否则结果点会落在面板底下。`viewPadding()` 按 上/右/下/左 四个方向分别给左筛选面板 356、右排面板 316、移动端底部 62vh，并保底留 240px 可视区
 - **缩放动画结束时 AMap 不一定再触发 `zoom` 事件**，必须同时监听 `zoomend` / `moveend`，否则画布停在动画中途那一帧（表现为"放大后标记消失"）
+- **高德 Key 的域名白名单会把错误伪装成"网络问题"**。白名单不含当前域名时，`webapi.amap.com/maps` 返回的是 `{"info":"INVALID_USER_DOMAIN","infocode":"10006"}` 且 `Content-Type: application/json`——不是 JS。Chrome 的 ORB（Opaque Response Blocking）会直接把它当脚本响应拦掉，`requestfailed` 里只留一个 `net::ERR_BLOCKED_BY_ORB`，控制台连一行报错都没有。排查时先 `curl` 那个地址看返回体，别被 ORB 的错号带偏。另外 Playwright 的 `page.route()` 改不了 `Referer`（AMap 2.0 用 `securityJsCode` + 来源算 MD5），所以本地想绕过白名单做无头验证是行不通的，只能去控制台加域名
 - 高德不提供菜单、座位/插座等信息；营业时间有 76% 覆盖但可能存在门店调整，`tags` 由店名与营业时间推断，会有误判（"手冲"只有 6 家命中，明显偏少）
 - POI 闭店状态滞后，出行前建议二次确认
 - 数据版权归高德，仅供个人展示使用

@@ -5,15 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>珠海咖啡地图 · Zhuhai Coffee Map</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23E0A458'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%2317130f' stroke-width='2.4' stroke-dasharray='33' stroke-dashoffset='8'/%3E%3C/svg%3E">
+<!-- LiquidLens（MIT）——液态玻璃材质。tokens 必须在 liquid-glass.css 之前，
+     两者都要在 style.css 之前，方便后面覆盖 -->
+<link rel="stylesheet" href="vendor/liquidlens/tokens.css">
+<link rel="stylesheet" href="vendor/liquidlens/liquid-glass.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <!-- 加载画面：高德 JS API 的链路（maps→migrate→init→checkredirect→icons）实测要 1.6s，
      这期间屏幕是全黑的，用户会以为卡死。标记放在 body 最前面、样式在 head 的 style.css 里，
-     所以第一帧就能画出来，不依赖任何 JS。 -->
+     所以第一帧就能画出来，不依赖任何 JS。液态玻璃版改成亮色玻璃卡。 -->
 <div id="loader">
-  <div class="ld-inner">
+  <div class="ld-inner lg-glass" data-glass>
     <div class="ld-mark"></div>
     <h1>珠海咖啡地图</h1>
     <p class="ld-sub">ZHUHAI COFFEE MAP</p>
@@ -24,7 +28,7 @@
 
 <div id="map"></div>
 
-<aside id="panel">
+<aside id="panel" class="lg-glass" data-glass>
   <header class="brand">
     <div class="brand-row">
       <div class="mark"></div>
@@ -104,14 +108,14 @@
 </aside>
 
 <div id="toolbar">
-  <button id="btn-loc" class="tool">定位</button>
-  <button id="btn-label" class="tool">标签</button>
-  <button id="btn-rank" class="tool active">排行</button>
-  <button id="btn-bound" class="tool active">区界</button>
-  <button id="btn-fit" class="tool">全览</button>
+  <button id="btn-loc" class="tool lg-glass" data-glass>定位</button>
+  <button id="btn-label" class="tool lg-glass" data-glass>标签</button>
+  <button id="btn-rank" class="tool lg-glass active" data-glass>排行</button>
+  <button id="btn-bound" class="tool lg-glass active" data-glass>区界</button>
+  <button id="btn-fit" class="tool lg-glass" data-glass>全览</button>
 </div>
 
-<aside id="rank">
+<aside id="rank" class="lg-glass" data-glass>
   <header>
     <div class="rk-top">
       <h2>评分排行</h2>
@@ -130,22 +134,38 @@
   <div class="rk-note" id="rank-note"></div>
 </aside>
 
-<div id="toast"></div>
+<div id="toast" class="lg-glass" data-glass></div>
 
-<div id="legend">
+<div id="legend" class="lg-glass" data-glass>
   <span><i class="lg chain"></i>连锁</span>
   <span><i class="lg indie"></i>独立</span>
   <span><i class="lg saved"></i>已收藏</span>
 </div>
 
-<div id="hint" class="hidden">拖动地图查看 · 点击圆点看详情</div>
+<div id="hint" class="hidden lg-glass" data-glass>拖动地图查看 · 点击圆点看详情</div>
 
-<div id="empty" class="hidden">没有符合条件的咖啡馆，试试放宽筛选</div>
+<div id="empty" class="hidden lg-glass" data-glass>没有符合条件的咖啡馆，试试放宽筛选</div>
 
 <!-- 高德 Key 不写进仓库：由 scripts/gen_config.py 生成 config.js（已 gitignore）注入。
      本地跑：python scripts/gen_config.py；CI 上由 GitHub Secrets 在构建时生成。
      必须放在 data/coffee.js 和 app.js 之前——config.js 用 document.write 同步插入
      高德脚本，时序和原来手写 <script> 标签一致，app.js 才能直接拿到 AMap。 -->
+<!-- 液态玻璃引擎。放在 app.js 之前、和高德脚本解耦：
+     高德加载失败时 app.js 会提前 return，但玻璃材质不该跟着一起失效。
+     blur 必须压在 0–4——有折射的时候模糊一高，边缘的弯折就被糊掉了。 -->
+<script src="vendor/liquidlens/liquid-glass.js"></script>
+<script>
+  LiquidGlass.init({
+    refraction: 20,     // 边缘折射强度（feDisplacementMap 的 scale）
+    bezel: 26,          // 折射边宽度
+    blur: 2,            // 背板模糊，配合折射取低值
+    saturation: 1.9,    // 背板提饱和，玻璃后面的地图更"润"
+    specular: 0.95,     // 高光强度
+    tintHue: 32,        // 暖白（咖啡色调），不用默认的蓝
+    tintOpacity: 0.40,
+    quality: 420
+  });
+</script>
 <script src="config.js"></script>
 <script src="data/coffee.js"></script>
 <script src="data/districts.js"></script>
