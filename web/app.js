@@ -863,7 +863,11 @@
 
   // AMap 在缩放动画结束时不一定再触发 zoom，必须同时监听 zoomend / moveend，
   // 否则画布会停在动画中途的那一帧（表现就是「放大后标记消失」）。
-  ['move', 'zoom', 'zoomchange', 'zoomend', 'moveend', 'resize', 'complete']
+  //
+  // mapmove 是关键：高德 2.0 拖拽期间只发 mapmove，不发 move（实测拖拽 1.2s，
+  // mapmove 触发 73 次 ≈ 每帧一次，move 触发 0 次）。少了它，圆点会冻在原地
+  // 等松手才跳过去 —— 表现就是「拖地图时点延时跟上」。
+  ['mapmove', 'move', 'zoom', 'zoomchange', 'zoomend', 'moveend', 'resize', 'complete']
     .forEach((ev) => map.on(ev, () => layer.schedule()));
 
   // 缩得太小时标签画不出来，按钮给个"已开但未生效"的提示态
