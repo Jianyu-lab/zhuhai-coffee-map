@@ -172,6 +172,26 @@
     return m < 1000 ? Math.round(m) + 'm' : (m / 1000).toFixed(1) + 'km';
   }
 
+  /* 当前距离档的米数（0 = 「全部」，不裁） */
+  function distLimit() {
+    return (DIST_LEVELS.find(([k]) => k === state.dist) || [])[1] || 0;
+  }
+
+  /* 距离档现在还该不该生效：视野中心得还在「我」附近。
+     一旦把地图拖走（去别的区逛），档位就必须让路 —— 否则拖到哪都是空的：
+     实测定位 1km 后拖到 5km 外，圆点 0 个、标签 0 个，面板却还写着 72 家。
+     1.15 倍是留一点余量，免得视野边缘刚蹭到就来回切。 */
+  function distActive() {
+    if (!me) return false;
+    const lim = distLimit();
+    if (!lim) return false;
+    const b = map.getBounds();
+    if (!b) return false;
+    const sw = b.getSouthWest(), ne = b.getNorthEast();
+    const cx = (sw.lng + ne.lng) / 2, cy = (sw.lat + ne.lat) / 2;
+    return distM(me.lng, me.lat, cx, cy) <= lim * 1.15;
+  }
+
   (function readURL() {
     const P = new URLSearchParams(location.search);
     if (P.get('d')) state.district = P.get('d');
@@ -259,7 +279,6 @@
     let hits = [];
     let hoverKey = null;
     let hoverItem = null;
-    let born = 0;
     let raf = 0;
 
     /* ── 簇的视觉状态（平滑过渡）───────────────────
@@ -360,7 +379,9 @@
       } catch (e) { return; }
 
       const now = performance.now();
-      const alpha = Math.min(1, (now - born) / 200);
+      // 全局淡入已经下放到「每个簇、每个标签各管自己的透明度」，
+      // 这里恒为 1（原来是 (now-born)/200，换一次筛选就整层闪暗 200ms）。
+      const alpha = 1;
       // 帧间隔按实际时间算，掉帧时缓动不会变慢；上限 64ms 防止切标签页回来猛跳
       const dt = lastT ? Math.min(64, now - lastT) : 16;
       lastT = now;
@@ -375,7 +396,7 @@
       // 热力图模式或结果为空：不画店点，但定位点要留着
       if (!data.length) {
         // 结果被筛空：圆点没了，标签也得跟着淡出，不能凭空消失
-        drawLabels(EMPTY, alpha, easeA, easeOutSlow);
+        drawLabels(EMPTY, alpha, easeA, easeOutSlow, ease);
         ctx.globalAlpha = 1;
         drawMe(z);
         if (labelBusy && now < settleUntil) schedule();
@@ -394,6 +415,17 @@
       // 定位后按距离分档压暗远处，让"附近"浮出来
       const dim = (d) => (me == null ? 1 : 0.55 + 0.45 * Math.max(0, 1 - (d || 0) / 4000));
 
+      /* 距离档只在视野还停在我周边时生效。拖走以后必须让路，
+         否则拖到别的区整片空白 —— 数据早被档位裁掉了，画无可画。 */
+      let distLim = 0;
+      if (me != null) {
+        const lim = distLimit();
+        if (lim) {
+          const vcx = (sw.lng + ne.lng) / 2, vcy = (sw.lat + ne.lat) / 2;
+          if (distM(me.lng, me.lat, vcx, vcy) <= lim * 1.15) distLim = lim;
+        }
+      }
+
       /* 分桶必须用「地理坐标」，不能用屏幕像素。
          用屏幕网格 ((p.x/cell)|0) 的话，地图一平移 p.x 整体位移，圆点会不停跨过
          格子边界，在「独立点 ↔ 聚类圈」之间来回跳 —— 实测拖动时 80% 的帧聚类
@@ -408,6 +440,7 @@
       for (let i = 0; i < data.length; i++) {
         const s = data[i];
         if (s.lng < sw.lng || s.lng > ne.lng || s.lat < sw.lat || s.lat > ne.lat) continue;
+        if (distLim && s._d > distLim) continue;   // 距离档生效时裁掉圈外
         let p;
         try {
           p = map.lngLatToContainer([s.lng, s.lat]);
@@ -432,7 +465,8 @@
 
         buckets.forEach((b, k) => {
           seen.add(k);
-          const cx = b.x / b.n, cy = b.y / b.n;
+          const cx = b.x / b.n, cy = b.y / b.n;          // 本帧真实质心（屏幕）
+          const tglng = b.lng / b.n, tglat = b.lat / b.n; // 本帧真实质心（地理）
           const tgtR = b.n === 1 ? dr : Math.min(radiusFor(b.n), cell * 0.45);
           let st = anim.get(k);
           if (!st) {
@@ -450,8 +484,8 @@
               if (q && (!pv || q.a > pv.a)) pv = q;
             }
             st = pv
-              ? { a: pv.a, r: Math.min(pv.r, tgtR), n: pv.n, tgtR, tgtN: b.n }
-              : { a: 0, r: tgtR * 0.55, n: b.n, tgtR, tgtN: b.n };
+              ? { a: pv.a, r: Math.min(pv.r, tgtR), n: pv.n, tgtR, tgtN: b.n, glng: tglng, glat: tglat }
+              : { a: 0, r: tgtR * 0.55, n: b.n, tgtR, tgtN: b.n, glng: tglng, glat: tglat };
             anim.set(k, st);
             if (!pv) settleUntil = now + 2400;   // 淡入要 1.3s 才到底，窗口得留够
           }
@@ -462,9 +496,23 @@
           // 插值会让它先以「圈里写 5」的样子存在半秒，然后再变成圆点。
           if (b.n === 1) st.n = 1;
           st.tgtR = tgtR; st.tgtN = b.n;
+
+          /* 位置也缓动：簇的成员一增一减，质心就会跳一格，硬切看着像"点瞬移"。
+             缓动的是「地理质心」而不是屏幕坐标 —— 屏幕坐标缓动会让圆点在平移时
+             拖在底图后面（就是最早那个"拖动延时"的毛病）；地理质心在平移时不变，
+             投影出来天然贴着地图走，只有成员变化时才有位移。 */
+          const moved = Math.abs(st.glng - tglng) + Math.abs(st.glat - tglat) > 2e-7;
+          st.glng += (tglng - st.glng) * ease;
+          st.glat += (tglat - st.glat) * ease;
+          let px = cx, py = cy;
+          if (moved) {
+            const q = map.lngLatToContainer([st.glng, st.glat]);
+            if (q) { px = q.x; py = q.y; }
+          }
+          st.tglng = tglng; st.tglat = tglat;
+
           st.live = true;
-          st.cx = cx; st.cy = cy;
-          st.glng = b.lng / b.n; st.glat = b.lat / b.n;
+          st.cx = px; st.cy = py;
           st.dmin = b.dmin; st.s = b.items[0];
           st.items = b.items;             // 供下一帧判断这个桶有没有"接力者"
           for (let i = 0; i < b.items.length; i++) curState.set(b.items[i], st);
@@ -473,16 +521,16 @@
           ctx.globalAlpha = alpha * st.a * dim(b.dmin);
           if (shownN <= 1) {
             // 单个点也要登记命中，否则这些点永远点不开
-            drawDot(cx, cy, b.items[0], st.r, emph);
-            hits.push({ type: 'dot', x: cx, y: cy, r: st.r + 2.5, s: b.items[0] });
-            lab.push({ s: b.items[0], x: cx, y: cy, r: st.r, a: st.a });
+            drawDot(px, py, b.items[0], st.r, emph);
+            hits.push({ type: 'dot', x: px, y: py, r: st.r + 2.5, s: b.items[0] });
+            lab.push({ s: b.items[0], x: px, y: py, r: st.r, a: st.a });
             return;
           }
           const isHover = hoverItem && hoverItem.type === 'cluster' &&
-            Math.abs(hoverItem.x - cx) < 0.6 && Math.abs(hoverItem.y - cy) < 0.6;
-          drawCluster(cx, cy, st.r, shownN, isHover);
+            Math.abs(hoverItem.x - px) < 0.6 && Math.abs(hoverItem.y - py) < 0.6;
+          drawCluster(px, py, st.r, shownN, isHover);
           hits.push({
-            type: 'cluster', x: cx, y: cy, r: st.r, n: shownN,
+            type: 'cluster', x: px, y: py, r: st.r, n: shownN,
             lng: st.glng, lat: st.glat, items: b.items,
           });
         });
@@ -531,6 +579,8 @@
           if (st.a < 0.985) busy = true;
           else if (Math.abs(st.r - st.tgtR) > 0.12) busy = true;
           else if (Math.abs(st.n - st.tgtN) > 0.06) busy = true;
+          // 质心还在滑（成员刚变过），也得继续出帧，否则会停在半路
+          else if (st.live && Math.abs(st.glng - st.tglng) + Math.abs(st.glat - st.tglat) > 2e-7) busy = true;
         });
         if (busy && now < settleUntil) schedule();
       } else {
@@ -592,9 +642,9 @@
       // 标签压在圆点之上；蓝点（我自己）最后画，保证永远可见。
       // 标签关掉/缩得太小时也走一遍，让已经画出来的标签淡出而不是凭空消失。
       if (labelOn && z >= LABEL_MIN_Z && lab.length) {
-        drawLabels(lab, alpha, easeA, easeOutSlow);
+        drawLabels(lab, alpha, easeA, easeOutSlow, ease);
       } else {
-        drawLabels(EMPTY, alpha, easeA, easeOutSlow);
+        drawLabels(EMPTY, alpha, easeA, easeOutSlow, ease);
       }
       drawMeCore(z);
       if (labelBusy && now < settleUntil) schedule();
@@ -657,7 +707,7 @@
        跟着点一起浮出来），放不下就向 0 缓动，淡到看不见才删。
        掉队的标签不是钉在原地，而是继续贴着自己的圆点飘 —— 否则地图一拖，
        残影似的几行字会留在半空。 */
-    function drawLabels(list, alpha, easeIn, easeOut) {
+    function drawLabels(list, alpha, easeIn, easeOut, easePos) {
       // 近的优先占位；没有定位就按评分和图片数排
       list.sort((a, b) => {
         if (me) {
@@ -690,28 +740,35 @@
           if (fits(b, placed)) { box = b; break; }
         }
         if (!box) continue;
-        placed.push(box);
         n++;
 
         const id = it.s.id;
         seenL.add(id);
+        const tdx = box.x - it.x, tdy = box.y - it.y;   // 相对圆点的偏移
         let st = labelAnim.get(id);
         if (!st) {
-          // 新标签从 0 起，但位置偏移先记下来，掉队时靠它贴着圆点走
-          st = { a: 0, box, L, s: it.s, dx: box.x - it.x, dy: box.y - it.y };
+          // 新标签：位置直接落在目标处（不要从圆点里滑出来），透明度从 0 起
+          st = { a: 0, dx: tdx, dy: tdy, box, L, s: it.s };
           labelAnim.set(id, st);
         }
+        /* 换边（右边放不下改放左边/上边）时不能硬跳。
+           缓动的是「相对圆点的偏移」，不是绝对坐标 —— 平移地图时偏移不变，
+           标签跟着点走、不会滞后；只有真的换边时才有位移，滑过去。 */
+        st.dx += (tdx - st.dx) * easePos;
+        st.dy += (tdy - st.dy) * easePos;
+        st.tdx = tdx; st.tdy = tdy;
         // 目标透明度压上圆点自己的透明度：点还在淡入时字不该先亮起来
         const tgt = it.a == null ? 1 : Math.min(1, it.a);
         st.a += (tgt - st.a) * easeIn;
         st.box = box; st.L = L; st.s = it.s;
-        st.dx = box.x - it.x; st.dy = box.y - it.y;
         st.live = true;
 
+        const cur = { x: it.x + st.dx, y: it.y + st.dy, w: box.w, h: box.h };
+        placed.push(cur);
         ctx.globalAlpha = alpha * st.a;
-        drawPill(box, L, it.s);
+        drawPill(cur, L, it.s);
         // 标签本身也能点开
-        hits.push({ type: 'dot', s: it.s, box });
+        hits.push({ type: 'dot', s: it.s, box: cur });
       }
 
       // 掉队的标签：淡出。位置用圆点的当前投影 + 上次的相对偏移重算，
@@ -736,8 +793,12 @@
       ctx.globalAlpha = 1;
 
       // 标签淡入淡出也得自己续帧：静止时没有 mapmove，否则字会停在半透明
+      // 或者停在换边换到一半的位置
       let lb = false;
-      labelAnim.forEach((st) => { if (st.a < 0.985) lb = true; });
+      labelAnim.forEach((st) => {
+        if (st.a < 0.985) lb = true;
+        else if (st.live && Math.abs(st.dx - st.tdx) + Math.abs(st.dy - st.tdy) > 0.15) lb = true;
+      });
       labelBusy = lb;
       if (lb) settleUntil = Math.max(settleUntil, performance.now() + 2400);
     }
@@ -935,7 +996,10 @@
 
     return {
       mount, resize, schedule, draw, hitTest,
-      setData(list) { data = list; born = performance.now(); schedule(); },
+      // 不再重置 born：那会让整层（圆点 + 标签）每次换筛选都从 0 亮起来，
+      // 叠在逐簇淡入上就是一次 200ms 的全局闪暗。现在每个簇、每个标签各自淡入，
+      // 谁新谁旧分得清，不需要再来一层全局遮罩。
+      setData(list) { data = list; schedule(); },
       setLabels(v) { labelOn = !!v; schedule(); },
       getLabels() { return labelOn; },
       getLabelCount() { return lastLabels; },
@@ -1524,7 +1588,7 @@
       return true;
     });
 
-    // 有定位时：先算距离，再按档过滤，最后按距离从远到近排序
+    // 有定位时：先算距离，再定"这一屏该展示哪些"，最后按距离从远到近排序
     // （远先画、近后画，近处的点自然压在上层 = "附近优先展示"）
     let list2 = list;
     if (me) {
@@ -1532,13 +1596,27 @@
         const s = list[i];
         s._d = distM(me.lng, me.lat, s.lng, s.lat);
       }
-      const lim = (DIST_LEVELS.find(([k]) => k === state.dist) || [])[1];
-      if (lim) list2 = list.filter((s) => s._d <= lim);
+      const lim = distLimit();
+      if (lim && distActive()) {
+        list2 = list.filter((s) => s._d <= lim);
+      } else if (lim) {
+        /* 视野已经离开我周边（用户拖去别的区逛了）：这时再按档裁就是一片空白。
+           改成"跟随视野"—— 统计和列表只看当前画面里的店，和地图上画的一致。 */
+        const b = map.getBounds();
+        if (b) {
+          const sw = b.getSouthWest(), ne = b.getNorthEast();
+          list2 = list.filter((s) =>
+            s.lng >= sw.lng && s.lng <= ne.lng && s.lat >= sw.lat && s.lat <= ne.lat);
+        }
+      }
       list2.sort((a, b) => b._d - a._d);
     }
 
     currentList = list2;
-    layer.setData(list2);
+    /* 地图拿的是「没被距离档裁过」的全量：图层自己每帧按视口裁，
+       这样拖动时新进画面的店立刻就在，不用等松手重新 apply。
+       距离档的裁剪在图层里做（distLim），和这里保持同一套判定。 */
+    layer.setData(list);
 
     // 数量发生变化且收敛到 20 家以内 → 自动定位（首次加载 lastLen=-1 不触发）
     const narrowed = lastLen >= 0 && list2.length !== lastLen && list2.length > 0 && list2.length <= 20;
@@ -1552,9 +1630,13 @@
     setCount($('#c-total'), list2.length);
     setCount($('#c-chain'), ch);
     setCount($('#c-indie'), list2.length - ch);
-    $('#empty').classList.toggle('hidden', list2.length > 0);
+    $('#empty').classList.toggle('hidden', !(list2.length === 0 && (list.length === 0 || distActive())));
+    /* 空态只在「真的筛没了」时提示。跟随视野时拖到空区域（海面、山地）不该弹
+       「试试放宽筛选」—— 那不是筛选的问题，是这块地方本来就没有店。 */
     syncURL();
     renderRank();
+    // 记下这一轮距离档是不是生效，moveend 时靠它判断要不要重算
+    distWasActive = me ? distActive() : null;
   }
 
   function refreshChrome() {
@@ -1836,6 +1918,22 @@
   });
 
   $('#btn-loc').onclick = locate;
+
+  /* 视野离开我周边、或又拖回来时，距离档的生效状态变了 —— 统计和列表要跟着重算，
+     否则地图已经按"跟随视野"画了，面板还停在原来的数字。
+     只在跨过阈值的那一次触发，拖动过程中不会反复重建列表。 */
+  let distWasActive = null;
+  function syncDistScope() {
+    if (!me) { distWasActive = null; return; }
+    const on = distActive();
+    if (on === distWasActive) return;
+    distWasActive = on;
+    suppressFly = true;        // 用户只是在拖地图，别自动飞走
+    apply();
+    suppressFly = false;
+  }
+  map.on('moveend', syncDistScope);
+  map.on('zoomend', syncDistScope);
 
   $('#btn-label').onclick = () => {
     const on = !layer.getLabels();
