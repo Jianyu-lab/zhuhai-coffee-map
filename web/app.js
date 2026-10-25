@@ -123,9 +123,15 @@
      内联优先级高于样式表，所以切换主题必须走 LiquidGlass.set()；
      --lg-tint-s / -l 这两个 JS 不碰，交给 CSS 的 :root[data-theme=dark] 覆盖。 */
   const THEME_KEY = 'zh_coffee_theme_v1';
+  /* blur / tintA 为什么明暗两套差这么多：
+     暗色底图本身是黑的，玻璃再厚也只是"更黑的玻璃"，看不出透；
+     日光底图是满屏白路网 + 绿地 + 彩色 POI，2px 模糊根本压不住，
+     0.40 的白 tint 相当于什么都没挡 —— 文字后面全是地图的花纹。
+     所以日光档把 blur 提到 12、tint 提到 0.66，做成磨砂牛奶玻璃。
+     代价是边缘折射被糊掉一些，但可读性优先于"液态"观感。 */
   const THEME_CFG = {
-    light: { hue: 32, tintA: 0.40, spec: 0.95, sat: 1.9, mapStyle: 'amap://styles/normal' },
-    dark:  { hue: 28, tintA: 0.26, spec: 0.55, sat: 1.35, mapStyle: 'amap://styles/dark' },
+    light: { hue: 32, tintA: 0.66, spec: 0.95, sat: 1.35, blur: 12, mapStyle: 'amap://styles/normal' },
+    dark:  { hue: 28, tintA: 0.26, spec: 0.55, sat: 1.35, blur: 2,  mapStyle: 'amap://styles/dark' },
   };
 
   // 首屏先定主题，避免「先亮一下再变暗」的闪烁。
@@ -305,6 +311,11 @@
     const FADE_TAU = 320;
     const FADE_OUT_TAU = 90;
     const FADE_OUT_SLOW = 260;
+    /* 标签淡出单独一档，比圆点快得多。
+       圆点淡出是"看见刚才那个点走了"，可以慢；文字淡出是"这行字还赖着不走"，
+       而且淡出期间它已经不参与占位了，下一帧可能就有新标签补到同一格，
+       两行字叠 0.9 秒会糊成一片。110ms 时间常数 ≈ 330ms 淡完，比原来快 3 倍。 */
+    const LABEL_OUT_TAU = 110;
     // 上一帧的「店 → 视觉状态」，用来判断一个桶到底是不是「新冒出来的」。
     // 少了它，地图平移时圆点跨过分桶格子边界（键变了、店没变）也会被当成
     // 新点重新淡入一遍 —— 那正是之前满屏闪动的成因，等于把 bug 又引回来。
@@ -391,6 +402,7 @@
       const easeA = 1 - Math.exp(-dt / FADE_TAU);       // 淡入
       const easeOut = 1 - Math.exp(-dt / FADE_OUT_TAU); // 淡出（出视口）
       const easeOutSlow = 1 - Math.exp(-dt / FADE_OUT_SLOW); // 淡出（被筛掉）
+      const easeLabOut = 1 - Math.exp(-dt / LABEL_OUT_TAU);  // 标签淡出（永远快）
 
       // 底图压暗只在"标签真的画出来"时生效，否则热力图/缩小时会白白变暗
       syncDim(z);
@@ -398,7 +410,7 @@
       // 热力图模式或结果为空：不画店点，但定位点要留着
       if (!data.length) {
         // 结果被筛空：圆点没了，标签也得跟着淡出，不能凭空消失
-        drawLabels(EMPTY, alpha, easeA, easeOutSlow, ease, true);
+        drawLabels(EMPTY, alpha, easeA, easeLabOut, ease, true);
         ctx.globalAlpha = 1;
         drawMe(z);
         if (labelBusy && now < settleUntil) schedule();
@@ -660,9 +672,9 @@
       // 标签压在圆点之上；蓝点（我自己）最后画，保证永远可见。
       // 标签关掉/缩得太小时也走一遍，让已经画出来的标签淡出而不是凭空消失。
       if (labelOn && z >= LABEL_MIN_Z && lab.length) {
-        drawLabels(lab, alpha, easeA, easeOutSlow, ease, viewBusy);
+        drawLabels(lab, alpha, easeA, easeLabOut, ease, viewBusy);
       } else {
-        drawLabels(EMPTY, alpha, easeA, easeOutSlow, ease, true);
+        drawLabels(EMPTY, alpha, easeA, easeLabOut, ease, true);
       }
       drawMeCore(z);
       if (labelBusy && now < settleUntil) schedule();
@@ -802,7 +814,7 @@
         if (seenL.has(id)) return;
         st.live = false;
         st.a += (0 - st.a) * easeOut;
-        if (st.a < 0.03) { labelAnim.delete(id); return; }
+        if (st.a < 0.05) { labelAnim.delete(id); return; }
         let q = null;
         try { q = map.lngLatToContainer([st.s.lng, st.s.lat]); } catch (e) { labelAnim.delete(id); return; }
         if (!q) { labelAnim.delete(id); return; }
@@ -1093,7 +1105,7 @@
       try {
         LiquidGlass.set({
           tintHue: cfg.hue, tintOpacity: cfg.tintA,
-          specular: cfg.spec, saturation: cfg.sat,
+          specular: cfg.spec, saturation: cfg.sat, blur: cfg.blur,
         });
       } catch (e) {}
     }

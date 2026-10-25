@@ -166,17 +166,19 @@
      高德脚本，时序和原来手写 <script> 标签一致，app.js 才能直接拿到 AMap。 -->
 <!-- 液态玻璃引擎。放在 app.js 之前、和高德脚本解耦：
      高德加载失败时 app.js 会提前 return，但玻璃材质不该跟着一起失效。
-     blur 必须压在 0–4——有折射的时候模糊一高，边缘的弯折就被糊掉了。 -->
+     这里的值只是"首帧默认"，真值由 app.js 的 applyTheme() 按主题写：
+     日光档 blur 12 / tint 0.66（磨砂，压得住满屏路网），暗色档 blur 2 / tint 0.26。
+     两套都写在这里是为了首屏别先闪一版太透的玻璃。 -->
 <script src="vendor/liquidlens/liquid-glass.js"></script>
 <script>
   LiquidGlass.init({
     refraction: 20,     // 边缘折射强度（feDisplacementMap 的 scale）
     bezel: 26,          // 折射边宽度
-    blur: 2,            // 背板模糊，配合折射取低值
-    saturation: 1.9,    // 背板提饱和，玻璃后面的地图更"润"
+    blur: 12,           // 背板模糊（日光档；暗色档由 applyTheme 压回 2）
+    saturation: 1.35,   // 背板提饱和，太高会把地图的绿地/橙路透上来
     specular: 0.95,     // 高光强度
     tintHue: 32,        // 暖白（咖啡色调），不用默认的蓝
-    tintOpacity: 0.40,
+    tintOpacity: 0.66,
     quality: 420
   });
 </script>
