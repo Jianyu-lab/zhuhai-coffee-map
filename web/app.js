@@ -123,14 +123,16 @@
      内联优先级高于样式表，所以切换主题必须走 LiquidGlass.set()；
      --lg-tint-s / -l 这两个 JS 不碰，交给 CSS 的 :root[data-theme=dark] 覆盖。 */
   const THEME_KEY = 'zh_coffee_theme_v1';
-  /* blur / tintA 为什么明暗两套差这么多：
+  /* blur / tintA / sat 为什么明暗两套差这么多：
      暗色底图本身是黑的，玻璃再厚也只是"更黑的玻璃"，看不出透；
      日光底图是满屏白路网 + 绿地 + 彩色 POI，2px 模糊根本压不住，
      0.40 的白 tint 相当于什么都没挡 —— 文字后面全是地图的花纹。
-     所以日光档把 blur 提到 12、tint 提到 0.66，做成磨砂牛奶玻璃。
+     所以日光档 blur 16 / tint 0.76 / saturate 0.50，做成磨砂牛奶玻璃。
+     sat 特意压到 0.5：模糊只能把边缘糊掉，压不住"一大片绿地/水面"的色块，
+     整块面板会被底图染成淡绿。先把背板去色再叠白，才真的干净。
      代价是边缘折射被糊掉一些，但可读性优先于"液态"观感。 */
   const THEME_CFG = {
-    light: { hue: 32, tintA: 0.66, spec: 0.95, sat: 1.35, blur: 12, mapStyle: 'amap://styles/normal' },
+    light: { hue: 32, tintA: 0.76, spec: 0.95, sat: 0.50, blur: 16, mapStyle: 'amap://styles/normal' },
     dark:  { hue: 28, tintA: 0.26, spec: 0.55, sat: 1.35, blur: 2,  mapStyle: 'amap://styles/dark' },
   };
 
@@ -395,8 +397,13 @@
       // 全局淡入已经下放到「每个簇、每个标签各管自己的透明度」，
       // 这里恒为 1（原来是 (now-born)/200，换一次筛选就整层闪暗 200ms）。
       const alpha = 1;
-      // 帧间隔按实际时间算，掉帧时缓动不会变慢；上限 64ms 防止切标签页回来猛跳
-      const dt = lastT ? Math.min(64, now - lastT) : 16;
+      // 帧间隔按实际时间算，掉帧时缓动不会变慢；上限 64ms 防止切标签页回来猛跳。
+      // 但"静止很久后重新起帧"要单独处理：那时 lastT 是几百毫秒前的，按 64ms 封顶
+      // 仍然会让透明度一帧掉 45%（tau=110 时），看着像"啪"一下闪没。这种情形按
+      // 一帧算，动画多走两帧收尾，比首帧突跳好看得多。
+      let dtRaw = lastT ? now - lastT : 16;
+      if (dtRaw > 200) dtRaw = 16;
+      const dt = Math.min(64, dtRaw);
       lastT = now;
       const ease = 1 - Math.exp(-dt / ANIM_TAU);        // 半径、成员数
       const easeA = 1 - Math.exp(-dt / FADE_TAU);       // 淡入

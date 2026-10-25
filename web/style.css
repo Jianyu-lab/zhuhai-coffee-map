@@ -394,6 +394,16 @@ body.pcollapsed #toolbar{left:16px;top:58px}
 #btn-label.active{--lg-tint-h:150;--lg-tint-a:.52;--lg-tint-l:95%;color:var(--green-deep);font-weight:600}
 /* 已开启但当前缩放太小、标签画不出来 */
 #btn-label.active.sub{--lg-tint-h:34;--lg-tint-a:.2;--lg-tint-l:97%;color:var(--dim-2);font-weight:500}
+
+/* 上面这几个 --lg-tint-a（.52~.62）是按"未选中 0.40"那套定的。日光档基准
+   已经抬到 0.76，再沿用就等于"选中比未选中更透"，按钮看着像凹进去了。
+   所以日光档单独一套：透明度抬到基准之上，明度压一点、饱和度提上去，
+   靠"暖一档/蓝一档"来区分选中，而不是靠透不透。
+   用 :not([data-theme="dark"]) 圈住，暗色档（基准 0.26）原样不动。 */
+:root:not([data-theme="dark"]) .tool.active{--lg-tint-a:.94;--lg-tint-s:76%;--lg-tint-l:93%}
+:root:not([data-theme="dark"]) #btn-loc.active{--lg-tint-a:.92;--lg-tint-s:80%;--lg-tint-l:93%}
+:root:not([data-theme="dark"]) #btn-label.active{--lg-tint-a:.90;--lg-tint-s:60%;--lg-tint-l:93%}
+:root:not([data-theme="dark"]) #btn-label.active.sub{--lg-tint-a:.70;--lg-tint-s:40%;--lg-tint-l:96%}
 #sec-dist.hidden{display:none}
 #sec-dist .chip.on{background:var(--glass-raise);border-color:var(--raise-edge);
   color:var(--blue-deep);font-weight:600;

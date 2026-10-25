@@ -167,18 +167,18 @@
 <!-- 液态玻璃引擎。放在 app.js 之前、和高德脚本解耦：
      高德加载失败时 app.js 会提前 return，但玻璃材质不该跟着一起失效。
      这里的值只是"首帧默认"，真值由 app.js 的 applyTheme() 按主题写：
-     日光档 blur 12 / tint 0.66（磨砂，压得住满屏路网），暗色档 blur 2 / tint 0.26。
-     两套都写在这里是为了首屏别先闪一版太透的玻璃。 -->
+     日光档 blur 16 / tint 0.76 / sat 0.50（磨砂，压得住满屏路网和绿地），
+     暗色档 blur 2 / tint 0.26。两套都写在这里是为了首屏别先闪一版太透的玻璃。 -->
 <script src="vendor/liquidlens/liquid-glass.js"></script>
 <script>
   LiquidGlass.init({
     refraction: 20,     // 边缘折射强度（feDisplacementMap 的 scale）
     bezel: 26,          // 折射边宽度
-    blur: 12,           // 背板模糊（日光档；暗色档由 applyTheme 压回 2）
-    saturation: 1.35,   // 背板提饱和，太高会把地图的绿地/橙路透上来
+    blur: 16,           // 背板模糊（日光档；暗色档由 applyTheme 压回 2）
+    saturation: 0.50,   // 背板去色：模糊压不住大片绿地/水面的色块，得先去色
     specular: 0.95,     // 高光强度
     tintHue: 32,        // 暖白（咖啡色调），不用默认的蓝
-    tintOpacity: 0.66,
+    tintOpacity: 0.76,
     quality: 420
   });
 </script>
