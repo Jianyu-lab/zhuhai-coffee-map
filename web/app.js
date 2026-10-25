@@ -445,6 +445,7 @@
           // 插值会让它先以「圈里写 5」的样子存在半秒，然后再变成圆点。
           if (b.n === 1) st.n = 1;
           st.tgtR = tgtR; st.tgtN = b.n;
+          st.live = true;
           st.cx = cx; st.cy = cy;
           st.glng = b.lng / b.n; st.glat = b.lat / b.n;
           st.dmin = b.dmin; st.s = b.items[0];
@@ -473,6 +474,7 @@
         // 这里走快档淡出（90ms）：平移时桶会成片消失，慢淡出会拖出残影。
         anim.forEach((st, k) => {
           if (seen.has(k)) return;
+          st.live = false;
           st.a += (0 - st.a) * easeOut;
           if (st.a < 0.03) { anim.delete(k); return; }
           settleUntil = Math.max(settleUntil, now + 400);
@@ -828,7 +830,7 @@
         const out = [];
         anim.forEach((st, k) => out.push({
           k, a: st.a, r: st.r, n: st.n, tgtR: st.tgtR, tgtN: st.tgtN,
-          x: st.cx, y: st.cy,
+          live: st.live, x: st.cx, y: st.cy,
         }));
         return out;
       },
