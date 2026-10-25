@@ -1438,11 +1438,12 @@
      早期版本只改筛选不改视野：点 3km/5km 后数量变了，但地图还停在 1km 的缩放，
      范围外的店根本看不见，表现为"点了没反应"。 */
   function fitToDist() {
-    if (!me || !currentList.length) return;
+    if (!me) return;
     const lim = (DIST_LEVELS.find(([k]) => k === state.dist) || [])[1];
 
     if (lim == null) {
       // 「全部」：看全当前筛选结果，同时保证"我"还在视野里
+      if (!currentList.length) return;      // 没有结果就算不出包围盒
       let minx = me.lng, miny = me.lat, maxx = me.lng, maxy = me.lat;
       for (let i = 0; i < currentList.length; i++) {
         const s = currentList[i];
@@ -1453,15 +1454,18 @@
       }
       map.setBounds(new AMap.Bounds([minx, miny], [maxx, maxy]), false, viewPadding(), 480);
     } else {
-      // 有半径：以"我"为圆心，让 2×lim 的方框正好落进可视范围
-      const el = document.getElementById('map');
-      const pad = viewPadding();
-      const availW = Math.max(200, el.clientWidth - pad[1] - pad[3]);
-      const availH = Math.max(200, el.clientHeight - pad[0] - pad[2]);
-      const px = Math.min(availW, availH);
-      const mpp = (lim * 2) / px;
-      const z = Math.log2(156543.03392 * Math.cos(me.lat * Math.PI / 180) / mpp);
-      map.setZoomAndCenter(z, [me.lng, me.lat], false, 480);
+      /* 有半径：以"我"为圆心构造一个 2×lim 见方的范围，交给 setBounds 装进可视区。
+         原来是自己按视口短边反算缩放再 setZoomAndCenter —— 那条路 padding 不生效，
+         面板一展开，圆的最外圈正好压在面板底下：切到 500m 后边上的店还是看不见，
+         看着就像"范围切了但没生效"。setBounds 会连边距一起算，圆内切于方框，
+         四角还有余量，整圈一定完整落在面板之间的可视区里。 */
+      const KX = 111320 * Math.cos(me.lat * Math.PI / 180);   // 米 / 度经度
+      const KY = 110540;                                      // 米 / 度纬度
+      const dlng = lim / KX, dlat = lim / KY;
+      map.setBounds(
+        new AMap.Bounds([me.lng - dlng, me.lat - dlat], [me.lng + dlng, me.lat + dlat]),
+        false, viewPadding(), 480
+      );
     }
 
     // 缩得太小时标签画不出来，说清楚，别让用户以为又坏了
