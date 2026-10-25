@@ -1,0 +1,66 @@
+name: 数据刷新
+
+# 每周自动重新采集高德 POI、清洗打标、提交回主干；
+# 提交会触发 Pages 工作流自动重新部署。也可以在 Actions 页面手动触发。
+on:
+  schedule:
+    # 每周一 18:00 UTC = 北京时间周二 02:00，避开白天高峰
+    - cron: '0 18 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      # 没配 Key 就整个跳过，不报错、不发失败邮件——
+      # 部署链路完全不依赖这个 secret，缺了只是不自动更新数据。
+      - name: 检查 Key
+        id: key
+        env:
+          AMAP_WEB_KEY: ${{ secrets.AMAP_WEB_KEY }}
+        run: |
+          if [ -n "$AMAP_WEB_KEY" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::未配置 secrets.AMAP_WEB_KEY，本次跳过采集。去 仓库 Settings → Secrets and variables → Actions 添加 AMAP_WEB_KEY 即可启用。"
+          fi
+
+      - name: 采集
+        if: steps.key.outputs.ok == 'true'
+        env:
+          AMAP_WEB_KEY: ${{ secrets.AMAP_WEB_KEY }}
+        run: |
+          python scripts/fetch.py --step 0.02
+          python scripts/fetch.py --step 0.02 --keywords "coffee|cafe|roaster|espresso|latte|cappuccino|brew"
+          python scripts/fetch.py --step 0.05 --keywords "咖啡"
+
+      - name: 清洗打标
+        if: steps.key.outputs.ok == 'true'
+        run: python scripts/clean.py
+
+      - name: 提交回主干
+        if: steps.key.outputs.ok == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/coffee_clean.json data/coffee.geojson web/data/
+          if git diff --cached --quiet; then
+            echo "数据无变化，跳过提交"
+          else
+            git commit -m "chore: 自动刷新咖啡数据 $(date -u +%Y-%m-%d)"
+            git push
+          fi

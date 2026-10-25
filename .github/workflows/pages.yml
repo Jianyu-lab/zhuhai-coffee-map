@@ -1,0 +1,86 @@
+name: Pages
+
+# push 到 main 且改动涉及站点/数据/脚本时重新构建并部署；
+# 也可以在 Actions 页面手动触发（workflow_dispatch）。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - 'data/coffee_clean.json'
+      - 'data/zhuhai_districts.geojson'
+      - 'scripts/build_web.py'
+      - 'scripts/gen_config.py'
+      - 'requirements.txt'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时刻只跑一个部署，新的推送取消还在跑的旧任务
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # build_web.py / gen_config.py 都只用标准库，不需要 pip install，
+      # 所以这一步不装依赖，Pages 构建能压到十几秒。
+      - name: 注入高德 Key
+        env:
+          AMAP_JS_KEY: ${{ secrets.AMAP_JS_KEY }}
+          AMAP_JS_SECURITY: ${{ secrets.AMAP_JS_SECURITY }}
+        run: python scripts/gen_config.py
+
+      - name: 打包前端数据
+        run: python scripts/build_web.py
+
+      - name: 构建校验
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          html = pathlib.Path("web/index.html").read_text(encoding="utf-8")
+          if "&key=" in html or "webapi.amap.com/maps" in html:
+              sys.exit("index.html 里又出现了高德 Key/脚本地址，应改为 <script src=\"config.js\"></script>")
+          if 'src="config.js"' not in html:
+              sys.exit("index.html 没有引用 config.js")
+          cfg = pathlib.Path("web/config.js").read_text(encoding="utf-8")
+          if not cfg.strip():
+              sys.exit("web/config.js 是空的——检查 secrets.AMAP_JS_KEY 是否已配置")
+          dec = json.JSONDecoder()
+          for name in ("coffee", "districts"):
+              t = pathlib.Path(f"web/data/{name}.js").read_text(encoding="utf-8")
+              obj, _ = dec.raw_decode(t[t.index("=") + 1:].lstrip())
+              n = len(obj) if isinstance(obj, list) else len(obj.get("features", []))
+              print(f"  {name}.js 解析正常，{n} 条")
+          print("构建校验通过")
+          PY
+
+      - name: 配置 Pages
+        uses: actions/configure-pages@v5
+
+      - name: 上传站点
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

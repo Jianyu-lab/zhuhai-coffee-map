@@ -1,0 +1,3 @@
+# 采集/清洗脚本依赖（GitHub Actions 会自动安装）
+# fetch.py 只用标准库；clean.py 需要 shapely 做区界几何判定
+shapely>=2.0

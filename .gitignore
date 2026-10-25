@@ -1,0 +1,35 @@
+# ── 密钥（绝不入库）─────────────────────────────
+# scripts/.env 里有高德服务端 Key，泄露会被盗刷配额
+.env
+scripts/.env
+
+# ── 采集缓存 ───────────────────────────────────
+# 1966 个网格文件，重跑只补缺失格，用 fetch.py 可随时重建
+data/cache/
+
+# ── 原始采集快照 ───────────────────────────────
+# 8MB 高德 API 原始返回，fetch.py 可重新采集。
+# 仓库里只留清洗后的 data/coffee_clean.json，CI 用它跑 build_web.py 就够
+data/raw_*.json
+
+# ── 构建产物：高德 Key 注入 ────────────────────
+# 由 scripts/gen_config.py 生成，真值来自 scripts/.env 或 GitHub Secrets
+web/config.js
+
+# ── 过程产物 ───────────────────────────────────
+# Playwright 验证截图
+shots/
+# README 用的过程截图
+docs-detail.png
+docs-heat.png
+docs-screenshot.png
+# 生成实地考察表的临时脚本目录
+.珠海独立咖啡厅实地考察表.ref/
+# 用户提供的实地考察表，含个人数据
+珠海独立咖啡厅实地考察表.xlsx
+
+# ── 系统 / 编辑器 ──────────────────────────────
+.DS_Store
+__pycache__/
+*.pyc
+.venv/

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>珠海咖啡地图 · Zhuhai Coffee Map</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23E0A458'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%2317130f' stroke-width='2.4' stroke-dasharray='33' stroke-dashoffset='8'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 加载画面：高德 JS API 的链路（maps→migrate→init→checkredirect→icons）实测要 1.6s，
+     这期间屏幕是全黑的，用户会以为卡死。标记放在 body 最前面、样式在 head 的 style.css 里，
+     所以第一帧就能画出来，不依赖任何 JS。 -->
+<div id="loader">
+  <div class="ld-inner">
+    <div class="ld-mark"></div>
+    <h1>珠海咖啡地图</h1>
+    <p class="ld-sub">ZHUHAI COFFEE MAP</p>
+    <div class="ld-bar"><i></i></div>
+    <p class="ld-stage" id="ld-stage">正在加载地图引擎…</p>
+  </div>
+</div>
+
+<div id="map"></div>
+
+<aside id="panel">
+  <header class="brand">
+    <div class="brand-row">
+      <div class="mark"></div>
+      <div>
+        <h1>珠海咖啡地图</h1>
+        <p class="sub">ZHUHAI COFFEE MAP</p>
+      </div>
+      <button id="collapse" title="收起面板">‹</button>
+    </div>
+    <div class="counts">
+      <span><b id="c-total">—</b> 家咖啡馆</span>
+      <span class="dot-sep"></span>
+      <span>连锁 <b id="c-chain">—</b></span>
+      <span class="dot-sep"></span>
+      <span>独立 <b id="c-indie">—</b></span>
+    </div>
+  </header>
+
+  <div class="scroll">
+    <div class="search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+      <input id="q" type="search" placeholder="搜店名、品牌、地址…" autocomplete="off">
+      <button id="q-clear" title="清除">×</button>
+    </div>
+
+    <section id="sec-dist" class="hidden">
+      <h2>距我 <span class="hint">点右上角「定位」</span></h2>
+      <div class="chips" id="f-dist"></div>
+    </section>
+
+    <section>
+      <h2>区域</h2>
+      <div class="chips" id="f-district"></div>
+    </section>
+
+    <section>
+      <h2>类型</h2>
+      <div class="chips" id="f-kind"></div>
+    </section>
+
+    <section>
+      <h2>评分</h2>
+      <div class="chips" id="f-rating"></div>
+    </section>
+
+    <section>
+      <h2>人均</h2>
+      <div class="chips" id="f-cost"></div>
+    </section>
+
+    <section>
+      <h2>特色 <span class="hint">可多选</span></h2>
+      <div class="chips" id="f-tags"></div>
+    </section>
+
+    <section>
+      <h2>品牌 <span class="hint">点击筛选</span></h2>
+      <div class="brands" id="f-brand"></div>
+    </section>
+
+    <section>
+      <h2>商圈分布</h2>
+      <div class="bars" id="stats-area"></div>
+    </section>
+
+    <section class="mylist">
+      <button id="saved-btn" class="ghost">☆ 我的收藏 <b id="c-saved">0</b></button>
+    </section>
+
+    <footer>
+      数据来源：高德地图 POI<br>
+      分类码 <code>050500</code> 全域扫描 + 中英文关键词补采<br>
+      共采集 <b id="c-raw">—</b> 家 · 最后更新 <span id="updated">—</span><br>
+      <span class="warn">高德未收录的小店不会出现在这里，出行前请以门店实际为准。</span>
+    </footer>
+  </div>
+</aside>
+
+<div id="toolbar">
+  <button id="btn-loc" class="tool">定位</button>
+  <button id="btn-label" class="tool">标签</button>
+  <button id="btn-rank" class="tool active">排行</button>
+  <button id="btn-bound" class="tool active">区界</button>
+  <button id="btn-fit" class="tool">全览</button>
+</div>
+
+<aside id="rank">
+  <header>
+    <div class="rk-top">
+      <h2>评分排行</h2>
+      <button id="rank-collapse" title="收起面板">›</button>
+    </div>
+    <div class="rk-sub">
+      <span id="rank-count">—</span> 家 · 跟随左侧筛选
+    </div>
+    <div class="rk-sort" id="rank-sort">
+      <button data-v="rating" class="on">评分</button>
+      <button data-v="dist">距离</button>
+      <button data-v="cost">人均</button>
+    </div>
+  </header>
+  <div class="rk-scroll" id="rank-list"></div>
+  <div class="rk-note" id="rank-note"></div>
+</aside>
+
+<div id="toast"></div>
+
+<div id="legend">
+  <span><i class="lg chain"></i>连锁</span>
+  <span><i class="lg indie"></i>独立</span>
+  <span><i class="lg saved"></i>已收藏</span>
+</div>
+
+<div id="hint" class="hidden">拖动地图查看 · 点击圆点看详情</div>
+
+<div id="empty" class="hidden">没有符合条件的咖啡馆，试试放宽筛选</div>
+
+<!-- 高德 Key 不写进仓库：由 scripts/gen_config.py 生成 config.js（已 gitignore）注入。
+     本地跑：python scripts/gen_config.py；CI 上由 GitHub Secrets 在构建时生成。
+     必须放在 data/coffee.js 和 app.js 之前——config.js 用 document.write 同步插入
+     高德脚本，时序和原来手写 <script> 标签一致，app.js 才能直接拿到 AMap。 -->
+<script src="config.js"></script>
+<script src="data/coffee.js"></script>
+<script src="data/districts.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
