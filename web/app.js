@@ -764,7 +764,9 @@
         st.live = true;
 
         const cur = { x: it.x + st.dx, y: it.y + st.dy, w: box.w, h: box.h };
-        placed.push(cur);
+        // 占位用「目标框」而不是当前滑到的位置：否则滑动途中会盖住别人的目标位，
+        // 下一帧别人被判为放不下→淡出→再淡入，来回抖。占位稳定优先。
+        placed.push(box);
         ctx.globalAlpha = alpha * st.a;
         drawPill(cur, L, it.s);
         // 标签本身也能点开
@@ -1019,14 +1021,18 @@
         anim.forEach((st, k) => out.push({
           k, a: st.a, r: st.r, n: st.n, tgtR: st.tgtR, tgtN: st.tgtN,
           live: st.live, x: st.cx, y: st.cy,
+          gx: st.glng, gy: st.glat, tgx: st.tglng, tgy: st.tglat,
         }));
         return out;
       },
 
-      // 调试用：标签的透明度状态。live=false 是正在淡出的掉队标签。
+      // 调试用：标签的透明度与位置偏移状态。live=false 是正在淡出的掉队标签。
       debugLabels() {
         const out = [];
-        labelAnim.forEach((st, id) => out.push({ id, a: st.a, live: st.live }));
+        labelAnim.forEach((st, id) => out.push({
+          id, a: st.a, live: st.live,
+          dx: st.dx, dy: st.dy, tdx: st.tdx, tdy: st.tdy,
+        }));
         return out;
       },
     };
