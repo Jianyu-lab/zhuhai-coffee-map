@@ -299,6 +299,7 @@
     const anim = new Map();
     let lastT = 0;
     let prevView = null;      // 上一帧视野，用来判断这一帧是不是在拖动/缩放
+    let lastViewMoveT = 0;    // 上一次视野变化的时刻，给「刚动过」留个尾巴
     let settleUntil = 0;      // 结构变化后的自续帧截止时间，防止空转
     const ANIM_TAU = 130;
     const FADE_TAU = 320;
@@ -461,10 +462,14 @@
 
       /* 这一帧视野动过没有（拖动/缩放）。位置缓动只该在视野静止时生效：
          平移时每帧都有店进出视口，桶的质心跟着变，若还缓动，圆点就会拖在
-         底图后面 —— 正是最早那个"拖动延时"的毛病。所以视野一动就吸附。 */
+         底图后面 —— 正是最早那个"拖动延时"的毛病。所以视野一动就吸附。
+         鼠标事件是一段段来的，两次事件之间那几帧会被判成"没动"，
+         所以再留 180ms 尾巴：刚动过也算动，拖动全程都吸附。 */
       const viewMoved = !prevView || prevView.lng !== sw.lng || prevView.lat !== sw.lat ||
         prevView.z !== z;
       prevView = { lng: sw.lng, lat: sw.lat, z };
+      if (viewMoved) lastViewMoveT = now;
+      const viewBusy = viewMoved || now - lastViewMoveT < 180;
 
       if (clusterMode) {
         const dr = dotRadius(z);
@@ -511,7 +516,7 @@
              但视野本身在动的那几帧必须吸附：那时质心变化是"店进出视口"造成的，
              缓动只会让圆点追不上底图。 */
           let px = cx, py = cy;
-          if (viewMoved) {
+          if (viewBusy) {
             st.glng = tglng; st.glat = tglat;
           } else {
             const moved = Math.abs(st.glng - tglng) + Math.abs(st.glat - tglat) > 2e-7;
@@ -655,7 +660,7 @@
       // 标签压在圆点之上；蓝点（我自己）最后画，保证永远可见。
       // 标签关掉/缩得太小时也走一遍，让已经画出来的标签淡出而不是凭空消失。
       if (labelOn && z >= LABEL_MIN_Z && lab.length) {
-        drawLabels(lab, alpha, easeA, easeOutSlow, ease, viewMoved);
+        drawLabels(lab, alpha, easeA, easeOutSlow, ease, viewBusy);
       } else {
         drawLabels(EMPTY, alpha, easeA, easeOutSlow, ease, true);
       }
@@ -720,7 +725,7 @@
        跟着点一起浮出来），放不下就向 0 缓动，淡到看不见才删。
        掉队的标签不是钉在原地，而是继续贴着自己的圆点飘 —— 否则地图一拖，
        残影似的几行字会留在半空。 */
-    function drawLabels(list, alpha, easeIn, easeOut, easePos, viewMoved) {
+    function drawLabels(list, alpha, easeIn, easeOut, easePos, viewBusy) {
       // 近的优先占位；没有定位就按评分和图片数排
       list.sort((a, b) => {
         if (me) {
@@ -767,7 +772,7 @@
         /* 换边（右边放不下改放左边/上边）时不能硬跳。
            缓动的是「相对圆点的偏移」，不是绝对坐标 —— 平移地图时偏移不变，
            标签跟着点走、不会滞后；只有真的换边时才有位移，滑过去。 */
-        if (viewMoved) {
+        if (viewBusy) {
           // 视野在动：吸附，别让字相对圆点飘（会看着像拖不动）
           st.dx = tdx; st.dy = tdy;
         } else {
