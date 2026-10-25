@@ -1434,6 +1434,34 @@
     return pad;
   }
 
+  /* 把一块矩形范围装进"两块面板之间"的可视区。
+     不用 setBounds 自带的 padding：实测它并不把内容居中到留白后的区域，
+     传 [40,316,40,356] 时圆心会跑到容器左上方，圆的左边照样压在左侧面板底下
+     （量到圆心 x=562，而可视区中心应该在 740）。所以缩放和偏移都自己算：
+       ① 用米/像素把矩形塞进 availW×availH，得出缩放；
+       ② 把矩形中心从容器中心挪到可视区中心，得出该用的地图中心。 */
+  function fitBox(minLng, minLat, maxLng, maxLat) {
+    const el = document.getElementById('map');
+    const pad = viewPadding();
+    const W = el.clientWidth, H = el.clientHeight;
+    const availW = Math.max(120, W - pad[1] - pad[3]);
+    const availH = Math.max(120, H - pad[0] - pad[2]);
+    const latC = (minLat + maxLat) / 2;
+    const cos = Math.cos(latC * Math.PI / 180);
+    const KX = 111320 * cos, KY = 110540;
+    const bw = Math.max(40, (maxLng - minLng) * KX);     // 矩形宽（米）
+    const bh = Math.max(40, (maxLat - minLat) * KY);     // 矩形高（米）
+    const mpp = Math.max(bw / availW, bh / availH);
+    const z = Math.log2(156543.03392 * cos / mpp);
+    // 矩形中心要落在可视区中心 → 反推地图中心该偏多少
+    const dx = (pad[3] + availW / 2) - W / 2;
+    const dy = (pad[0] + availH / 2) - H / 2;
+    map.setZoomAndCenter(z, [
+      (minLng + maxLng) / 2 - (dx * mpp) / KX,
+      latC + (dy * mpp) / KY,
+    ], false, 480);
+  }
+
   /* 切距离档时把地图带到"能看全这一圈"的位置。
      早期版本只改筛选不改视野：点 3km/5km 后数量变了，但地图还停在 1km 的缩放，
      范围外的店根本看不见，表现为"点了没反应"。 */
@@ -1452,20 +1480,13 @@
         if (s.lat < miny) miny = s.lat;
         if (s.lat > maxy) maxy = s.lat;
       }
-      map.setBounds(new AMap.Bounds([minx, miny], [maxx, maxy]), false, viewPadding(), 480);
+      fitBox(minx, miny, maxx, maxy);
     } else {
-      /* 有半径：以"我"为圆心构造一个 2×lim 见方的范围，交给 setBounds 装进可视区。
-         原来是自己按视口短边反算缩放再 setZoomAndCenter —— 那条路 padding 不生效，
-         面板一展开，圆的最外圈正好压在面板底下：切到 500m 后边上的店还是看不见，
-         看着就像"范围切了但没生效"。setBounds 会连边距一起算，圆内切于方框，
-         四角还有余量，整圈一定完整落在面板之间的可视区里。 */
+      // 有半径：以"我"为圆心，让 2×lim 见方的范围整块落进可视区
       const KX = 111320 * Math.cos(me.lat * Math.PI / 180);   // 米 / 度经度
       const KY = 110540;                                      // 米 / 度纬度
       const dlng = lim / KX, dlat = lim / KY;
-      map.setBounds(
-        new AMap.Bounds([me.lng - dlng, me.lat - dlat], [me.lng + dlng, me.lat + dlat]),
-        false, viewPadding(), 480
-      );
+      fitBox(me.lng - dlng, me.lat - dlat, me.lng + dlng, me.lat + dlat);
     }
 
     // 缩得太小时标签画不出来，说清楚，别让用户以为又坏了
