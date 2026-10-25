@@ -400,10 +400,10 @@ body.pcollapsed #toolbar{left:16px;top:58px}
    所以日光档单独一套：透明度抬到基准之上，明度压一点、饱和度提上去，
    靠"暖一档/蓝一档"来区分选中，而不是靠透不透。
    用 :not([data-theme="dark"]) 圈住，暗色档（基准 0.26）原样不动。 */
-:root:not([data-theme="dark"]) .tool.active{--lg-tint-a:.94;--lg-tint-s:76%;--lg-tint-l:93%}
-:root:not([data-theme="dark"]) #btn-loc.active{--lg-tint-a:.92;--lg-tint-s:80%;--lg-tint-l:93%}
-:root:not([data-theme="dark"]) #btn-label.active{--lg-tint-a:.90;--lg-tint-s:60%;--lg-tint-l:93%}
-:root:not([data-theme="dark"]) #btn-label.active.sub{--lg-tint-a:.70;--lg-tint-s:40%;--lg-tint-l:96%}
+:root:not([data-theme="dark"]) .tool.active{--lg-tint-a:.94;--lg-tint-s:56%;--lg-tint-l:93%}
+:root:not([data-theme="dark"]) #btn-loc.active{--lg-tint-a:.92;--lg-tint-s:60%;--lg-tint-l:93%}
+:root:not([data-theme="dark"]) #btn-label.active{--lg-tint-a:.90;--lg-tint-s:44%;--lg-tint-l:93%}
+:root:not([data-theme="dark"]) #btn-label.active.sub{--lg-tint-a:.70;--lg-tint-s:28%;--lg-tint-l:96%}
 #sec-dist.hidden{display:none}
 #sec-dist .chip.on{background:var(--glass-raise);border-color:var(--raise-edge);
   color:var(--blue-deep);font-weight:600;
