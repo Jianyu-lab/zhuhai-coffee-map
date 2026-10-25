@@ -196,6 +196,19 @@
     let born = 0;
     let raf = 0;
 
+    /* ── 簇的视觉状态（平滑过渡）───────────────────
+       分桶本身已经是稳定的（按地理坐标），但店多店少、缩放换格时
+       成员数仍会突变。直接按新值画就是「啪」一下换掉，肉眼是闪。
+       这里给每个桶存一份视觉状态，每帧向目标缓动：
+         a 透明度（新出现的从 0 淡入，消失的淡出后再删）
+         r 半径（1 家 ↔ 多家的圆点/圆环之间平滑长大缩小）
+         n 成员数（用浮点插值，取整后才显示）
+       时间常数 70ms，大约 200ms 收敛完，比硬切自然得多。 */
+    const anim = new Map();
+    let lastT = 0;
+    let settleUntil = 0;      // 结构变化后的自续帧截止时间，防止空转
+    const ANIM_TAU = 70;
+
     /* ── 常驻标签 ──────────────────────────────────
        定位之后把附近店名直接铺在地图上，不用逐个点开。
        规则：只在单点上挂标签（簇不挂）、按距离由近到远贪心占位、
@@ -260,7 +273,12 @@
         ne = b.getNorthEast();
       } catch (e) { return; }
 
-      const alpha = Math.min(1, (performance.now() - born) / 200);
+      const now = performance.now();
+      const alpha = Math.min(1, (now - born) / 200);
+      // 帧间隔按实际时间算，掉帧时缓动不会变慢；上限 64ms 防止切标签页回来猛跳
+      const dt = lastT ? Math.min(64, now - lastT) : 16;
+      lastT = now;
+      const ease = 1 - Math.exp(-dt / ANIM_TAU);
 
       // 底图压暗只在"标签真的画出来"时生效，否则热力图/缩小时会白白变暗
       syncDim(z);
@@ -280,6 +298,17 @@
       // 定位后按距离分档压暗远处，让"附近"浮出来
       const dim = (d) => (me == null ? 1 : 0.55 + 0.45 * Math.max(0, 1 - (d || 0) / 4000));
 
+      /* 分桶必须用「地理坐标」，不能用屏幕像素。
+         用屏幕网格 ((p.x/cell)|0) 的话，地图一平移 p.x 整体位移，圆点会不停跨过
+         格子边界，在「独立点 ↔ 聚类圈」之间来回跳 —— 实测拖动时 80% 的帧聚类
+         数量都在变（97~122 之间抖，单帧最多跳 7 个），肉眼就是整屏圆点在闪。
+         换成地理网格后，归属只跟缩放级别有关，平移时完全稳定。
+         经度按固定纬度换算，珠海跨度不到 1 度，误差可以忽略。 */
+      const KX = 111320 * Math.cos(22.27 * Math.PI / 180);   // 米 / 度经度
+      const KY = 110540;                                     // 米 / 度纬度
+      const spanX = Math.abs(ne.lng - sw.lng) * KX;          // 视口宽度（米）
+      const cellM = Math.max(0.5, (cell * spanX) / (W || 1)); // 格子边长（米）
+
       for (let i = 0; i < data.length; i++) {
         const s = data[i];
         if (s.lng < sw.lng || s.lng > ne.lng || s.lat < sw.lat || s.lat > ne.lat) continue;
@@ -290,7 +319,7 @@
         if (!p) continue;
         if (!clusterMode) { singles.push({ s, x: p.x, y: p.y }); continue; }
 
-        const k = ((p.x / cell) | 0) + '_' + ((p.y / cell) | 0);
+        const k = ((s.lng * KX) / cellM | 0) + '_' + ((s.lat * KY) / cellM | 0);
         let b = buckets.get(k);
         if (!b) { b = { n: 0, x: 0, y: 0, lng: 0, lat: 0, items: [], dmin: Infinity }; buckets.set(k, b); }
         b.n++; b.x += p.x; b.y += p.y; b.lng += s.lng; b.lat += s.lat;
@@ -301,27 +330,73 @@
       ctx.globalAlpha = alpha;
 
       if (clusterMode) {
-        buckets.forEach((b) => {
+        const dr = dotRadius(z);
+        const seen = new Set();
+
+        buckets.forEach((b, k) => {
+          seen.add(k);
           const cx = b.x / b.n, cy = b.y / b.n;
-          const dr = dotRadius(z);
-          ctx.globalAlpha = alpha * dim(b.dmin);
-          if (b.n === 1) {
+          const tgtR = b.n === 1 ? dr : Math.min(radiusFor(b.n), cell * 0.45);
+          let st = anim.get(k);
+          if (!st) {
+            // 新出现的桶：透明度从 0 淡入，半径直接给目标值（不从一点炸开）
+            st = { a: 0, r: tgtR, n: b.n, tgtR, tgtN: b.n };
+            anim.set(k, st);
+            settleUntil = now + 1200;
+          }
+          st.a += (1 - st.a) * ease;
+          st.r += (tgtR - st.r) * ease;
+          st.n += (b.n - st.n) * ease;
+          st.tgtR = tgtR; st.tgtN = b.n;
+          st.cx = cx; st.cy = cy;
+          st.glng = b.lng / b.n; st.glat = b.lat / b.n;
+          st.dmin = b.dmin; st.s = b.items[0];
+
+          const shownN = Math.round(st.n);
+          ctx.globalAlpha = alpha * st.a * dim(b.dmin);
+          if (shownN <= 1) {
             // 单个点也要登记命中，否则这些点永远点不开
-            drawDot(cx, cy, b.items[0], dr, emph);
-            hits.push({ type: 'dot', x: cx, y: cy, r: dr + 2.5, s: b.items[0] });
-            lab.push({ s: b.items[0], x: cx, y: cy, r: dr });
+            drawDot(cx, cy, b.items[0], st.r, emph);
+            hits.push({ type: 'dot', x: cx, y: cy, r: st.r + 2.5, s: b.items[0] });
+            lab.push({ s: b.items[0], x: cx, y: cy, r: st.r });
             return;
           }
-          const r = Math.min(radiusFor(b.n), cell * 0.45);
           const isHover = hoverItem && hoverItem.type === 'cluster' &&
             Math.abs(hoverItem.x - cx) < 0.6 && Math.abs(hoverItem.y - cy) < 0.6;
-          drawCluster(cx, cy, r, b.n, isHover);
+          drawCluster(cx, cy, st.r, shownN, isHover);
           hits.push({
-            type: 'cluster', x: cx, y: cy, r, n: b.n,
-            lng: b.lng / b.n, lat: b.lat / b.n, items: b.items,
+            type: 'cluster', x: cx, y: cy, r: st.r, n: shownN,
+            lng: st.glng, lat: st.glat, items: b.items,
           });
         });
+
+        // 本帧消失的桶：淡出后再删。位置用地理中心重新投影，
+        // 否则地图已经平移了，残影会跟底图脱节。
+        anim.forEach((st, k) => {
+          if (seen.has(k)) return;
+          st.a += (0 - st.a) * ease;
+          settleUntil = now + 1200;      // 淡出也要有帧才能走完
+          if (st.a < 0.03) { anim.delete(k); return; }
+          let q = null;
+          try { q = map.lngLatToContainer([st.glng, st.glat]); } catch (e) { anim.delete(k); return; }
+          if (!q) { anim.delete(k); return; }
+          const shownN = Math.max(1, Math.round(st.n));
+          ctx.globalAlpha = alpha * st.a * dim(st.dmin);
+          if (shownN <= 1) drawDot(q.x, q.y, st.s, st.r, false);
+          else drawCluster(q.x, q.y, st.r, shownN, false);
+        });
+
+        // 静止时不再有 mapmove，过渡没收敛就得自己续帧，
+        // 否则新出现的簇会永远停在半透明、改过成员的簇停在旧半径。
+        let busy = false;
+        anim.forEach((st) => {
+          if (st.a < 0.99) busy = true;
+          else if (Math.abs(st.r - st.tgtR) > 0.1) busy = true;
+          else if (Math.abs(st.n - st.tgtN) > 0.05) busy = true;
+        });
+        if (busy && now < settleUntil) schedule();
       } else {
+        anim.clear();
         const dr = dotRadius(z);
         for (let i = 0; i < singles.length; i++) {
           const it = singles[i];
