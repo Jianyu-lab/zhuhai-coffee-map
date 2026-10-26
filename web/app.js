@@ -301,9 +301,11 @@
          FADE_TAU 透明度 —— 慢。这是用户唯一能明确「看见」的过渡，
                             320ms 时间常数 ≈ 1.3s 淡入到底，肉眼清楚。
          ANIM_TAU 半径/成员数 —— 快。跟着缩放走的东西拖太久会发飘。
-       淡出分两档：
-         FADE_OUT_TAU 90ms  —— 平移出视口的桶，快收，否则拖残影。
-         FADE_OUT_SLOW 260ms —— 被筛选掉的桶，慢慢退场，用户能看见"之前的点"走了。 */
+       淡出分两档，都比淡入快得多 —— 淡入是"请你看这个新点"，可以慢；
+       淡出是"它已经不该在了"，慢一帧就多一帧噪音：
+         FADE_OUT_TAU 70ms   —— 平移出视口的桶，快收，否则拖残影。
+         FADE_OUT_SLOW 110ms —— 被筛选掉的桶，仍然要能看出"它退场了"，
+                                但 260ms 那版实测 845ms 才淡完，太拖。 */
     const anim = new Map();
     let lastT = 0;
     let prevView = null;      // 上一帧视野，用来判断这一帧是不是在拖动/缩放
@@ -311,13 +313,14 @@
     let settleUntil = 0;      // 结构变化后的自续帧截止时间，防止空转
     const ANIM_TAU = 130;
     const FADE_TAU = 320;
-    const FADE_OUT_TAU = 90;
-    const FADE_OUT_SLOW = 260;
-    /* 标签淡出单独一档，比圆点快得多。
+    const FADE_OUT_TAU = 70;
+    const FADE_OUT_SLOW = 110;
+    /* 标签淡出单独一档，比圆点还快。
        圆点淡出是"看见刚才那个点走了"，可以慢；文字淡出是"这行字还赖着不走"，
        而且淡出期间它已经不参与占位了，下一帧可能就有新标签补到同一格，
-       两行字叠 0.9 秒会糊成一片。110ms 时间常数 ≈ 330ms 淡完，比原来快 3 倍。 */
-    const LABEL_OUT_TAU = 110;
+       两行字叠在一起会糊。55ms 时间常数 ≈ 165ms 淡完 —— 大约 10 帧，
+       仍然看得出是"淡"出去而不是硬切，但不会留下残影。 */
+    const LABEL_OUT_TAU = 55;
     // 上一帧的「店 → 视觉状态」，用来判断一个桶到底是不是「新冒出来的」。
     // 少了它，地图平移时圆点跨过分桶格子边界（键变了、店没变）也会被当成
     // 新点重新淡入一遍 —— 那正是之前满屏闪动的成因，等于把 bug 又引回来。
@@ -593,7 +596,7 @@
           const inside = st.glng >= sw.lng && st.glng <= ne.lng &&
                          st.glat >= sw.lat && st.glat <= ne.lat;
           st.a += (0 - st.a) * (inside ? easeOutSlow : easeOut);
-          if (st.a < 0.03) { anim.delete(k); return; }
+          if (st.a < 0.05) { anim.delete(k); return; }
           settleUntil = Math.max(settleUntil, now + (inside ? 1200 : 400));
           let q = null;
           try { q = map.lngLatToContainer([st.glng, st.glat]); } catch (e) { anim.delete(k); return; }
@@ -659,7 +662,7 @@
           const inside = s.lng >= sw.lng && s.lng <= ne.lng &&
                          s.lat >= sw.lat && s.lat <= ne.lat;
           st.a += (0 - st.a) * (inside ? easeOutSlow : easeOut);
-          if (st.a < 0.03) { singleAnim.delete(s); return; }
+          if (st.a < 0.05) { singleAnim.delete(s); return; }
           settleUntil = Math.max(settleUntil, now + (inside ? 1200 : 400));
           ctx.globalAlpha = alpha * st.a * dim(s._d);
           drawDot(st.x, st.y, s, st.r, false);
