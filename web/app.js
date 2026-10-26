@@ -124,16 +124,19 @@
      --lg-tint-s / -l 这两个 JS 不碰，交给 CSS 的 :root[data-theme=dark] 覆盖。 */
   const THEME_KEY = 'zh_coffee_theme_v1';
   /* blur / tintA / sat 为什么明暗两套差这么多：
-     暗色底图本身是黑的，玻璃再厚也只是"更黑的玻璃"，看不出透；
      日光底图是满屏白路网 + 绿地 + 彩色 POI，2px 模糊根本压不住，
      0.40 的白 tint 相当于什么都没挡 —— 文字后面全是地图的花纹。
      所以日光档 blur 16 / tint 0.76 / saturate 0.50，做成磨砂牛奶玻璃。
      sat 特意压到 0.5：模糊只能把边缘糊掉，压不住"一大片绿地/水面"的色块，
      整块面板会被底图染成淡绿。先把背板去色再叠白，才真的干净。
+     暗色档底图本身是黑的，不用去色（sat 反而可以留着，让深色玻璃有点冷调），
+     tint 也不必加厚；但 blur 得给到 10 —— 原来 2px 的时候能透过面板
+     读清底图上的地名（"市民…""香洲…"），面板随地图平移一直在变，
+     观感就是"材质不稳"。模糊到 10 之后字糊成色块，才是磨砂该有的样子。
      代价是边缘折射被糊掉一些，但可读性优先于"液态"观感。 */
   const THEME_CFG = {
     light: { hue: 32, tintA: 0.76, spec: 0.95, sat: 0.50, blur: 16, mapStyle: 'amap://styles/normal' },
-    dark:  { hue: 28, tintA: 0.26, spec: 0.55, sat: 1.35, blur: 2,  mapStyle: 'amap://styles/dark' },
+    dark:  { hue: 28, tintA: 0.26, spec: 0.55, sat: 1.35, blur: 10, mapStyle: 'amap://styles/dark' },
   };
 
   // 首屏先定主题，避免「先亮一下再变暗」的闪烁。

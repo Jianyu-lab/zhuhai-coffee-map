@@ -138,6 +138,32 @@
 :root[data-theme="dark"] #map.labels .amap-layers > canvas.amap-layer,
 :root[data-theme="dark"] #map.labels .amap-layers img{filter:saturate(.62) brightness(.82)}
 
+/* ── 玻璃高光：固定、贴顶、窄 ──────────────────
+   LiquidLens 自带的 ::after 是 radial-gradient(70% 55% at var(--lg-lx) var(--lg-ly))。
+   两个问题：
+     1. 位置跟着 pointermove 走，十几个玻璃元素里的白斑会同时游走，
+        看着像界面有盏灯在乱晃（已用 init 的 pointer:false 关掉跟随）；
+     2. 尺寸太大 —— 70% × 55% 的椭圆在 340×860 的面板上半径有 470px，
+        整个上半块都被糊亮。浅色档看不出来（screen 混合在近白上没有变化），
+        暗色档就是一大片牛奶光。
+   改成贴顶的窄光带：椭圆中心放在盒子外面（y=-8%），只露最上面一小条，
+   往下 72% 就完全透明。看起来是"顶部打光"，而不是"中间有个光球"。 */
+.lg-glass::after{
+  background:radial-gradient(120% 42% at 50% -8%,
+    rgba(255,255,255,calc(.55 * var(--lg-spec))) 0%,
+    rgba(255,255,255,calc(.13 * var(--lg-spec))) 44%,
+    rgba(255,255,255,0) 74%);
+  transition:none;
+}
+/* 暗色档再压一档：screen 混合在深底上的亮度提升远大于浅底，
+   同一组数值在暗色里会显得刺眼 */
+:root[data-theme="dark"] .lg-glass::after{
+  background:radial-gradient(120% 40% at 50% -10%,
+    rgba(255,255,255,calc(.34 * var(--lg-spec))) 0%,
+    rgba(255,255,255,calc(.07 * var(--lg-spec))) 46%,
+    rgba(255,255,255,0) 76%);
+}
+
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
