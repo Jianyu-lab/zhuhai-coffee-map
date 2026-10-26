@@ -1569,28 +1569,28 @@
      点了筛选，数量和列表都变了，地图却一动不动，看着像按钮没生效。
      区域是个"地点"而不是"数量条件"，选它就应当看过去，与结果多少无关。
 
-     取景用**这个区里的店**的包围盒，不用行政区边界：
-     香洲区辖万山群岛，边界一直延伸到外伶仃、担杆，按边界取景会一路缩到 10 级，
-     珠海、深圳、香港、澳门全挤进来 —— 点了反而更看不清。
-     店才是用户要看的东西，用它们的范围取景才是"到这个区去"。 */
+     取景用**区内门店的 2%–98% 分位框**，不用行政区边界、也不用 min/max：
+     香洲区辖万山群岛，边界一直延伸到外伶仃；门店里也真有几家在外伶仃（114.03）
+     和万山岛（21.93）。按 min/max 取景会一路缩到 10 级，珠海、深圳、香港、澳门
+     全挤进来，点了反而更看不清。掐掉两端 2% 的离群点，框住的才是这个区的"城区"。 */
   function fitDistrict(name) {
     if (name === '全部') {
       map.setZoomAndCenter(HOME.zoom, HOME.center, false, 420);
       return;
     }
-    let minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity, n = 0;
+    const lngs = [], lats = [];
     for (let i = 0; i < DATA.length; i++) {
       const s = DATA[i];
       if (s.district !== name) continue;
-      n++;
-      if (s.lng < minx) minx = s.lng;
-      if (s.lng > maxx) maxx = s.lng;
-      if (s.lat < miny) miny = s.lat;
-      if (s.lat > maxy) maxy = s.lat;
+      lngs.push(s.lng); lats.push(s.lat);
     }
-    if (!n) return;
-    const padX = Math.max((maxx - minx) * 0.25, 0.004);
-    const padY = Math.max((maxy - miny) * 0.25, 0.004);
+    if (!lngs.length) return;
+    lngs.sort((a, b) => a - b); lats.sort((a, b) => a - b);
+    const pick = (a, f) => a[Math.min(a.length - 1, Math.max(0, Math.round(f * (a.length - 1))))];
+    const minx = pick(lngs, 0.02), maxx = pick(lngs, 0.98);
+    const miny = pick(lats, 0.02), maxy = pick(lats, 0.98);
+    const padX = Math.max((maxx - minx) * 0.12, 0.004);
+    const padY = Math.max((maxy - miny) * 0.12, 0.004);
     fitBox(minx - padX, miny - padY, maxx + padX, maxy + padY);
   }
 
