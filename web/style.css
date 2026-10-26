@@ -440,6 +440,18 @@ body.pcollapsed #toolbar{left:16px;top:58px}
 :root:not([data-theme="dark"]) #btn-loc.active{--lg-tint-a:.84;--lg-tint-s:60%;--lg-tint-l:93%}
 :root:not([data-theme="dark"]) #btn-label.active{--lg-tint-a:.82;--lg-tint-s:44%;--lg-tint-l:93%}
 :root:not([data-theme="dark"]) #btn-label.active.sub{--lg-tint-a:.62;--lg-tint-s:28%;--lg-tint-l:96%}
+
+/* 暗色档的选中态必须另写一套，不能沿用上面那套「几乎不透明的亮块」：
+   深底上一块 hsla(34,52%,96%,.62) 是灰白药片，压在上面的亮橙/亮蓝字
+   几乎没有对比（实测肉眼分不出 排行 和 区界 到底哪个是选中的）。
+   改成「同色相 + 低明度 + 低透明」的深色玻璃，靠颜色和亮边认选中。 */
+:root[data-theme="dark"] .tool.active{
+  --lg-tint-a:.30;--lg-tint-s:42%;--lg-tint-l:24%;
+  border-color:rgba(255,255,255,.34);
+  box-shadow:0 2px 14px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1)}
+:root[data-theme="dark"] #btn-loc.active{--lg-tint-h:210;--lg-tint-a:.32;--lg-tint-s:48%;--lg-tint-l:30%}
+:root[data-theme="dark"] #btn-label.active{--lg-tint-h:150;--lg-tint-a:.30;--lg-tint-s:40%;--lg-tint-l:26%}
+:root[data-theme="dark"] #btn-label.active.sub{--lg-tint-h:34;--lg-tint-a:.16;--lg-tint-s:22%;--lg-tint-l:20%;color:var(--dim-2)}
 #sec-dist.hidden{display:none}
 #sec-dist .chip.on{background:var(--glass-raise);border-color:var(--raise-edge);
   color:var(--blue-deep);font-weight:600;
