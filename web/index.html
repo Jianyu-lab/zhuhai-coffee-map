@@ -120,11 +120,15 @@
 </aside>
 
 <div id="toolbar">
-  <button id="btn-loc" class="tool lg-glass" data-glass>定位</button>
-  <button id="btn-label" class="tool lg-glass" data-glass>标签</button>
-  <button id="btn-rank" class="tool lg-glass active" data-glass>排行</button>
-  <button id="btn-bound" class="tool lg-glass active" data-glass>区界</button>
-  <button id="btn-fit" class="tool lg-glass" data-glass>全览</button>
+  <!-- 这几个按钮**故意不带 data-glass**：引擎的 SVG 折射在小尺寸元素上会把
+       边缘以外的暗底吸进来，沿圆角形成一圈 2px 的黑边（53×36 的胶囊上特别明显，
+       看着像描了个粗黑框）。保留 .lg-glass 的半透明底色和高光，
+       磨砂效果由 style.css 里自己写的 backdrop-filter 提供。 -->
+  <button id="btn-loc" class="tool lg-glass">定位</button>
+  <button id="btn-label" class="tool lg-glass">标签</button>
+  <button id="btn-rank" class="tool lg-glass active">排行</button>
+  <button id="btn-bound" class="tool lg-glass active">区界</button>
+  <button id="btn-fit" class="tool lg-glass">全览</button>
 </div>
 
 <aside id="rank" class="lg-glass" data-glass>

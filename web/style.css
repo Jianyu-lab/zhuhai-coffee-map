@@ -307,14 +307,36 @@ footer .warn{color:#9A7B5C}
 /* ── 工具栏 ───────────────────────── */
 /* 竖排在筛选面板右侧：左右各有一个面板，工具栏夹在中间永不打架。
    筛选面板收起时跟着挪到最左边（body.pcollapsed）。
-   这几个按钮走真折射——它们是浮在地图上最显眼的"液态"元素 */
+   这几个按钮不带 data-glass（原因见 index.html 的注释）：引擎的 SVG 折射在
+   小胶囊上会把边缘外的暗底吸进来，沿圆角糊出一圈 2px 黑边，特别显脏。
+   所以磨砂自己写，只保留 .lg-glass 的 tint 底色 + 高光层。 */
 #toolbar{position:absolute;left:372px;top:16px;z-index:15;display:flex;flex-direction:column;gap:6px}
 body.pcollapsed #toolbar{left:16px;top:58px}
 .tool{--lg-radius:var(--r-pill);padding:8px 13px;font-size:11.5px;cursor:pointer;font-family:inherit;
-  color:var(--dim);transition:.16s;text-align:center;font-weight:500}
-.tool:hover{color:var(--txt)}
-/* 选中态用库自己的 tint 机制改单个元素的色相，不整块盖掉背景 */
-.tool.active{--lg-tint-h:34;--lg-tint-a:.62;--lg-tint-l:96%;color:var(--accent-deep);font-weight:600}
+  color:var(--dim);transition:background .18s,color .16s,border-color .16s,box-shadow .18s;
+  text-align:center;font-weight:600;
+  -webkit-backdrop-filter:blur(10px) saturate(1.05);
+  backdrop-filter:blur(10px) saturate(1.05);
+  /* hairline 是「一层玻璃」的关键：没有它，半透明底会糊进地图里没有边界；
+     有了它，即便完全不折射，也还是一块玻璃而不是一团雾。 */
+  border:1px solid rgba(255,255,255,.5);
+  box-shadow:0 2px 9px rgba(70,48,28,.16), inset 0 1px 0 rgba(255,255,255,.5)}
+.tool:hover{color:var(--txt);border-color:rgba(255,255,255,.75);
+  box-shadow:0 3px 12px rgba(70,48,28,.2), inset 0 1px 0 rgba(255,255,255,.6)}
+/* 选中态用库自己的 tint 改单个元素底色，不整块盖掉背景 */
+.tool.active{--lg-tint-h:34;--lg-tint-a:.62;--lg-tint-l:96%;color:var(--accent-deep);font-weight:600;
+  border-color:rgba(255,255,255,.75);
+  box-shadow:0 2px 12px rgba(70,48,28,.22), inset 0 1px 0 rgba(255,255,255,.62)}
+/* 暗色档：底色本来就深，hairline 要压到很淡，不然一圈白边比黑边还脏；
+   阴影也得换成纯黑，暖棕色的影在深底上是看不见的。 */
+:root[data-theme="dark"] .tool{
+  -webkit-backdrop-filter:blur(8px) saturate(1.15);
+  backdrop-filter:blur(8px) saturate(1.15);
+  border-color:rgba(255,255,255,.13);
+  box-shadow:0 2px 10px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.07)}
+:root[data-theme="dark"] .tool:hover{color:var(--txt);border-color:rgba(255,255,255,.26)}
+:root[data-theme="dark"] .tool.active{border-color:rgba(255,255,255,.3);
+  box-shadow:0 2px 14px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1)}
 
 /* ── 右侧评分排面板 ───────────────── */
 #rank{

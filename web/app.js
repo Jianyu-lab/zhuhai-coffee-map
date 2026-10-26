@@ -1290,13 +1290,25 @@
 
   /* ══ 区界 ══════════════════════════════════════ */
   const districtPolys = [];
+  /* 每个区的经纬度包围盒。点「区域」筛选时靠它把视野带到那个区 ——
+     只筛不飞的话，筛完九百多家地图还停在原地，看着像没反应。 */
+  const districtBounds = {};
   (function drawDistricts() {
     DISTRICTS.features.forEach((f) => {
       const g = f.geometry;
       const polys = g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates];
+      const bb = { minx: Infinity, miny: Infinity, maxx: -Infinity, maxy: -Infinity };
       polys.forEach((poly) => {
+        const path = poly[0].map((c) => [c[0], c[1]]);
+        for (let i = 0; i < path.length; i++) {
+          const c = path[i];
+          if (c[0] < bb.minx) bb.minx = c[0];
+          if (c[0] > bb.maxx) bb.maxx = c[0];
+          if (c[1] < bb.miny) bb.miny = c[1];
+          if (c[1] > bb.maxy) bb.maxy = c[1];
+        }
         const p = new AMap.Polygon({
-          path: poly[0].map((c) => [c[0], c[1]]),
+          path,
           strokeColor: PAL.bound,
           strokeWeight: 1.2,
           strokeOpacity: 0.5,
@@ -1309,6 +1321,7 @@
         p.setMap(map);
         districtPolys.push(p);
       });
+      if (bb.minx < bb.maxx && bb.miny < bb.maxy) districtBounds[f.properties.name] = bb;
 
       if (f.properties.center) {
         const el = document.createElement('div');
@@ -1552,12 +1565,28 @@
       state[group] = v;
     }
     const distChanged = group === 'dist';
+    const districtChanged = group === 'district';
     paintChips();
-    suppressFly = distChanged;   // 距离档自己会 fitToDist，别让自动飞行抢镜头
+    // 距离档自己会 fitToDist，区域自己会 fitDistrict，别让自动飞行抢镜头
+    suppressFly = distChanged || districtChanged;
     apply();
     suppressFly = false;
     // 距离档位变化要把视野带过去，否则范围外的店看不见
     if (distChanged && me) fitToDist();
+    if (districtChanged) fitDistrict(v);
+  }
+
+  /* 点「区域」时把视野带到那个区。
+     之前只有"筛完剩不到 20 家才自动定位"这一条路径，香洲区 900 多家永远够不着 ——
+     点了筛选，数量和列表都变了，地图却一动不动，看着像按钮没生效。
+     区域是个"地点"而不是"数量条件"，选它就应当看过去，与结果多少无关。 */
+  function fitDistrict(name) {
+    if (name === '全部') {
+      map.setZoomAndCenter(HOME.zoom, HOME.center, false, 420);
+      return;
+    }
+    const b = districtBounds[name];
+    if (b) fitBox(b.minx, b.miny, b.maxx, b.maxy);
   }
 
   function paintGroup(sel, active) {
