@@ -185,11 +185,9 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);
   background:var(--loader-bg);
   transition:opacity .45s ease,visibility .45s}
 #loader.done{opacity:0;visibility:hidden;pointer-events:none}
-.ld-inner{--lg-radius:30px;display:flex;flex-direction:column;align-items:center;padding:40px 48px 34px}
-.ld-inner h1{margin:0;font-size:18px;font-weight:600;letter-spacing:.04em;color:var(--txt)}
-.ld-sub{margin:6px 0 0;font-size:10px;letter-spacing:.22em;color:var(--dim-2);font-weight:500}
+.ld-inner{display:flex;flex-direction:column;align-items:center;padding:0}
 .ld-bar{width:184px;height:4px;border-radius:2px;background:rgba(116,92,66,.12);
-  margin-top:26px;overflow:hidden;box-shadow:inset 0 1px 1px rgba(116,92,66,.08)}
+  overflow:hidden;box-shadow:inset 0 1px 1px rgba(116,92,66,.08)}
 .ld-bar i{display:block;height:100%;width:38%;border-radius:2px;
   background:linear-gradient(90deg,#C67A3D,#E0A458);
   animation:ld-slide 1.15s cubic-bezier(.65,.05,.36,1) infinite}
@@ -410,14 +408,16 @@ body.pcollapsed #toolbar{left:16px;top:58px}
 #btn-label.active.sub{--lg-tint-h:34;--lg-tint-a:.2;--lg-tint-l:97%;color:var(--dim-2);font-weight:500}
 
 /* 上面这几个 --lg-tint-a（.52~.62）是按"未选中 0.40"那套定的。日光档基准
-   已经抬到 0.76，再沿用就等于"选中比未选中更透"，按钮看着像凹进去了。
-   所以日光档单独一套：透明度抬到基准之上，明度压一点、饱和度提上去，
-   靠"暖一档/蓝一档"来区分选中，而不是靠透不透。
+   后来一路抬到 0.76（为了压住底图绿地），再沿用就等于"选中比未选中更透"，
+   按钮看着像凹进去了。所以日光档单独一套：透明度抬到基准之上，明度压一点、
+   饱和度提上去，靠"暖一档/蓝一档"来区分选中，而不是靠透不透。
+   基准现在回落到 0.68（0.76 时玻璃几乎不透，看不出材质），这一套跟着降 0.08，
+   保持的是「比基准实多少」这个差值，不是绝对值。
    用 :not([data-theme="dark"]) 圈住，暗色档（基准 0.26）原样不动。 */
-:root:not([data-theme="dark"]) .tool.active{--lg-tint-a:.94;--lg-tint-s:56%;--lg-tint-l:93%}
-:root:not([data-theme="dark"]) #btn-loc.active{--lg-tint-a:.92;--lg-tint-s:60%;--lg-tint-l:93%}
-:root:not([data-theme="dark"]) #btn-label.active{--lg-tint-a:.90;--lg-tint-s:44%;--lg-tint-l:93%}
-:root:not([data-theme="dark"]) #btn-label.active.sub{--lg-tint-a:.70;--lg-tint-s:28%;--lg-tint-l:96%}
+:root:not([data-theme="dark"]) .tool.active{--lg-tint-a:.86;--lg-tint-s:56%;--lg-tint-l:93%}
+:root:not([data-theme="dark"]) #btn-loc.active{--lg-tint-a:.84;--lg-tint-s:60%;--lg-tint-l:93%}
+:root:not([data-theme="dark"]) #btn-label.active{--lg-tint-a:.82;--lg-tint-s:44%;--lg-tint-l:93%}
+:root:not([data-theme="dark"]) #btn-label.active.sub{--lg-tint-a:.62;--lg-tint-s:28%;--lg-tint-l:96%}
 #sec-dist.hidden{display:none}
 #sec-dist .chip.on{background:var(--glass-raise);border-color:var(--raise-edge);
   color:var(--blue-deep);font-weight:600;

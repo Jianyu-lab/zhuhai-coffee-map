@@ -28,11 +28,11 @@
 
 <!-- 加载画面：高德 JS API 的链路（maps→migrate→init→checkredirect→icons）实测要 1.6s，
      这期间屏幕是全黑的，用户会以为卡死。标记放在 body 最前面、样式在 head 的 style.css 里，
-     所以第一帧就能画出来，不依赖任何 JS。液态玻璃版改成亮色玻璃卡。 -->
+     所以第一帧就能画出来，不依赖任何 JS。
+     不再套玻璃卡：卡片会把"等 1.6 秒"包装成一个要读的物件，而这里只需要一个
+     "还在动"的信号。整屏只留一条进度条 + 一行状态字，落在一层暖色底上。 -->
 <div id="loader">
-  <div class="ld-inner lg-glass" data-glass>
-    <h1>珠海咖啡地图</h1>
-    <p class="ld-sub">ZHUHAI COFFEE MAP</p>
+  <div class="ld-inner">
     <div class="ld-bar"><i></i></div>
     <p class="ld-stage" id="ld-stage">正在加载地图引擎…</p>
   </div>
@@ -172,11 +172,11 @@
   LiquidGlass.init({
     refraction: 20,     // 边缘折射强度（feDisplacementMap 的 scale）
     bezel: 26,          // 折射边宽度
-    blur: 16,           // 背板模糊（日光档；暗色档由 applyTheme 压回 2）
-    saturation: 0.50,   // 背板去色：模糊压不住大片绿地/水面的色块，得先去色
+    blur: 10,           // 背板模糊（日光档；暗色档同为 10，由 applyTheme 复核）
+    saturation: 0.80,   // 背板去色：模糊压不住大片绿地/水面的色块，得先去色
     specular: 0.95,     // 高光强度
     tintHue: 32,        // 暖白（咖啡色调），不用默认的蓝
-    tintOpacity: 0.76,
+    tintOpacity: 0.68,
     quality: 420,
     /* 关掉"高光跟随鼠标"。开着的时候每次 pointermove 都会在 <html> 上写
        --lg-lx / --lg-ly / --lg-edge，等于全文档样式失效重算，十几个玻璃元素

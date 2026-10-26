@@ -126,16 +126,22 @@
   /* blur / tintA / sat 为什么明暗两套差这么多：
      日光底图是满屏白路网 + 绿地 + 彩色 POI，2px 模糊根本压不住，
      0.40 的白 tint 相当于什么都没挡 —— 文字后面全是地图的花纹。
-     所以日光档 blur 16 / tint 0.76 / saturate 0.50，做成磨砂牛奶玻璃。
-     sat 特意压到 0.5：模糊只能把边缘糊掉，压不住"一大片绿地/水面"的色块，
+     所以日光档做成磨砂牛奶玻璃：blur 10 / tint 0.68 / saturate 0.80。
+     sat 压到 0.8：模糊只能把边缘糊掉，压不住"一大片绿地/水面"的色块，
      整块面板会被底图染成淡绿。先把背板去色再叠白，才真的干净。
+     这三个数是量出来的，不是拍的：把面板文字全隐掉只截玻璃本身，
+     逐档量像素标准差（底图轮廓透出来的程度）——
+     0.76/16/0.50 是 3.0（几乎看不出材质），0.70/10/0.70 是 4.9，
+     0.68/10/0.80 是 5.6，0.66/8/0.85 是 6.3（路网开始被读出来）。
+     取 5.6 这一档：材质看得见，但路网还是糊的；面板平均亮度只从 244 掉到 241，
+     深色文字的对比度基本没变。
      暗色档底图本身是黑的，不用去色（sat 反而可以留着，让深色玻璃有点冷调），
      tint 也不必加厚；但 blur 得给到 10 —— 原来 2px 的时候能透过面板
      读清底图上的地名（"市民…""香洲…"），面板随地图平移一直在变，
      观感就是"材质不稳"。模糊到 10 之后字糊成色块，才是磨砂该有的样子。
      代价是边缘折射被糊掉一些，但可读性优先于"液态"观感。 */
   const THEME_CFG = {
-    light: { hue: 32, tintA: 0.76, spec: 0.95, sat: 0.50, blur: 16, mapStyle: 'amap://styles/normal' },
+    light: { hue: 32, tintA: 0.68, spec: 0.95, sat: 0.80, blur: 10, mapStyle: 'amap://styles/normal' },
     dark:  { hue: 28, tintA: 0.26, spec: 0.55, sat: 1.35, blur: 10, mapStyle: 'amap://styles/dark' },
   };
 
@@ -366,6 +372,12 @@
     const FADE_OUT_FAST_MS = 110;   // 拖出视口，不许留尾巴
     const LABEL_IN_MS = 380;
     const LABEL_OUT_MS = 120;
+    /* 换边：淡出 → 换位 → 淡入。三段都短，因为"字挪了个位置"不该抢注意力。
+       Material 把这套叫 fade through，专门用在"元素换位置但没有共享元素过渡"
+       的场合 —— 横着滑过去会让标签从圆点上碾过，比硬跳还难看。 */
+    const LABEL_FLIP_OUT_MS = 90;
+    const LABEL_FLIP_IN_MS = 200;
+    const LABEL_MOVE_MS = 200;      // 同侧微调（点半径变了、文字变长了）
     const EASE_IN = bezier(0.4, 0, 0.2, 1);
     const EASE_OUT = bezier(0.3, 0, 1, 1);
 
@@ -402,6 +414,18 @@
       if (p <= 0) return st.a;
       st.a = st.aFrom + (st.aTo - st.aFrom) * (st.aTo > st.aFrom ? EASE_IN : EASE_OUT)(p);
       return st.a;
+    }
+
+    /* 位移也走同一条贝塞尔。标签相对圆点的偏移在「同侧微调」时才用它；
+       换边不走位移，走的是淡出→换位→淡入（见 drawLabels）。 */
+    function moveStep(st, now) {
+      if (!st.mRun) return;
+      const p = (now - st.mT0) / st.mDur;
+      if (p >= 1) { st.dx = st.tdx; st.dy = st.tdy; st.mRun = false; return; }
+      if (p <= 0) return;
+      const e = EASE_IN(p);
+      st.dx = st.sdx + (st.tdx - st.sdx) * e;
+      st.dy = st.sdy + (st.tdy - st.sdy) * e;
     }
 
     // 上一帧的「店 → 视觉状态」，用来判断一个桶到底是不是「新冒出来的」。
@@ -859,10 +883,10 @@
           [it.x - L.w / 2, it.y - it.r - 6 - h],
           [it.x - L.w / 2, it.y + it.r + 6],
         ];
-        let box = null;
+        let box = null, side = 0;
         for (let c = 0; c < cands.length; c++) {
           const b = { x: cands[c][0], y: cands[c][1], w: L.w, h };
-          if (fits(b, placed)) { box = b; break; }
+          if (fits(b, placed)) { box = b; side = c; break; }
         }
         if (!box) continue;
         n++;
@@ -873,22 +897,57 @@
         let st = labelAnim.get(id);
         if (!st) {
           // 新标签：位置直接落在目标处（不要从圆点里滑出来），透明度从 0 起
-          st = { a: 0, dx: tdx, dy: tdy, box, L, s: it.s };
+          st = {
+            a: 0, dx: tdx, dy: tdy, tdx, tdy, sdx: tdx, sdy: tdy,
+            mT0: 0, mDur: 1, mRun: false, flip: 0, side, box, L, s: it.s,
+          };
           labelAnim.set(id, st);
         }
-        /* 换边（右边放不下改放左边/上边）时不能硬跳。
-           缓动的是「相对圆点的偏移」，不是绝对坐标 —— 平移地图时偏移不变，
-           标签跟着点走、不会滞后；只有真的换边时才有位移，滑过去。 */
+        /* 位置也要过渡，但**不能横着滑过去**：
+           换边（右→左→上→下）时如果让偏移从 +30 线性插到 -120，
+           标签会从圆点上碾过去，比硬跳还难看。走 Material 的
+           「淡出 → 换位 → 淡入」：先在原位淡到 0，看不见了再挪，然后淡回来。
+           视野正在动的时候例外 —— 拖一下地图会有一排标签同时换边，
+           集体闪一遍比硬跳更糟，所以那时吸附、不做换边动画。 */
         if (viewBusy) {
-          // 视野在动：吸附，别让字相对圆点飘（会看着像拖不动）
-          st.dx = tdx; st.dy = tdy;
-        } else {
-          st.dx += (tdx - st.dx) * easePos;
-          st.dy += (tdy - st.dy) * easePos;
+          st.dx = tdx; st.dy = tdy; st.tdx = tdx; st.tdy = tdy;
+          st.side = side; st.flip = 0; st.mRun = false;
+        } else if (st.side !== side) {
+          if (st.flip === 0) {
+            st.flip = 1;
+            fadeTo(st, 0, now, LABEL_FLIP_OUT_MS);
+          }
+          st.side = side;
+          st.flipDx = tdx; st.flipDy = tdy;
+          st.mRun = false;
+        } else if (st.flip === 0) {
+          // 同侧微调（点半径随缩放变、标签文字变长）：贝塞尔位移，不闪
+          if (!st.mRun || Math.abs(tdx - st.tdx) + Math.abs(tdy - st.tdy) > 0.5) {
+            st.sdx = st.dx; st.sdy = st.dy;
+            st.tdx = tdx; st.tdy = tdy;
+            st.mT0 = now;
+            st.mDur = Math.max(80, Math.min(LABEL_MOVE_MS,
+              LABEL_MOVE_MS * Math.hypot(tdx - st.dx, tdy - st.dy) / 90));
+            st.mRun = true;
+          }
         }
-        st.tdx = tdx; st.tdy = tdy;
-        fadeTo(st, 1, now, LABEL_IN_MS);
+        /* 换边的第二、三拍：淡到 0 → 挪到新位 → 淡回 1。
+           这一步必须放在这里而不是上面的分支里 —— 上一帧的 fadeStep
+           可能刚把 a 走到 0，得下一帧才能读到。 */
+        if (st.flip === 1) {
+          if (!st.aRun && st.a <= 0.001) {
+            st.dx = st.flipDx; st.dy = st.flipDy;
+            st.tdx = st.flipDx; st.tdy = st.flipDy;
+            st.flip = 2;
+            fadeTo(st, 1, now, LABEL_FLIP_IN_MS);
+          }
+        } else if (st.flip === 2) {
+          if (!st.aRun) st.flip = 0;          // 淡回来了，回到常规态
+        } else {
+          fadeTo(st, 1, now, LABEL_IN_MS);
+        }
         fadeStep(st, now);
+        if (st.mRun) moveStep(st, now);
         st.box = box; st.L = L; st.s = it.s;
         st.live = true;
 
@@ -1157,11 +1216,13 @@
       },
 
       // 调试用：标签的透明度与位置偏移状态。live=false 是正在淡出的掉队标签。
+      // side / flip 是换边状态机：flip 0=常规 1=正在淡出 2=正在淡入。
       debugLabels() {
         const out = [];
         labelAnim.forEach((st, id) => out.push({
-          id, a: st.a, live: st.live, run: !!st.aRun,
+          id, a: st.a, live: st.live, run: !!st.aRun, mRun: !!st.mRun,
           dx: st.dx, dy: st.dy, tdx: st.tdx, tdy: st.tdy,
+          side: st.side, flip: st.flip,
         }));
         return out;
       },
