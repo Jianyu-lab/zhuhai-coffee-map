@@ -2002,10 +2002,14 @@
 
     $('#rank-collapse').onclick = () => {
       $('#rank').classList.add('collapsed');
+      if (document.getElementById('rank-open')) return;
+      /* 类名必须带 lg-glass：圆角和底色都是 .lg-glass 给的，只有 .tool 的话
+         会退化成浏览器默认的灰方块（方角、系统字体、无背景），跟旁边的胶囊差一大截。 */
       const b = document.createElement('button');
-      b.className = 'tool';
+      b.id = 'rank-open';
+      b.className = 'tool lg-glass';
+      b.title = '展开排行面板';
       b.textContent = '‹ 排行';
-      b.style.cssText = 'position:absolute;right:16px;top:16px;z-index:25';
       b.onclick = () => { $('#rank').classList.remove('collapsed'); b.remove(); };
       document.body.appendChild(b);
     };
@@ -2126,10 +2130,13 @@
     $('#panel').classList.add('collapsed');
     document.body.classList.add('pcollapsed');   // 工具栏跟着挪到最左边
     setTimeout(() => {
+      if (document.getElementById('panel-open')) return;
+      // 同 rank-open：带 lg-glass 才有圆角和底色，否则是个灰方块
       const b = document.createElement('button');
-      b.className = 'tool';
-      b.textContent = '☰ 筛选';
-      b.style.cssText = 'position:absolute;left:16px;top:16px;z-index:25';
+      b.id = 'panel-open';
+      b.className = 'tool lg-glass';
+      b.title = '展开筛选面板';
+      b.textContent = '› 筛选';
       b.onclick = () => {
         $('#panel').classList.remove('collapsed');
         document.body.classList.remove('pcollapsed');
