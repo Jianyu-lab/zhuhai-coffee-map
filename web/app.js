@@ -1290,23 +1290,12 @@
 
   /* ══ 区界 ══════════════════════════════════════ */
   const districtPolys = [];
-  /* 每个区的经纬度包围盒。点「区域」筛选时靠它把视野带到那个区 ——
-     只筛不飞的话，筛完九百多家地图还停在原地，看着像没反应。 */
-  const districtBounds = {};
   (function drawDistricts() {
     DISTRICTS.features.forEach((f) => {
       const g = f.geometry;
       const polys = g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates];
-      const bb = { minx: Infinity, miny: Infinity, maxx: -Infinity, maxy: -Infinity };
       polys.forEach((poly) => {
         const path = poly[0].map((c) => [c[0], c[1]]);
-        for (let i = 0; i < path.length; i++) {
-          const c = path[i];
-          if (c[0] < bb.minx) bb.minx = c[0];
-          if (c[0] > bb.maxx) bb.maxx = c[0];
-          if (c[1] < bb.miny) bb.miny = c[1];
-          if (c[1] > bb.maxy) bb.maxy = c[1];
-        }
         const p = new AMap.Polygon({
           path,
           strokeColor: PAL.bound,
@@ -1321,7 +1310,6 @@
         p.setMap(map);
         districtPolys.push(p);
       });
-      if (bb.minx < bb.maxx && bb.miny < bb.maxy) districtBounds[f.properties.name] = bb;
 
       if (f.properties.center) {
         const el = document.createElement('div');
@@ -1577,16 +1565,33 @@
   }
 
   /* 点「区域」时把视野带到那个区。
-     之前只有"筛完剩不到 20 家才自动定位"这一条路径，香洲区 900 多家永远够不着 ——
+     之前只有"筛完剩不到 20 家才自动定位"这一条路径，香洲区 930 家永远够不着 ——
      点了筛选，数量和列表都变了，地图却一动不动，看着像按钮没生效。
-     区域是个"地点"而不是"数量条件"，选它就应当看过去，与结果多少无关。 */
+     区域是个"地点"而不是"数量条件"，选它就应当看过去，与结果多少无关。
+
+     取景用**这个区里的店**的包围盒，不用行政区边界：
+     香洲区辖万山群岛，边界一直延伸到外伶仃、担杆，按边界取景会一路缩到 10 级，
+     珠海、深圳、香港、澳门全挤进来 —— 点了反而更看不清。
+     店才是用户要看的东西，用它们的范围取景才是"到这个区去"。 */
   function fitDistrict(name) {
     if (name === '全部') {
       map.setZoomAndCenter(HOME.zoom, HOME.center, false, 420);
       return;
     }
-    const b = districtBounds[name];
-    if (b) fitBox(b.minx, b.miny, b.maxx, b.maxy);
+    let minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity, n = 0;
+    for (let i = 0; i < DATA.length; i++) {
+      const s = DATA[i];
+      if (s.district !== name) continue;
+      n++;
+      if (s.lng < minx) minx = s.lng;
+      if (s.lng > maxx) maxx = s.lng;
+      if (s.lat < miny) miny = s.lat;
+      if (s.lat > maxy) maxy = s.lat;
+    }
+    if (!n) return;
+    const padX = Math.max((maxx - minx) * 0.25, 0.004);
+    const padY = Math.max((maxy - miny) * 0.25, 0.004);
+    fitBox(minx - padX, miny - padY, maxx + padX, maxy + padY);
   }
 
   function paintGroup(sel, active) {
