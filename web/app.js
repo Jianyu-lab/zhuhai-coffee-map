@@ -522,7 +522,7 @@
       // 热力图模式或结果为空：不画店点，但定位点要留着
       if (!data.length) {
         // 结果被筛空：圆点没了，标签也得跟着淡出，不能凭空消失
-        drawLabels(EMPTY, alpha, now, ease, true);
+        drawLabels(EMPTY, alpha, now, true);
         ctx.globalAlpha = 1;
         drawMe(z);
         if (labelBusy && now < settleUntil) schedule();
@@ -790,9 +790,9 @@
       // 标签压在圆点之上；蓝点（我自己）最后画，保证永远可见。
       // 标签关掉/缩得太小时也走一遍，让已经画出来的标签淡出而不是凭空消失。
       if (labelOn && z >= LABEL_MIN_Z && lab.length) {
-        drawLabels(lab, alpha, now, ease, viewBusy);
+        drawLabels(lab, alpha, now, viewBusy);
       } else {
-        drawLabels(EMPTY, alpha, now, ease, true);
+        drawLabels(EMPTY, alpha, now, true);
       }
       drawMeCore(z);
       if (labelBusy && now < settleUntil) schedule();
@@ -856,7 +856,7 @@
        跟着圆点一起慢慢浮出来反而像没渲染完。
        掉队的标签不是钉在原地，而是继续贴着自己的圆点飘 —— 否则地图一拖，
        残影似的几行字会留在半空。 */
-    function drawLabels(list, alpha, now, easePos, viewBusy) {
+    function drawLabels(list, alpha, now, viewBusy) {
       // 近的优先占位；没有定位就按评分和图片数排
       list.sort((a, b) => {
         if (me) {
