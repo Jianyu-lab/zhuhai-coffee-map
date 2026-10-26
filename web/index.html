@@ -177,7 +177,13 @@
     specular: 0.95,     // 高光强度
     tintHue: 32,        // 暖白（咖啡色调），不用默认的蓝
     tintOpacity: 0.76,
-    quality: 420
+    quality: 420,
+    /* 关掉"高光跟随鼠标"。开着的时候每次 pointermove 都会在 <html> 上写
+       --lg-lx / --lg-ly / --lg-edge，等于全文档样式失效重算，十几个玻璃元素
+       的 radial-gradient 跟着重绘；暗色档下那个白斑还会在面板里游走，
+       看着像渲染 bug 而不是材质。关掉后高光固定在 tokens.css 的
+       32% / 12%（左上打光），边缘光角度固定 140deg。 */
+    pointer: false
   });
 </script>
 <script src="config.js"></script>

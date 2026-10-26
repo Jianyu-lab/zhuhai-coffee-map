@@ -17,6 +17,7 @@
  *
  * ── PUBLIC API ───────────────────────────────────────────────────────
  *   init(options?)      Scan [data-glass], apply, wire resize + pointer + observer. Call once.
+ *                       pointer:false 可关掉"高光跟随鼠标"（本项目关了，见 defaults 注释）。
  *   apply(el, opts?)    (Re)apply to one element (reads its live size + radius + data-* overrides).
  *   applyAll()          Re-apply to every [data-glass] element.
  *   set(partial)        Merge params into global state, update CSS vars, re-render. For live controls.
@@ -67,7 +68,15 @@
     tintHue: 220,     // HSL hue of tint 0..360
     tintOpacity: 0.10,// tint alpha 0..0.4
     quality: 360,     // max displacement-map dimension (perf cap)
-    tilt: false       // if true, specular tracks DeviceOrientation (mobile)
+    tilt: false,      // if true, specular tracks DeviceOrientation (mobile)
+    /* 本项目加的一个开关（上游没有）。默认 true 保持库原行为：
+       跟随 pointermove 把 --lg-lx / --lg-ly / --lg-edge 写到 <html> 上，
+       让每个玻璃元素的高光跟着鼠标跑。关掉以后这三个变量停在 tokens.css
+       的静态值（32% / 12% / 140deg），高光变成固定的"左上打光"。
+       为什么要能关：每次 pointermove 都要在 documentElement 上写三个自定义
+       属性，等于全文档样式失效重算一遍，十几个玻璃元素的 radial-gradient
+       全部重绘；暗色档下这个移动的白斑还特别显眼，看着像 bug 而不像材质。 */
+    pointer: true
   };
   var state = assign({}, defaults);
 
@@ -217,7 +226,7 @@
   }
   function bindMotion() {
     if (pointerBound) return; pointerBound = true;
-    window.addEventListener('pointermove', onPointer);
+    if (state.pointer !== false) window.addEventListener('pointermove', onPointer);
     if (state.tilt && window.DeviceOrientationEvent) window.addEventListener('deviceorientation', onTilt);
   }
 
