@@ -296,13 +296,15 @@ h2{margin:0 0 10px;font-size:11px;font-weight:600;letter-spacing:.1em;
   background:var(--glass-sm);border:1px solid var(--edge);color:var(--dim);
   transition:.16s;font-family:inherit;box-shadow:inset 0 1px 0 var(--btn-top)}
 .ghost:hover{background:var(--glass-sm-hi);color:var(--txt)}
-.ghost.on{background:rgba(214,71,107,.12);border-color:rgba(214,71,107,.38);color:#B93354;font-weight:500}
+.ghost.on{background:rgba(214,71,107,.12);border-color:rgba(214,71,107,.38);color:var(--saved);font-weight:500}
 .ghost b{font-weight:600}
 
 footer{margin-top:20px;padding-top:15px;border-top:1px solid rgba(116,92,66,.12);
   font-size:10.5px;line-height:1.75;color:var(--dim-2)}
 footer b{color:var(--dim);font-weight:500}
 footer .warn{color:#9A7B5C}
+/* 深底上 #9A7B5C 只剩 3:1 左右，退成一句看不清的小字；提亮到暖米色 */
+:root[data-theme="dark"] footer .warn{color:rgba(232,204,166,.66)}
 
 /* ── 工具栏 ───────────────────────── */
 /* 竖排在筛选面板右侧：左右各有一个面板，工具栏夹在中间永不打架。
@@ -501,7 +503,7 @@ body.pcollapsed #toolbar{left:16px;top:58px}
 .amap-info-contentContainer .card *{box-sizing:border-box}
 .amap-info-contentContainer .card .top{display:flex;align-items:flex-start;gap:8px}
 .amap-info-contentContainer .card h3{margin:0!important;font-size:14.5px!important;font-weight:600!important;
-  line-height:1.35!important;flex:1;color:#1a1610!important}
+  line-height:1.35!important;flex:1;color:var(--txt)!important}
 .amap-info-contentContainer .card .star{background:none!important;border:0!important;font-size:16px;
   cursor:pointer;color:var(--faint)!important;padding:0;line-height:1;transition:.15s}
 .amap-info-contentContainer .card .star:hover,.amap-info-contentContainer .card .star.on{color:var(--saved)!important}
