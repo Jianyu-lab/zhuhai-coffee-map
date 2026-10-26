@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>独立咖啡馆 · 清洗确认表</title>
+<style>
+:root{
+  --bg:#f7f2ea; --bg2:#efe7db;
+  --txt:#211c16; --dim:rgba(58,46,36,.66); --dim2:rgba(58,46,36,.42);
+  --accent:#B4712F; --accent-deep:#8C5620; --accent-soft:rgba(180,113,47,.10);
+  --del:#C0453C; --del-soft:rgba(192,69,60,.09);
+  --keep:#2E9E78; --keep-soft:rgba(46,158,120,.10);
+  --edge:#B4712F; --edge-soft:rgba(180,113,47,.12);
+  --card:rgba(255,255,255,.74); --line:rgba(116,92,66,.14);
+  --hair:rgba(255,255,255,.75);
+  --shadow:0 18px 44px -26px rgba(74,50,26,.34), 0 2px 10px -6px rgba(74,50,26,.16);
+}
+:root[data-theme="dark"]{
+  --bg:#17130f; --bg2:#100d0a;
+  --txt:#f0eae1; --dim:rgba(240,234,225,.62); --dim2:rgba(240,234,225,.38);
+  --accent:#E0A15E; --accent-deep:#F0B97C; --accent-soft:rgba(224,161,94,.13);
+  --del:#F07A6E; --del-soft:rgba(240,122,110,.13);
+  --keep:#4FC79A; --keep-soft:rgba(79,199,154,.13);
+  --edge:#E0A15E; --edge-soft:rgba(224,161,94,.14);
+  --card:rgba(44,38,32,.72); --line:rgba(255,255,255,.09);
+  --hair:rgba(255,255,255,.07);
+  --shadow:0 18px 44px -26px rgba(0,0,0,.8), 0 2px 10px -6px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:
+    radial-gradient(1200px 620px at 82% -10%, var(--accent-soft), transparent 62%),
+    radial-gradient(900px 520px at 6% 104%, rgba(46,158,120,.07), transparent 60%),
+    linear-gradient(178deg, var(--bg), var(--bg2));
+  background-attachment:fixed;
+  color:var(--txt);
+  font:14px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+  padding:0 0 96px;
+  min-height:100vh;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+/* ---------- 头部 ---------- */
+header{padding:44px 0 20px}
+.kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent-deep);font-weight:700}
+h1{font-family:"Songti SC","Noto Serif SC",Georgia,serif;font-size:32px;line-height:1.24;margin:9px 0 10px;letter-spacing:-.01em}
+.lede{color:var(--dim);max-width:66ch;margin:0}
+.lede b{color:var(--txt);font-weight:600}
+.lede code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--accent-soft);padding:1px 5px;border-radius:5px;color:var(--accent-deep)}
+
+/* ---------- 统计 ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0 6px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);backdrop-filter:blur(14px) saturate(1.1);-webkit-backdrop-filter:blur(14px) saturate(1.1);position:relative;overflow:hidden}
+.stat::after{content:"";position:absolute;inset:0;border-radius:inherit;border-top:1px solid var(--hair);pointer-events:none}
+.stat .n{font-family:"Songti SC",Georgia,serif;font-size:27px;line-height:1.1;font-weight:600;letter-spacing:-.02em}
+.stat .l{font-size:11.5px;color:var(--dim2);margin-top:3px;letter-spacing:.02em}
+.stat.d .n{color:var(--del)} .stat.k .n{color:var(--keep)} .stat.e .n{color:var(--edge)}
+
+/* ---------- 工具条 ---------- */
+.bar{position:sticky;top:0;z-index:20;padding:12px 0 10px;margin-top:18px;
+  background:linear-gradient(var(--bg) 62%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.bar-in{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px;box-shadow:var(--shadow)}
+.tab{border:0;background:transparent;color:var(--dim);font:inherit;font-size:12.5px;font-weight:600;
+  padding:7px 14px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:.16s}
+.tab:hover{color:var(--txt)}
+.tab.on{background:var(--txt);color:var(--bg)}
+.tab .c{font-weight:500;opacity:.62;margin-left:5px;font-size:11.5px}
+.search{flex:1;min-width:160px;max-width:300px;position:relative}
+#theme{margin-left:auto}
+.search input{width:100%;font:inherit;font-size:13px;color:var(--txt);background:var(--card);
+  border:1px solid var(--line);border-radius:999px;padding:9px 14px 9px 32px;outline:none;
+  box-shadow:var(--shadow);transition:.16s}
+.search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.search input::placeholder{color:var(--dim2)}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.4}
+.iconbtn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--card);
+  color:var(--dim);cursor:pointer;display:grid;place-items:center;box-shadow:var(--shadow);transition:.16s;flex:none}
+.iconbtn:hover{color:var(--txt);border-color:var(--accent)}
+
+/* ---------- 列表 ---------- */
+.list{margin-top:6px;display:flex;flex-direction:column;gap:2px}
+.grp{margin:22px 0 6px;display:flex;align-items:baseline;gap:10px;padding-left:2px}
+.grp h2{font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin:0;color:var(--dim2);font-weight:700}
+.grp .line{flex:1;height:1px;background:var(--line)}
+.grp .n{font-size:11.5px;color:var(--dim2)}
+
+.row{display:grid;grid-template-columns:22px minmax(0,340px) 52px minmax(0,1fr);gap:13px;align-items:center;
+  padding:10px 12px;border-radius:11px;border:1px solid transparent;transition:.13s;cursor:pointer}
+.row:hover{background:var(--card);border-color:var(--line)}
+.row .nm{font-weight:600;font-size:13.5px;line-height:1.4;overflow-wrap:anywhere}
+.row .mt{font-size:11.5px;color:var(--dim2);margin-top:2px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.row .mt .dot{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.5}
+.row .rs{font-size:12px;color:var(--dim);line-height:1.55}
+.row .rs.e{color:var(--accent-deep)}
+.chk{appearance:none;-webkit-appearance:none;width:17px;height:17px;margin:0;border-radius:5px;
+  border:1.5px solid var(--dim2);background:transparent;cursor:pointer;position:relative;transition:.14s;flex:none}
+.chk:checked{background:var(--del);border-color:var(--del)}
+.chk:checked::after{content:"";position:absolute;left:4.6px;top:1.4px;width:5px;height:9px;
+  border:2px solid #fff;border-top:0;border-left:0;transform:rotate(42deg)}
+.vc{text-align:right}
+.vd{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;padding:3px 9px;border-radius:999px;white-space:nowrap;text-align:center}
+.vd.DEL{color:var(--del);background:var(--del-soft)}
+.vd.KEEP{color:var(--keep);background:var(--keep-soft)}
+.vd.EDGE{color:var(--edge);background:var(--edge-soft)}
+.empty{padding:60px 0;text-align:center;color:var(--dim2)}
+
+/* ---------- 底部确认条 ---------- */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 22px;
+  background:var(--card);border-top:1px solid var(--line);
+  backdrop-filter:blur(20px) saturate(1.2);-webkit-backdrop-filter:blur(20px) saturate(1.2);
+  box-shadow:0 -14px 40px -26px rgba(74,50,26,.4)}
+.dock-in{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.dock .sum{font-size:13px;color:var(--dim)}
+.dock .sum b{color:var(--del);font-size:17px;font-family:"Songti SC",Georgia,serif;font-weight:600;margin:0 2px}
+.dock .sum i{color:var(--keep);font-style:normal;font-size:17px;font-family:"Songti SC",Georgia,serif;font-weight:600;margin:0 2px}
+.dock .sp{flex:1}
+.btn{font:inherit;font-size:12.5px;font-weight:600;padding:9px 16px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:transparent;color:var(--dim);transition:.16s}
+.btn:hover{color:var(--txt);border-color:var(--accent)}
+.btn.pri{background:var(--txt);color:var(--bg);border-color:transparent}
+.btn.pri:hover{opacity:.86;color:var(--bg)}
+.applied{display:flex;gap:9px;align-items:flex-start;margin-top:18px;padding:11px 14px;border-radius:11px;
+  background:var(--keep-soft);border:1px solid rgba(46,158,120,.28);font-size:12.5px;color:var(--dim);line-height:1.6}
+.applied b{color:var(--keep);font-weight:700;white-space:nowrap}
+.applied code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:rgba(46,158,120,.14);
+  padding:1px 5px;border-radius:4px;color:var(--keep)}
+.note{font-size:11.5px;color:var(--dim2);margin-top:14px;line-height:1.7}
+.note b{color:var(--dim)}
+
+@media (max-width:820px){
+  header{padding:28px 0 12px}
+  h1{font-size:24px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .row{grid-template-columns:22px minmax(0,1fr) 52px;gap:10px}
+  .vc{order:3}
+  .row .rs{order:4}
+  .row .rs{display:none}
+  .dock .sum{font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Zhuhai Coffee Map · Data Review</div>
+    <h1>独立咖啡馆 · 清洗确认表</h1>
+    <p class="lede">从 <b>982 家</b> 独立店里挑出 <b>248 家</b> 可疑 POI，逐条判定「是不是咖啡馆」。
+      下面是判定结果、每条的理由，以及最后实际执行的名单。</p>
+    <div class="stats">
+      <div class="stat d"><div class="n" id="s-del">119</div><div class="l">建议删除</div></div>
+      <div class="stat e"><div class="n" id="s-edge">45</div><div class="l">需你定</div></div>
+      <div class="stat k"><div class="n" id="s-keep">84</div><div class="l">建议保留</div></div>
+      <div class="stat"><div class="n" id="s-left">982</div><div class="l">清洗后独立店</div></div>
+    </div>
+    <div class="applied">
+      <b>已执行</b>
+      <div>2026-10-26 实际删除 <b>127</b> 家（默认 119 + 额外勾选 8）：1303 → 1176 家，独立 982 → 855，连锁 321 不变。
+        原始数据备份在 <code>data/backup/</code>，本页留作决策记录。</div>
+    </div>
+  </header>
+
+  <div class="bar">
+    <div class="bar-in">
+      <div class="tabs" id="tabs">
+        <button class="tab on" data-f="all">全部<span class="c">248</span></button>
+        <button class="tab" data-f="DEL">建议删除<span class="c">119</span></button>
+        <button class="tab" data-f="EDGE">需你定<span class="c">45</span></button>
+        <button class="tab" data-f="KEEP">建议保留<span class="c">84</span></button>
+      </div>
+      <div class="search">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.4 3.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input id="q" placeholder="搜店名 / 区域 / POI 类型" autocomplete="off">
+      </div>
+      <button class="iconbtn" id="theme" title="切换日光 / 暗色">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2.6a5.4 5.4 0 100 10.8A6.4 6.4 0 018 2.6z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <main class="list" id="list"></main>
+
+  <p class="note">
+    <b>这张表是怎么来的：</b>先按高德 POI 分类 + 店名关键词分堆（酒店/民宿、停车、正餐、茶饮、非餐饮、酒吧），
+    再对「咖啡 + 另一业态并列」的 114 条逐条读店名判主次 —— 这一层是 LLM 判的，不是正则。
+    判定标准是<b>店名里咖啡排在第一位</b>：<code>Cafe·简餐</code> 留，<code>米线&amp;咖啡</code> 删。<br>
+    <b>顺手发现两处规则误判：</b>「木色啡语咖啡烘焙工坊(绿洋山庄店)」的「山庄」是住宅区不是酒店；
+    「旧仓Coffee&amp;Tea」POI 挂的是咖啡厅却被分进了非餐饮。这两条已改回保留。
+  </p>
+</div>
+
+<div class="dock">
+  <div class="dock-in">
+    <div class="sum">将删除 <b id="c-del">0</b> 家 · 保留 <i id="c-keep">982</i> 家</div>
+    <div class="sp"></div>
+    <button class="btn" id="reset">按建议重选</button>
+    <button class="btn pri" id="copy">复制要删的 id</button>
+  </div>
+</div>
+
+<script type="application/json" id="data">[{"id":"B0JRDS0VWP","name":"OKay诗柏雅睡眠酒店(珠海金湾机场店)","area":"其他","type":"住宿服务;宾馆酒店;宾馆酒店","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0FFH0C7FB","name":"华发喜来登酒店·大堂吧","area":"其他","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"住宿","v":"DEL","why":"酒店大堂吧，不是独立门店"},{"id":"B0MDTMB3DH","name":"圭隐山居","area":"其他","type":"住宿服务;住宿服务相关;住宿服务相关","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0GUFOHD64","name":"大堂酒廊·下午茶(横琴凯悦酒店)","area":"横琴","type":"餐饮服务;咖啡厅;咖啡厅","g":"住宿","v":"DEL","why":"酒店酒廊的下午茶，属于酒店配套"},{"id":"B0JUHO4PZS","name":"尚品度假酒店(珠海机场店)","area":"其他","type":"住宿服务;宾馆酒店;宾馆酒店","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0MG6HHUYG","name":"山海间民宿(珠海机场店)","area":"其他","type":"住宿服务;住宿服务相关;住宿服务相关","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B02F402VWX","name":"文华酒店(珠海新香洲城轨明珠站店)","area":"其他","type":"住宿服务;宾馆酒店;宾馆酒店","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0J1N5HYMX","name":"旧仓(营地奶茶)","area":"其他","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"住宿","v":"DEL","why":"营地奶茶档，主业是奶茶"},{"id":"B0HAFOXXLN","name":"曲奇民宿简餐咖啡","area":"唐家湾","type":"餐饮服务;咖啡厅;咖啡厅","g":"住宿","v":"DEL","why":"民宿+简餐+咖啡，主体是民宿"},{"id":"B0J6YU5O2Z","name":"桂山岛2127贰楼民宿","area":"其他","type":"住宿服务;住宿服务相关;住宿服务相关","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0FFHX93M1","name":"横琴听墨·民宿(珠海长隆旅游度假区店)","area":"其他","type":"住宿服务;旅馆招待所;旅馆招待所","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0G1VSA204","name":"海湾大酒店加咖啡西餐厅","area":"拱北","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"住宿","v":"DEL","why":"酒店里的西餐厅，主体是餐饮配套"},{"id":"B0K3LK2G1T","name":"海豚白舍精品民宿(淇澳岛店)","area":"其他","type":"住宿服务;旅馆招待所;旅馆招待所","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0KR9ZCPCX","name":"海阔天空全海景民宿","area":"其他","type":"住宿服务;住宿服务相关;住宿服务相关","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0HR15B9PA","name":"淇澳初印象咖啡庭院民宿(东和街分店)","area":"其他","type":"住宿服务;旅馆招待所;旅馆招待所","g":"住宿","v":"DEL","why":"民宿，咖啡是庭院配套"},{"id":"B0K0MARVVB","name":"潮漫酒店(珠海斗门御温泉店)","area":"其他","type":"住宿服务;宾馆酒店;宾馆酒店","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0HR957RPJ","name":"珠海中山大学港湾大道亚朵酒店","area":"唐家湾","type":"住宿服务;宾馆酒店;宾馆酒店","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0J0PM5TWF","name":"珠海市万山岛星屿民宿","area":"其他","type":"住宿服务;住宿服务相关;住宿服务相关","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0G26OOIIT","name":"珠海横琴凯悦酒店·180渡天台酒吧","area":"横琴","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"住宿","v":"DEL","why":"酒店天台酒吧"},{"id":"B0LBYANSSP","name":"珠海美高梅华府酒店","area":"其他","type":"住宿服务;宾馆酒店;宾馆酒店","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0IUDOJ7V1","name":"珠海荷包岛假日酒店","area":"其他","type":"住宿服务;住宿服务相关;住宿服务相关","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0L17Y780V","name":"珠海观琴精品民宿(横琴海洋王国店)","area":"其他","type":"住宿服务;住宿服务相关;住宿服务相关","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0L1HCXYQG","name":"珠海金湾戴斯温德姆酒店(高栏港商都店)","area":"其他","type":"住宿服务;住宿服务相关;住宿服务相关","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0J19756C1","name":"珠海长琴岛度假酒店","area":"其他","type":"住宿服务;住宿服务相关;住宿服务相关","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0FFF60QG1","name":"珠海静云山庄","area":"其他","type":"住宿服务;宾馆酒店;宾馆酒店","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0J2U1YROB","name":"璃上酒店·咖啡","area":"吉大","type":"餐饮服务;咖啡厅;咖啡厅","g":"住宿","v":"DEL","why":"酒店挂名的咖啡，主体是住宿"},{"id":"B0J1172AX2","name":"甜舍之旅蛋糕定制营地(横琴商业步行街店)","area":"横琴","type":"体育休闲服务;休闲场所;休闲场所","g":"住宿","v":"DEL","why":"蛋糕定制+营地活动，不是咖啡馆"},{"id":"B0MGL7NTW6","name":"繁花青年旅舍","area":"其他","type":"住宿服务;旅馆招待所;青年旅舍","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0KDZHQA2J","name":"花田書下民宿咖啡·小愈机器人睡眠吧(金湾华发商都店)","area":"其他","type":"住宿服务;旅馆招待所;旅馆招待所","g":"住宿","v":"DEL","why":"民宿+睡眠吧，咖啡是配套"},{"id":"B0L6ASWET5","name":"野许是海|180度海景·伴山美宿(珠海金湾机场木头冲沙滩店)","area":"其他","type":"住宿服务;住宿服务相关;住宿服务相关","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0K1DDI8FW","name":"鑫月湾民宿","area":"其他","type":"住宿服务;住宿服务相关;住宿服务相关","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0LG0L6MAL","name":"闲云观海居民宿(桂山岛度假区店)","area":"其他","type":"住宿服务;住宿服务相关;住宿服务相关","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0FFIC5LBJ","name":"麗枫酒店(珠海斗门店)","area":"其他","type":"住宿服务;宾馆酒店;宾馆酒店","g":"住宿","v":"DEL","why":"酒店 / 民宿 / 客栈 / 营地，主业是住宿"},{"id":"B0LRJDHSUL","name":"HY营地·健身·咖啡·桌游","area":"其他","type":"体育休闲服务;体育休闲服务场所;体育休闲服务场所","g":"住宿","v":"EDGE","why":"营地+健身+桌游+咖啡，咖啡只是其中一块"},{"id":"B02F40OSQY","name":"在路上啡语茶廊(粤海酒店-东楼店)","area":"拱北","type":"餐饮服务;咖啡厅;咖啡厅","g":"住宿","v":"EDGE","why":"粤海酒店东楼里的「啡语茶廊」，POI 本身登记为咖啡厅，但挂在酒店名下"},{"id":"B0KUDDDY2Z","name":"海豚咖啡·汉堡·三明治·糖水(横琴湾酒店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅|餐饮服务;快餐厅;快餐厅","g":"住宿","v":"EDGE","why":"横琴湾酒店内的独立咖啡品牌，但兼卖汉堡糖水，主业被稀释"},{"id":"B0H3DCTTY2","name":"木色啡语咖啡烘焙工坊(绿洋山庄店)","area":"吉大","type":"餐饮服务;咖啡厅;咖啡厅","g":"住宿","v":"KEEP","why":"咖啡烘焙工坊；绿洋山庄是住宅区不是酒店，规则把「山庄」误当住宿"},{"id":"B0MUT6JE7N","name":"2 coffee地上停车场","area":"前山","type":"交通设施服务;停车场;公共停车场","g":"停车","v":"DEL","why":"停车场，不是门店"},{"id":"B0GKYAHLI7","name":"哥德堡咖啡停车场","area":"三灶","type":"交通设施服务;停车场;公共停车场","g":"停车","v":"DEL","why":"停车场，不是门店"},{"id":"B0FFHU5MMR","name":"悦·咖啡专用车场","area":"唐家湾","type":"交通设施服务;停车场;停车场相关","g":"停车","v":"DEL","why":"停车场，不是门店"},{"id":"B0LUA7J7W5","name":"珠海高新区青鸟北附实验学校停车场","area":"其他","type":"交通设施服务;停车场;公共停车场","g":"停车","v":"DEL","why":"停车场，不是门店"},{"id":"B0MA3DZDM0","name":"老屋咖啡那州店停车场","area":"其他","type":"交通设施服务;停车场;公共停车场","g":"停车","v":"DEL","why":"停车场，不是门店"},{"id":"B0MBSCEBO3","name":"道路停车位","area":"其他","type":"交通设施服务;停车场;路边停车场","g":"停车","v":"DEL","why":"停车场，不是门店"},{"id":"B0LRL7N33M","name":"Bae2•茶咖•糖水•小吃•绵绵冰","area":"柠溪","type":"餐饮服务;冷饮店;冷饮店","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0I2P1LSQW","name":"Full House福号(玖洲道店)","area":"前山","type":"餐饮服务;中餐厅;中餐厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0L1U61YWZ","name":"Seed食得(简餐·煮物)","area":"前山","type":"餐饮服务;甜品店;甜品店","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0FFITIHXV","name":"华莱士·全鸡汉堡(下金龙店)","area":"其他","type":"餐饮服务;快餐厅;快餐厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0FFFOKXGN","name":"华莱士·全鸡汉堡(乾务店)","area":"其他","type":"餐饮服务;快餐厅;快餐厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0KAJA301L","name":"华莱士·全鸡汉堡(平沙新城店)","area":"其他","type":"餐饮服务;快餐厅;快餐厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0HU45LPNP","name":"华莱士·全鸡汉堡(珠海龙山店)","area":"其他","type":"餐饮服务;快餐厅;快餐厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0L3UDH9KN","name":"华莱士·全鸡汉堡(荔山店)","area":"其他","type":"餐饮服务;快餐厅;快餐厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0FFIVRIXL","name":"华莱士·全鸡汉堡(虎山店)","area":"其他","type":"餐饮服务;快餐厅;快餐厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0I63GVR90","name":"华莱士·全鸡汉堡(高栏商都店)","area":"其他","type":"餐饮服务;快餐厅;快餐厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B02F40PI0U","name":"大家乐(机场店)","area":"其他","type":"餐饮服务;快餐厅;大家乐","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0KRKD35TD","name":"天与地(再生时代大厦店)","area":"南屏","type":"餐饮服务;中餐厅;中餐厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0FFFDSWL0","name":"天与地(夏湾D店)","area":"拱北","type":"餐饮服务;中餐厅;中餐厅|餐饮服务;咖啡厅;咖啡厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B02F401ILV","name":"小麦之家(海湾总店)","area":"吉大","type":"餐饮服务;糕饼店;糕饼店|餐饮服务;咖啡厅;咖啡厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0K295SK53","name":"布鲁得川粤私房菜","area":"其他","type":"餐饮服务;中餐厅;四川菜(川菜)","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0L3K9BXM1","name":"甜觅时光餐饮屋","area":"其他","type":"餐饮服务;中餐厅;中餐厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0IUCKDRGY","name":"苏霏尔餐室(唐家店)","area":"唐家湾","type":"餐饮服务;中餐厅;中餐厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0KRUDY6E5","name":"莫高小院","area":"其他","type":"餐饮服务;中餐厅;中餐厅","g":"正餐","v":"DEL","why":"正餐 / 快餐 / 小吃店，不是咖啡馆"},{"id":"B0MU7L66SB","name":"ChillLand潮靓·茶饮小食","area":"前山","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0M6T75BJM","name":"illy咖啡(东澳岛尾浪茶社店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0MUHLQCDF","name":"之助饮品小食屋","area":"红旗","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0L3VHHABU","name":"加班奶茶店(新堂店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0KD5CTF91","name":"古茗(乾务东苑路店)","area":"其他","type":"餐饮服务;休闲餐饮场所;休闲餐饮场所","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0J1AH2ITO","name":"古茗(平沙钰海万国汇购物广场店)","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0K055ZMJ4","name":"古茗(斗门六乡店)","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0L0TXBWDK","name":"古茗(斗门莲洲镇店)","area":"其他","type":"餐饮服务;休闲餐饮场所;休闲餐饮场所","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0L0BRVLBU","name":"古茗(斗门虎山市场店)","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0JRJRKU4E","name":"古茗(珠海斗门夏村店)","area":"其他","type":"餐饮服务;休闲餐饮场所;休闲餐饮场所","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0JRKC4CK2","name":"古茗(珠海老斗门店)","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0J3HANFDJ","name":"古茗(珠海金湾高栏港店)","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0MA7C2KQL","name":"古茗(金湾美平市场店)","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0IG4Z0KPK","name":"四少奶茶馆","area":"唐家湾","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0KKFLR1NW","name":"有柠","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0LR4HP2GS","name":"柠茶吨吨","area":"柠溪","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0LRB5NFVK","name":"沪上阿姨·精选茶饮(珠海斗门虎山市场店)","area":"其他","type":"餐饮服务;休闲餐饮场所;休闲餐饮场所","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0K1VUPBQL","name":"沪上阿姨·精选茶饮(珠海格力怡馨园店)","area":"其他","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0LDRS9GXB","name":"沪上阿姨·精选茶饮(珠海钰海万国汇广场店)","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0L0DUNO9R","name":"沪上阿姨·精选茶饮(珠海高栏商都店)","area":"其他","type":"餐饮服务;休闲餐饮场所;休闲餐饮场所","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0LGCHT333","name":"沪上阿姨·精选茶饮(珠海高栏港店)","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0FFKVZ8SB","name":"玉川茶堂(万事得商业街店)","area":"拱北","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0LATM4I70","name":"珠海市高新区芳芳家茶饮店","area":"唐家湾","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0LRBMLDI0","name":"盾皇咖啡奶茶原料批发仓库","area":"其他","type":"公司企业;公司;公司","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0JKNZA5YM","name":"茶遇(白蕉店)","area":"斗门井岸","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0KGFS4AUL","name":"锋味Q咖啡奶茶果茶煲仔饭","area":"柠溪","type":"餐饮服务;咖啡厅;咖啡厅","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0LUSC5ODZ","name":"黔糯糯贵味冰浆","area":"前山","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"茶饮","v":"DEL","why":"主业是茶饮、奶茶（其中古茗、沪上阿姨本身还是连锁）"},{"id":"B0MD4XKLRA","name":"77茶档柠檬茶咖啡","area":"前山","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"EDGE","why":"柠檬茶档带咖啡"},{"id":"B0MDA15AI3","name":"BAR咖啡柠檬茶珠海永夜店","area":"吉大","type":"餐饮服务;咖啡厅;咖啡厅","g":"茶饮","v":"EDGE","why":"咖啡+柠檬茶+酒吧，三块业务并列"},{"id":"B0KA9SLGGP","name":"PLA奶茶咖啡休闲馆","area":"斗门井岸","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"EDGE","why":"奶茶打头"},{"id":"B0LR3UCLG6","name":"你好开心·奶茶·柠檬茶·咖啡小吃","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"EDGE","why":"奶茶柠檬茶打头，咖啡排第三"},{"id":"B0FFJ4WPF4","name":"抹简单鲜果茶咖啡店(南水店)","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"EDGE","why":"鲜果茶打头"},{"id":"B0MR7DW7IA","name":"春莱·老挝冰咖啡·泰式奶茶(金湾华发商都)","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"EDGE","why":"冰咖啡+泰式奶茶并列，是东南亚甜品饮品店"},{"id":"B0MAMR7AZN","name":"毛林茶饮/奶茶/咖啡","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"EDGE","why":"茶饮奶茶打头"},{"id":"B0MD97Q2Q6","name":"泰咖奶茶店·THAIKA(白藤湖店)","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"EDGE","why":"奶茶店打头，泰式"},{"id":"B0K05MV5XS","name":"花满楼奶茶咖啡店","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅|餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"EDGE","why":"奶茶打头"},{"id":"B0M2Z61R2A","name":"萃柠果茶咖啡店","area":"唐家湾","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"EDGE","why":"果茶打头"},{"id":"B0MRO6FQXO","name":"鲜奶茶咖啡铺","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"EDGE","why":"鲜奶茶打头"},{"id":"B0L6GHFLE8","name":"LK² Coffee tea (咖啡·茶饮)","area":"拱北","type":"餐饮服务;咖啡厅;咖啡厅","g":"茶饮","v":"KEEP","why":"Coffee 打头，茶饮是第二块"},{"id":"B0L2MCYHSX","name":"一叶(咖啡·面包·茶饮)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"茶饮","v":"KEEP","why":"咖啡打头，面包茶饮是配"},{"id":"B0HKRLSB4M","name":"发达猫·咖啡&柠檬茶(北师店)","area":"其他","type":"餐饮服务;冷饮店;冷饮店","g":"茶饮","v":"KEEP","why":"咖啡打头，校园店"},{"id":"B0J29R6B23","name":"周末咖啡(柠檬茶·小吃·湾仔店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"茶饮","v":"KEEP","why":"咖啡打头，柠檬茶小吃是配"},{"id":"B0MUJXUPRW","name":"星晴StarShine·咖啡·柠檬茶(珠海店)","area":"其他","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"茶饮","v":"KEEP","why":"咖啡打头"},{"id":"B0L0KUPHTP","name":"街角咖啡.茶饮.棋牌(尖峰店)","area":"斗门井岸","type":"餐饮服务;咖啡厅;咖啡厅","g":"茶饮","v":"KEEP","why":"咖啡打头，棋牌是附加"},{"id":"B0LKX5N4T5","name":"REGGA","area":"前山","type":"购物服务;服装鞋帽皮具店;品牌服装店","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0K345YFL6","name":"RELX悦刻(斗门招商花园城店)","area":"其他","type":"购物服务;购物相关场所;购物相关场所","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0LRPXS0J1","name":"丰巢快递柜","area":"其他","type":"生活服务;物流速递;物流速递","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0MBZOD7OH","name":"云咖啡篮球场","area":"其他","type":"体育休闲服务;运动场馆;篮球场馆","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0IR273AVM","name":"变色龙FITNESS&DANCING","area":"其他","type":"科教文化服务;培训机构;培训机构","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0JANLJ2H6","name":"喆文创商店CHITSTORE(北山店)","area":"南屏","type":"购物服务;便民商店/便利店;便民商店/便利店","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0FFLB16M8","name":"大横琴&BEEPLUS珠海ICC中心","area":"横琴","type":"公司企业;公司;公司","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0FFKX2GG5","name":"悠间尚居","area":"其他","type":"商务住宅;商务住宅相关;商务住宅相关","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0FFFZULQA","name":"溢学网咖","area":"三灶","type":"体育休闲服务;娱乐场所;网吧","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0LKS5IH25","name":"珠海市奥维斯五金制品有限公司","area":"其他","type":"公司企业;公司;公司","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0FFH2AYU6","name":"自由人汽车美容","area":"横琴","type":"汽车服务;汽车养护/装饰;汽车养护","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0K1OU1TD7","name":"酷猫健身会所","area":"金湾航空新城","type":"体育休闲服务;运动场馆;健身中心","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0KKNH3YM1","name":"间葭Nail·Eyelash美甲美睫(前山店)","area":"前山","type":"生活服务;美容美发店;美容美发店","g":"非餐饮","v":"DEL","why":"公司 / 商店 / 健身 / 美甲 / 快递等非餐饮场所"},{"id":"B0K1HSRH55","name":"Hyphen(琴鸣广场店)","area":"横琴","type":"购物服务;购物相关场所;购物相关场所","g":"非餐饮","v":"EDGE","why":"高德只挂购物场所，名字看不出"},{"id":"B0FFLDMRDY","name":"NEW DAY小芸家(柠溪店)","area":"柠溪","type":"餐饮服务;咖啡厅;咖啡厅|购物服务;购物相关场所;购物相关场所","g":"非餐饮","v":"EDGE","why":"名字看不出业态，高德挂了咖啡厅+购物"},{"id":"B0K2KUQQQ4","name":"元气绿洲(横琴科创店)","area":"其他","type":"体育休闲服务;体育休闲服务场所;体育休闲服务场所","g":"非餐饮","v":"EDGE","why":"高德挂体育休闲，名字像轻食饮品"},{"id":"B0L0Y55Z8U","name":"可页(柠溪店)","area":"柠溪","type":"购物服务;便民商店/便利店;便民商店/便利店","g":"非餐饮","v":"EDGE","why":"高德只挂便利店"},{"id":"B0FFMFSLWH","name":"小日子(北山店)","area":"南屏","type":"餐饮服务;咖啡厅;咖啡厅|公司企业;公司;公司","g":"非餐饮","v":"EDGE","why":"生活杂货+咖啡的复合店，咖啡是其中一半"},{"id":"B0M6X5QGZR","name":"有猫伴","area":"斗门井岸","type":"购物服务;专卖店;宠物用品店","g":"非餐饮","v":"EDGE","why":"高德挂宠物用品店，可能是猫咖"},{"id":"B0MU1U1UW5","name":"汪得仆仆","area":"老香洲","type":"地名地址信息;地名地址信息;地名地址信息","g":"非餐饮","v":"EDGE","why":"高德只挂地名地址"},{"id":"B0KKARTEGM","name":"燎泰 Nathai(暂停营业)","area":"南屏","type":"公司企业;公司;公司","g":"非餐饮","v":"EDGE","why":"高德挂公司，且已暂停营业"},{"id":"B0MBDUGECT","name":"翩翩空间","area":"前山","type":"生活服务;美容美发店;美容美发店","g":"非餐饮","v":"EDGE","why":"高德挂美容美发"},{"id":"B0MUZA63AE","name":"醒醒事务所","area":"老香洲","type":"生活服务;事务所;事务所","g":"非餐饮","v":"EDGE","why":"高德挂事务所，名字像咖啡店"},{"id":"B0FFKYAM6T","name":"饴源食品饮品体验服务中心","area":"其他","type":"科教文化服务;培训机构;培训机构","g":"非餐饮","v":"EDGE","why":"饮品体验中心，可能含咖啡"},{"id":"B0KRC616LR","name":"旧仓Coffee&Tea","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"非餐饮","v":"KEEP","why":"Coffee&Tea，POI 登记为咖啡厅，规则误判"},{"id":"B0MGL1O4WZ","name":"A&JARTHOUSE","area":"唐家湾","type":"体育休闲服务;娱乐场所;酒吧","g":"酒吧","v":"DEL","why":"纯酒吧，名字里没有咖啡业务"},{"id":"B0MBB7X0G8","name":"Atelier·Anew","area":"前山","type":"体育休闲服务;娱乐场所;酒吧","g":"酒吧","v":"DEL","why":"纯酒吧，名字里没有咖啡业务"},{"id":"B0MR1CE10Z","name":"IKOI BAR小憩吧","area":"拱北","type":"体育休闲服务;娱乐场所;酒吧","g":"酒吧","v":"DEL","why":"纯酒吧，名字里没有咖啡业务"},{"id":"B0LRHU7OPI","name":"MASTER(时代保利中环广场店)","area":"其他","type":"体育休闲服务;娱乐场所;酒吧","g":"酒吧","v":"DEL","why":"纯酒吧，名字里没有咖啡业务"},{"id":"B0L3LAPFT4","name":"UNSTOPPABLE日咖夜酒烧烤吧","area":"其他","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"复合","v":"DEL","why":"日咖夜酒+烧烤吧，夜段主体是烧烤酒馆"},{"id":"B0MUPCETCA","name":"健身汉堡·咖啡","area":"吉大","type":"餐饮服务;快餐厅;快餐厅","g":"复合","v":"DEL","why":"店名主体是汉堡（健身餐），咖啡是配角"},{"id":"B0LBD5R9ME","name":"古古餐厅·意面·三明治·咖啡","area":"前山","type":"餐饮服务;快餐厅;快餐厅","g":"复合","v":"DEL","why":"餐厅打头，意面为主，咖啡排最后"},{"id":"B0L0XULPX7","name":"海岛来信·摄影基地·咖啡厅","area":"其他","type":"生活服务;摄影冲印店;摄影冲印","g":"复合","v":"DEL","why":"摄影基地打头，咖啡是拍照场景配套"},{"id":"B0L395SLNZ","name":"米CōE·云贵米线&咖啡","area":"老香洲","type":"餐饮服务;快餐厅;快餐厅","g":"复合","v":"DEL","why":"米线打头，咖啡是搭售"},{"id":"B0K6JURT8E","name":"西千纪·中餐·咖啡·私房菜(万科城店)","area":"其他","type":"餐饮服务;中餐厅;中餐厅","g":"复合","v":"DEL","why":"中餐私房菜打头，咖啡排最后"},{"id":"B0J6JU9P6H","name":"赶早肠粉咖啡(柠溪店)","area":"柠溪","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"DEL","why":"肠粉打头，是早餐店带咖啡"},{"id":"B0MAKLPR6Q","name":"CakeCakeChan定制蛋糕咖啡甜品","area":"柠溪","type":"餐饮服务;糕饼店;糕饼店","g":"复合","v":"EDGE","why":"定制蛋糕为主业，咖啡是搭售"},{"id":"B0MRURMLI1","name":"F•Coffee(咖啡•肠粉•简餐)","area":"拱北","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"EDGE","why":"Coffee 打头，但肠粉是珠海人的早餐主食，很可能一半生意在肠粉"},{"id":"B0KKUDIVNN","name":"INJOYLIFE 咖啡·无界料理","area":"吉大","type":"购物服务;购物相关场所;购物相关场所","g":"复合","v":"EDGE","why":"咖啡+无界料理，料理占比不明"},{"id":"B0MASCH1GU","name":"喜乐coffee咖啡肠粉","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"EDGE","why":"coffee 打头，但肠粉是珠海早餐主食，看实拍哪半更重"},{"id":"B0MRTZW95V","name":"喜乐coffee咖啡肠粉(富华里店)","area":"拱北","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"EDGE","why":"同上，同一个品牌"},{"id":"B0J6VM9I16","name":"壹茶咖","area":"其他","type":"餐饮服务;甜品店;甜品店","g":"复合","v":"EDGE","why":"「茶咖」二字看不出茶和咖啡谁重"},{"id":"B0FFJKI1T3","name":"小酒窝·花园咖啡&西餐BAR(夏湾店)","area":"南屏","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"复合","v":"EDGE","why":"咖啡&西餐BAR，晚市可能是酒馆"},{"id":"B0M6T54C6P","name":"新麦荟面包蛋糕咖啡","area":"拱北","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"复合","v":"EDGE","why":"面包蛋糕打头，更像烘焙店带咖啡"},{"id":"B02F40Q4P6","name":"横琴成记咖啡美食(宝中路店)","area":"横琴","type":"餐饮服务;咖啡厅;咖啡厅|餐饮服务;休闲餐饮场所;休闲餐饮场所|餐饮服务;中餐厅;中餐厅","g":"复合","v":"EDGE","why":"咖啡+美食，高德同时挂了咖啡厅和中餐厅"},{"id":"B0FFMCEUVA","name":"红馆咖啡西餐厅(井岸店)","area":"斗门井岸","type":"餐饮服务;外国餐厅;西餐厅(综合风味)|餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"EDGE","why":"咖啡西餐厅，西餐占比不明"},{"id":"B02F402MRX","name":"苹果屋咖啡西餐厅(紫荆路店)","area":"老香洲","type":"餐饮服务;外国餐厅;西餐厅(综合风味)","g":"复合","v":"EDGE","why":"咖啡西餐厅，西餐占比不明"},{"id":"B0L19CI1DU","name":"AMIGO咖啡甜品","area":"柠溪","type":"餐饮服务;外国餐厅;西餐厅(综合风味)","g":"复合","v":"KEEP","why":"咖啡甜品店，两个都是咖啡业态的自然延伸"},{"id":"B0MUXRANVN","name":"COFFEEE·BAKING面包","area":"横琴","type":"餐饮服务;糕饼店;糕饼店","g":"复合","v":"KEEP","why":"咖啡+烘焙，同一个吧台两块业务，仍是咖啡馆"},{"id":"B0IRH7QWPL","name":"COMMON日嘗·coffee&brunch(横琴店)","area":"横琴","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"KEEP","why":"coffee&brunch，咖啡馆标准形态"},{"id":"B0HD75NZZA","name":"DW Cafe·简餐(金钟花园店)","area":"前山","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"复合","v":"KEEP","why":"店名主体是 Cafe，简餐是配餐"},{"id":"B0GR1SY5KR","name":"HUB COFFEE咖啡&汉堡(沿河路店)","area":"老香洲","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"KEEP","why":"咖啡打头，汉堡是配餐"},{"id":"B0LU3K8DMT","name":"KOFFI·三明治·咖啡(新香洲店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"KEEP","why":"咖啡+三明治，咖啡馆标准形态"},{"id":"B0IRRUE46A","name":"Keto同·瓦舍咖啡·生酮甜品","area":"南屏","type":"餐饮服务;糕饼店;糕饼店","g":"复合","v":"KEEP","why":"咖啡+生酮甜品，客群就是咖啡客"},{"id":"B0LGVRY0KN","name":"Liya Ge Bagel(咖啡·烘焙·简餐)","area":"南屏","type":"餐饮服务;冷饮店;冷饮店","g":"复合","v":"KEEP","why":"咖啡+贝果烘焙，咖啡馆标准形态"},{"id":"B0FFHI6J9U","name":"丽沙咖啡烘焙(前山店)","area":"前山","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"KEEP","why":"咖啡烘焙，自己烘豆的独立店"},{"id":"B0FFHJQ5RN","name":"初心咖啡烘焙馆","area":"老香洲","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"复合","v":"KEEP","why":"咖啡烘焙馆"},{"id":"B0KASHQ1A0","name":"原派三明治&咖啡(金山软件园店)","area":"唐家湾","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"复合","v":"KEEP","why":"咖啡+三明治，园区咖啡馆"},{"id":"B0KUDUD3GR","name":"原派三明治&咖啡(钰海环球店)","area":"吉大","type":"餐饮服务;快餐厅;快餐厅","g":"复合","v":"KEEP","why":"咖啡+三明治，同一品牌"},{"id":"B0IUD7I4OZ","name":"咖啡窦烘焙工作室(装修中)","area":"其他","type":"餐饮服务;糕饼店;糕饼店","g":"复合","v":"KEEP","why":"咖啡烘焙工作室，只是当前在装修"},{"id":"B0IKJR76QW","name":"咖舍KA SHE咖啡烘焙工作室","area":"斗门井岸","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"KEEP","why":"咖啡烘焙工作室"},{"id":"B0MU6STYI6","name":"嘻哆咪·饮品咖啡简餐","area":"三灶","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"KEEP","why":"饮品+咖啡+简餐，咖啡馆形态"},{"id":"B0FFHKQE6B","name":"地中海美食街咖啡屋","area":"其他","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"复合","v":"KEEP","why":"咖啡屋，只是开在美食街里"},{"id":"B0H10XYYPH","name":"小月简餐咖啡","area":"唐家湾","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"KEEP","why":"简餐咖啡，咖啡馆形态"},{"id":"B0MDA6ZSBZ","name":"星迈咖啡(珠海香洲北理工四饭堂店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"KEEP","why":"校园咖啡馆"},{"id":"B0LUZCYAKT","name":"春见Shiranui·甜品咖啡","area":"吉大","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"复合","v":"KEEP","why":"甜品咖啡，客群就是咖啡客"},{"id":"B0K3U5X1E1","name":"留香咖啡","area":"唐家湾","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"KEEP","why":"纯咖啡馆"},{"id":"B0LKFATL2Z","name":"留香咖啡(会议中心)","area":"唐家湾","type":"科教文化服务;会展中心;会展中心","g":"复合","v":"KEEP","why":"同一品牌，会议中心店"},{"id":"B0LKNSPZY8","name":"遇见厚吐司三明治咖啡(拱北中学店)","area":"拱北","type":"餐饮服务;咖啡厅;咖啡厅","g":"复合","v":"KEEP","why":"厚吐司三明治+咖啡，咖啡馆形态"},{"id":"B0FFGP7ZO8","name":"The Green Party(珠海华发商都店)","area":"南屏","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"DEL","why":"连锁杂货零售品牌，不是咖啡馆"},{"id":"B0L27LL1HJ","name":"VALE STEAK","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"DEL","why":"牛排馆"},{"id":"B0LK6AJOXR","name":"中国邮政报刊亭(中电大厦店)","area":"吉大","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"DEL","why":"邮政报刊亭，不是门店"},{"id":"B0MDV7OA8H","name":"二十七度餐厅(金湾高尔夫店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"DEL","why":"餐厅，咖啡只是附带"},{"id":"B0IRZU3YTB","name":"佳记茶餐厅KAKEE (优特汇店)","area":"老香洲","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"DEL","why":"茶餐厅"},{"id":"B0GD0XA595","name":"初记港式美食(莲花山小区西区店)","area":"吉大","type":"餐饮服务;中餐厅;广东菜(粤菜)|餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"DEL","why":"港式美食"},{"id":"B0MUJMS3VD","name":"南屏文化广场(东北门)","area":"南屏","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"DEL","why":"广场出入口，不是门店"},{"id":"B0MDLXMEBB","name":"囍记HEY餐厅(北山店)","area":"南屏","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"DEL","why":"餐厅"},{"id":"B0HBXUROBV","name":"时光屋NextKitchen(由澳门特别行政区实施管辖)","area":"横琴","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"待定","v":"DEL","why":"NextKitchen 是餐厅"},{"id":"B0LKNDPTBY","name":"镜-镜湖酒廊(珠海凤凰湾悦榕庄店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"DEL","why":"悦榕庄酒店的酒廊"},{"id":"B0J21UB6SQ","name":"隐浪·LATENT IMAGE STUDIO(暂停营业)","area":"前山","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"DEL","why":"摄影工作室，且已暂停营业"},{"id":"B02F40PHLH","name":"Hill Cocktail酒吧(店)","area":"吉大","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"EDGE","why":"高德挂咖啡厅，名字是酒吧"},{"id":"B0LRO6UM0E","name":"M2 KITCHEN(珠海环宇城店)","area":"前山","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"EDGE","why":"KITCHEN，正餐概率大"},{"id":"B0J2T78N9F","name":"Station法式精酿小馆","area":"老香洲","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"EDGE","why":"法式精酿小馆，酒为主"},{"id":"B0H2GHVZOH","name":"black Amber(兰埔花园店)","area":"前山","type":"购物服务;服装鞋帽皮具店;服装鞋帽皮具店|餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"EDGE","why":"高德挂服装皮具+咖啡厅，买手店带咖啡"},{"id":"B0J0JA61OD","name":"失眠招待所Nightynight","area":"前山","type":"住宿服务;旅馆招待所;旅馆招待所","g":"待定","v":"EDGE","why":"高德挂旅馆招待所，但「失眠招待所」是网红咖啡酒馆常见取名"},{"id":"B0FFLIE0A7","name":"花海长廊三号驿站","area":"其他","type":"生活服务;生活服务场所;生活服务场所","g":"待定","v":"EDGE","why":"公园驿站，可能卖咖啡也可能只是服务点"},{"id":"B0FFIKGDH7","name":"茶一站(斗门镇店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"EDGE","why":"名字是茶"},{"id":"B0FFKMQRVN","name":"茶桂坊(横山店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"EDGE","why":"名字是茶"},{"id":"B0L0C1ZHCR","name":"麦奇空间","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"EDGE","why":"名字看不出业态"},{"id":"B0K0G7A3WH","name":"13CHILL HOUSE十三浩室","area":"柠溪","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0L1KHURS8","name":"AMIA brunch&bistro","area":"横琴","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0MGHSTLB7","name":"Coffe Plus","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0MGP11Y7C","name":"Dolavmen(拱北店)","area":"拱北","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0FFL1AFC3","name":"Dreamland梦里树下","area":"老香洲","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0J1SCQYXU","name":"Enjoy Life享受生活(斗门井岸店)","area":"斗门井岸","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0K1FZKUXU","name":"Eym coffex","area":"斗门井岸","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0GDUM4227","name":"Go get it","area":"前山","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0HKPZ993H","name":"Greedy Land","area":"老香洲","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0LK4DW2N7","name":"Joyu久屿","area":"吉大","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0L2HHB59O","name":"Love me brunch简餐","area":"老香洲","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0KK97L01K","name":"NO BAN(奥园店)(暂停营业)","area":"其他","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0LKXAJ05V","name":"Neko Leong","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0FFFTSMMV","name":"ROYA·517(北山店)","area":"南屏","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0L6JU1AJD","name":"SAM OUTDOOR(海滨泳场)","area":"吉大","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0H6GX57K3","name":"Season(江湾西一苑店)","area":"斗门井岸","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0JD0ZQVES","name":"TITI(金湾华发商都店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0L3JHDTKC","name":"TOI","area":"柠溪","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0LD09DZP4","name":"Theroom房间","area":"柠溪","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0KKUOAKIR","name":"ToTo&MoMo","area":"老香洲","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0I0BCGXRN","name":"WinnHouse好时里","area":"老香洲","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0LAXA30CJ","name":"amai","area":"老香洲","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0I2PN29AX","name":"candi&co-factory(华发国际花园店)","area":"拱北","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0J1NSK5BC","name":"一尺花园(情侣中路店)","area":"吉大","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0JR7CHWFN","name":"不赖Bligh8·Brunch & Bistro(世纪城店)","area":"南屏","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0FFLHSE3H","name":"不赖Bligh8·Brunch & Bistro(香洲店)","area":"老香洲","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0MB7HP5PK","name":"不赖Bligh8·Brunch&Bistro(横琴创新方店)","area":"横琴","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0L1NKVT7M","name":"于归园","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0L2AU1HVS","name":"云璈春雪","area":"老香洲","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0FFG62DSM","name":"共乐吧(唐家店)","area":"唐家湾","type":"餐饮服务;中餐厅;特色/地方风味餐厅|餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0J6DMCA97","name":"共森Mutualism","area":"拱北","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0M657JN17","name":"冬天的西瓜","area":"老香洲","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0J0CUD3RK","name":"凬KAZE(乐士文化区店)","area":"前山","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B02F40OQI6","name":"北山会馆","area":"南屏","type":"体育休闲服务;休闲场所;休闲场所|餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0FFHDUAZY","name":"半糖(时代·山湖海店)","area":"金湾航空新城","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0I2UHWEXV","name":"地层@Decent Taproom","area":"拱北","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0ID5CV3HS","name":"宝藏绿洲(前山店)","area":"前山","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0JR49DK0G","name":"宝藏绿洲(北山店)","area":"南屏","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0JRTY05EY","name":"宝藏绿洲(紫荆豪庭店)","area":"老香洲","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0KR6DXGAU","name":"宝藏绿洲(金湾店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0K2KMYLCB","name":"家有美式","area":"其他","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0ID2DLX41","name":"小时光(美平东路店)","area":"其他","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0LKKUO0E3","name":"屿你","area":"斗门井岸","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0J1T5GQTK","name":"柚来小院(美湾南小区店)","area":"斗门井岸","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0GUK5FGIY","name":"栖池北山店","area":"南屏","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0FFM8ZV77","name":"江萳(香码1909香洲码头文化街区店)","area":"老香洲","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B02F40OSR2","name":"流花(宝江大厦店)","area":"拱北","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0MUS5B9Y4","name":"滨菓(横琴会议中心店)","area":"横琴","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0LDMUECIN","name":"甜头","area":"南屏","type":"餐饮服务;餐饮相关场所;餐饮相关","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0KGGC7H0F","name":"绿点greenpoint","area":"前山","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0J1YCKCQX","name":"绿的瓦饮子铺","area":"老香洲","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0JRDZRYVU","name":"边山间野","area":"唐家湾","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0LKSCJFJP","name":"遇见那时光(西堤店)","area":"斗门井岸","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"},{"id":"B0J2D967TD","name":"黑鸟(竹苑店)","area":"吉大","type":"餐饮服务;咖啡厅;咖啡厅","g":"待定","v":"KEEP","why":"高德登记为咖啡厅，名字看不出别的业态，按独立咖啡馆保留"}]</script>
+<script>
+const ROWS = JSON.parse(document.getElementById('data').textContent);
+const TOTAL = 982;
+const BASE = ROWS.reduce((a,r)=>a + (r.v==='DEL'?1:0), 0);   // 建议删除的条数
+const state = { filter:'all', q:'' };
+// 默认：建议删除的打勾，保留和需你定的不打勾
+const sel = new Set(ROWS.filter(r=>r.v==='DEL').map(r=>r.id));
+
+const GORDER = ['住宿','停车','正餐','茶饮','非餐饮','酒吧','复合','待定'];
+const GNAME = {
+  住宿:'住宿 / 酒店 / 民宿', 停车:'停车场', 正餐:'正餐 / 快餐 / 小吃',
+  茶饮:'茶饮 / 奶茶', 非餐饮:'非餐饮场所', 酒吧:'酒吧',
+  复合:'咖啡 + 另一业态（逐条判过）', 待定:'名字看不出，靠 POI 类型'
+};
+
+const $ = s => document.querySelector(s);
+const list = $('#list');
+
+function render(){
+  const q = state.q.trim().toLowerCase();
+  const rows = ROWS.filter(r => {
+    if (state.filter !== 'all' && r.v !== state.filter) return false;
+    if (!q) return true;
+    return (r.name + ' ' + (r.area||'') + ' ' + (r.type||'') + ' ' + r.why).toLowerCase().includes(q);
+  });
+  if (!rows.length){ list.innerHTML = '<div class="empty">没有匹配的记录</div>'; return; }
+
+  let html = '', last = null;
+  const byG = {};
+  rows.forEach(r => (byG[r.g] = byG[r.g] || []).push(r));
+  GORDER.forEach(g => {
+    const arr = byG[g]; if (!arr) return;
+    const dn = arr.filter(r=>r.v==='DEL').length;
+    html += `<div class="grp"><h2>${GNAME[g]||g}</h2><div class="line"></div>
+      <div class="n">${arr.length} 条 · 建议删 ${dn}</div></div>`;
+    arr.forEach(r => {
+      const on = sel.has(r.id);
+      const tp = shortType(r.type);
+      html += `<label class="row" data-id="${r.id}">
+        <input class="chk" type="checkbox"${on?' checked':''}>
+        <div><div class="nm">${esc(r.name)}</div>
+          <div class="mt"><span>${esc(r.area||'区域未知')}</span><span class="dot"></span><span>${esc(tp)}</span></div></div>
+        <div class="vc"><span class="vd ${r.v}">${r.v==='DEL'?'删':r.v==='KEEP'?'留':'你定'}</span></div>
+        <div class="rs ${r.v==='EDGE'?'e':''}">${esc(r.why)}</div>
+      </label>`;
+    });
+  });
+  list.innerHTML = html;
+  syncDock();
+}
+
+function shortType(t){
+  if (!t) return '—';
+  return t.split('|').map(x=>x.split(';').pop()).slice(0,2).join(' / ');
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function syncDock(){
+  const n = sel.size;
+  $('#c-del').textContent = n;
+  $('#c-keep').textContent = TOTAL - n;
+  $('#s-left').textContent = TOTAL - n;
+}
+
+list.addEventListener('click', e => {
+  const row = e.target.closest('.row'); if (!row) return;
+  if (e.target.tagName === 'INPUT') return;      // 原生勾选走 change
+  e.preventDefault();
+  const box = row.querySelector('.chk');
+  box.checked = !box.checked;
+  toggle(row.dataset.id, box.checked, row);
+});
+list.addEventListener('change', e => {
+  if (!e.target.classList.contains('chk')) return;
+  const row = e.target.closest('.row');
+  toggle(row.dataset.id, e.target.checked, row);
+});
+function toggle(id, on, row){
+  if (on) sel.add(id); else sel.delete(id);
+  row.classList.toggle('sel', on);
+  syncDock();
+}
+
+$('#tabs').addEventListener('click', e => {
+  const b = e.target.closest('.tab'); if (!b) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t === b));
+  state.filter = b.dataset.f;
+  render();
+});
+$('#q').addEventListener('input', e => { state.q = e.target.value; render(); });
+
+$('#reset').onclick = () => {
+  sel.clear();
+  ROWS.filter(r=>r.v==='DEL').forEach(r=>sel.add(r.id));
+  render();
+};
+$('#copy').onclick = async () => {
+  const txt = ROWS.filter(r=>sel.has(r.id)).map(r=>r.id).join(',');
+  try{
+    await navigator.clipboard.writeText(txt);
+    const b = $('#copy'); const old = b.textContent;
+    b.textContent = `已复制 ${sel.size} 个 id`;
+    setTimeout(()=>b.textContent = old, 1600);
+  }catch(err){
+    const ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); ta.remove();
+  }
+};
+
+$('#theme').onclick = () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+};
+
+if (matchMedia('(prefers-color-scheme: dark)').matches)
+  document.documentElement.setAttribute('data-theme','dark');
+
+render();
+</script>
+</body>
+</html>

@@ -17,6 +17,8 @@ data/raw_*.json
 web/config.js
 
 # ── 过程产物 ───────────────────────────────────
+# 批量删数据前的手工备份；原始版本在 git 历史里，这里只是本地保险
+data/backup/
 # Playwright 验证截图
 shots/
 # README 用的过程截图

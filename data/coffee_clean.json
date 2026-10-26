@@ -1,129 +1,5 @@
 [
  {
-  "id": "B0MDTMB3DH",
-  "name": "圭隐山居",
-  "brand": null,
-  "lng": 113.825351,
-  "lat": 22.138693,
-  "address": "桂山镇桂山村新昌巷03号",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;住宿服务相关;住宿服务相关",
-  "tel": "18163202762",
-  "rating": 5.0,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0LG0L6MAL",
-  "name": "闲云观海居民宿(桂山岛度假区店)",
-  "brand": null,
-  "lng": 113.825358,
-  "lat": 22.135262,
-  "address": "桂山镇桂海东巷16号",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;住宿服务相关;住宿服务相关",
-  "tel": "17825776690",
-  "rating": 4.9,
-  "cost": null,
-  "tags": [
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0J6YU5O2Z",
-  "name": "桂山岛2127贰楼民宿",
-  "brand": null,
-  "lng": 113.825359,
-  "lat": 22.138176,
-  "address": "桂山镇永康巷6号2层",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;住宿服务相关;住宿服务相关",
-  "tel": "13702326197",
-  "rating": 4.8,
-  "cost": null,
-  "tags": [
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0HR15B9PA",
-  "name": "淇澳初印象咖啡庭院民宿(东和街分店)",
-  "brand": null,
-  "lng": 113.647955,
-  "lat": 22.414162,
-  "address": "东和街白石街-道路淇澳岛内(东侧)",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;旅馆招待所;旅馆招待所",
-  "tel": "",
-  "rating": 4.8,
-  "cost": null,
-  "tags": [
-   "院子/户外",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0K0MARVVB",
-  "name": "潮漫酒店(珠海斗门御温泉店)",
-  "brand": null,
-  "lng": 113.195132,
-  "lat": 22.220106,
-  "address": "斗门镇斗门大道南96号",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "住宿服务;宾馆酒店;宾馆酒店",
-  "tel": "0756-5783888",
-  "rating": 4.8,
-  "cost": null,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0MGL7NTW6",
-  "name": "繁花青年旅舍",
-  "brand": null,
-  "lng": 113.386532,
-  "lat": 22.024838,
-  "address": "锦霞路上表生活区22栋",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "住宿服务;旅馆招待所;青年旅舍",
-  "tel": "",
-  "rating": 4.8,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
   "id": "B0L1KHURS8",
   "name": "AMIA brunch&bistro",
   "brand": null,
@@ -159,25 +35,6 @@
   "open": 540,
   "close": 1260,
   "hours": "09:00-21:00",
-  "photos": 3
- },
- {
-  "id": "B0MBB7X0G8",
-  "name": "Atelier·Anew",
-  "brand": null,
-  "lng": 113.518514,
-  "lat": 22.251843,
-  "address": "金嘉创意谷南区瑞元4栋106店铺",
-  "district": "香洲区",
-  "area": "前山",
-  "type": "体育休闲服务;娱乐场所;酒吧",
-  "tel": "",
-  "rating": 4.7,
-  "cost": 26.0,
-  "tags": [],
-  "open": 660,
-  "close": 1200,
-  "hours": "11:00-20:00",
   "photos": 3
  },
  {
@@ -259,28 +116,6 @@
   "open": 570,
   "close": 1110,
   "hours": "09:30-18:30",
-  "photos": 3
- },
- {
-  "id": "B0JRDS0VWP",
-  "name": "OKay诗柏雅睡眠酒店(珠海金湾机场店)",
-  "brand": null,
-  "lng": 113.370987,
-  "lat": 22.011422,
-  "address": "三灶镇海澄白石公村桂花里西119号1层至5层",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "住宿服务;宾馆酒店;宾馆酒店",
-  "tel": "17722065088",
-  "rating": 4.7,
-  "cost": null,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
   "photos": 3
  },
  {
@@ -550,27 +385,6 @@
   "photos": 3
  },
  {
-  "id": "B0K3LK2G1T",
-  "name": "海豚白舍精品民宿(淇澳岛店)",
-  "brand": null,
-  "lng": 113.647025,
-  "lat": 22.405475,
-  "address": "唐家湾镇淇澳社区淇澳江南街69号",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;旅馆招待所;旅馆招待所",
-  "tel": "",
-  "rating": 4.7,
-  "cost": null,
-  "tags": [
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
   "id": "B0FFFWZ4S6",
   "name": "漫咖啡MAAN COFFEE(中珠九悦店)",
   "brand": "漫咖啡",
@@ -589,47 +403,6 @@
   "open": 540,
   "close": 1410,
   "hours": "09:00-23:30",
-  "photos": 3
- },
- {
-  "id": "B0LBYANSSP",
-  "name": "珠海美高梅华府酒店",
-  "brand": null,
-  "lng": 113.528323,
-  "lat": 22.286781,
-  "address": "健民路888号",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;宾馆酒店;宾馆酒店",
-  "tel": "0756-6288888",
-  "rating": 4.7,
-  "cost": null,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0FFF60QG1",
-  "name": "珠海静云山庄",
-  "brand": null,
-  "lng": 113.72734,
-  "lat": 21.93346,
-  "address": "大万山岛万山镇",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;宾馆酒店;宾馆酒店",
-  "tel": "",
-  "rating": 4.7,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
   "photos": 3
  },
  {
@@ -668,28 +441,6 @@
   "open": 690,
   "close": 1170,
   "hours": "11:30-19:30",
-  "photos": 3
- },
- {
-  "id": "B0FFIC5LBJ",
-  "name": "麗枫酒店(珠海斗门店)",
-  "brand": null,
-  "lng": 113.279564,
-  "lat": 22.228913,
-  "address": "井岸镇工业大道北黄杨明月轩555-1号",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "住宿服务;宾馆酒店;宾馆酒店",
-  "tel": "0756-5526222",
-  "rating": 4.7,
-  "cost": null,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
   "photos": 3
  },
  {
@@ -975,27 +726,6 @@
   "photos": 3
  },
  {
-  "id": "B0I2P1LSQW",
-  "name": "Full House福号(玖洲道店)",
-  "brand": null,
-  "lng": 113.542026,
-  "lat": 22.237855,
-  "address": "九洲大道十五巷17号玖洲道购物公园F1层",
-  "district": "香洲区",
-  "area": "前山",
-  "type": "餐饮服务;中餐厅;中餐厅",
-  "tel": "",
-  "rating": 4.6,
-  "cost": 107.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 1110,
-  "close": 210,
-  "hours": "18:30-03:30",
-  "photos": 3
- },
- {
   "id": "B0GDUM4227",
   "name": "Go get it",
   "brand": null,
@@ -1235,25 +965,6 @@
   "open": 540,
   "close": 1230,
   "hours": "09:00-20:30",
-  "photos": 3
- },
- {
-  "id": "B0LKX5N4T5",
-  "name": "REGGA",
-  "brand": null,
-  "lng": 113.525379,
-  "lat": 22.245068,
-  "address": "前山东升后街4号106商铺",
-  "district": "香洲区",
-  "area": "前山",
-  "type": "购物服务;服装鞋帽皮具店;品牌服装店",
-  "tel": "18023015927",
-  "rating": 4.6,
-  "cost": 26.0,
-  "tags": [],
-  "open": 690,
-  "close": 1080,
-  "hours": "11:30-18:00",
   "photos": 3
  },
  {
@@ -1658,46 +1369,6 @@
   "photos": 3
  },
  {
-  "id": "B0KRKD35TD",
-  "name": "天与地(再生时代大厦店)",
-  "brand": null,
-  "lng": 113.494455,
-  "lat": 22.22541,
-  "address": "屏北二路55号再生时代大厦F1层",
-  "district": "香洲区",
-  "area": "南屏",
-  "type": "餐饮服务;中餐厅;中餐厅",
-  "tel": "",
-  "rating": 4.6,
-  "cost": 25.0,
-  "tags": [],
-  "open": 660,
-  "close": 1200,
-  "hours": "11:00-20:00",
-  "photos": 3
- },
- {
-  "id": "B0FFFDSWL0",
-  "name": "天与地(夏湾D店)",
-  "brand": null,
-  "lng": 113.542475,
-  "lat": 22.222375,
-  "address": "夏湾华平路131号",
-  "district": "香洲区",
-  "area": "拱北",
-  "type": "餐饮服务;中餐厅;中餐厅|餐饮服务;咖啡厅;咖啡厅",
-  "tel": "0756-8862116",
-  "rating": 4.6,
-  "cost": 36.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 510,
-  "close": 1320,
-  "hours": "08:30-22:00",
-  "photos": 3
- },
- {
   "id": "B0KRFCHINP",
   "name": "安定区咖啡×骨骨谷社!!",
   "brand": null,
@@ -1778,27 +1449,6 @@
   "open": 540,
   "close": 1170,
   "hours": "09:00-19:30",
-  "photos": 3
- },
- {
-  "id": "B02F401ILV",
-  "name": "小麦之家(海湾总店)",
-  "brand": null,
-  "lng": 113.576664,
-  "lat": 22.240033,
-  "address": "石花东路113号(近海湾花园)",
-  "district": "香洲区",
-  "area": "吉大",
-  "type": "餐饮服务;糕饼店;糕饼店|餐饮服务;咖啡厅;咖啡厅",
-  "tel": "0756-3232139",
-  "rating": 4.6,
-  "cost": 19.0,
-  "tags": [
-   "早咖"
-  ],
-  "open": 450,
-  "close": 1290,
-  "hours": "07:30-21:30",
   "photos": 3
  },
  {
@@ -2259,27 +1909,6 @@
   "photos": 3
  },
  {
-  "id": "B0H3DCTTY2",
-  "name": "木色啡语咖啡烘焙工坊(绿洋山庄店)",
-  "brand": null,
-  "lng": 113.574565,
-  "lat": 22.233345,
-  "address": "水湾路240号海景花园",
-  "district": "香洲区",
-  "area": "吉大",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "13156485155",
-  "rating": 4.6,
-  "cost": 60.0,
-  "tags": [
-   "有烘焙"
-  ],
-  "open": 600,
-  "close": 1200,
-  "hours": "10:00-20:00",
-  "photos": 3
- },
- {
   "id": "B0MG6HI86F",
   "name": "栖刻爬宠咖啡·珠海店CHILL CRAWL",
   "brand": null,
@@ -2380,49 +2009,6 @@
   "open": 660,
   "close": 1170,
   "hours": "11:00-19:30",
-  "photos": 3
- },
- {
-  "id": "B0HR957RPJ",
-  "name": "珠海中山大学港湾大道亚朵酒店",
-  "brand": null,
-  "lng": 113.594274,
-  "lat": 22.368304,
-  "address": "唐家湾镇金唐路18号",
-  "district": "香洲区",
-  "area": "唐家湾",
-  "type": "住宿服务;宾馆酒店;宾馆酒店",
-  "tel": "",
-  "rating": 4.6,
-  "cost": null,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0J0PM5TWF",
-  "name": "珠海市万山岛星屿民宿",
-  "brand": null,
-  "lng": 113.725705,
-  "lat": 21.93518,
-  "address": "万山市场二楼",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;住宿服务相关;住宿服务相关",
-  "tel": "",
-  "rating": 4.6,
-  "cost": null,
-  "tags": [
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
   "photos": 3
  },
  {
@@ -3467,25 +3053,6 @@
   "photos": 3
  },
  {
-  "id": "B0L1U61YWZ",
-  "name": "Seed食得(简餐·煮物)",
-  "brand": null,
-  "lng": 113.527766,
-  "lat": 22.262769,
-  "address": "翠前北路一街118号铺",
-  "district": "香洲区",
-  "area": "前山",
-  "type": "餐饮服务;甜品店;甜品店",
-  "tel": "18088826577",
-  "rating": 4.5,
-  "cost": 25.0,
-  "tags": [],
-  "open": 660,
-  "close": 1200,
-  "hours": "11:00-20:00",
-  "photos": 3
- },
- {
   "id": "B0FFJGUSPE",
   "name": "Smile Star 幸运星咖啡室(中怡花园店)",
   "brand": null,
@@ -4071,29 +3638,6 @@
   "photos": 3
  },
  {
-  "id": "B0FFH0C7FB",
-  "name": "华发喜来登酒店·大堂吧",
-  "brand": null,
-  "lng": 113.5257,
-  "lat": 22.170337,
-  "address": "湾仔银湾路1663号华发喜来登酒店一楼大堂吧(国际会展中心旁)",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "餐饮服务;餐饮相关场所;餐饮相关",
-  "tel": "0756-2996688",
-  "rating": 4.5,
-  "cost": 51.0,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡",
-   "夜咖"
-  ],
-  "open": 510,
-  "close": 1380,
-  "hours": "08:30-23:00",
-  "photos": 3
- },
- {
   "id": "B0GRL7MH3Z",
   "name": "咖啡音乐工作室",
   "brand": null,
@@ -4285,25 +3829,6 @@
   "photos": 3
  },
  {
-  "id": "B0FFLB16M8",
-  "name": "大横琴&BEEPLUS珠海ICC中心",
-  "brand": null,
-  "lng": 113.544764,
-  "lat": 22.143653,
-  "address": "环岛东路横琴国际商务中心2座8-9层",
-  "district": "香洲区",
-  "area": "横琴",
-  "type": "公司企业;公司;公司",
-  "tel": "",
-  "rating": 4.5,
-  "cost": null,
-  "tags": [],
-  "open": 540,
-  "close": 1080,
-  "hours": "09:00-18:00",
-  "photos": 3
- },
- {
   "id": "B0KR6DXGAU",
   "name": "宝藏绿洲(金湾店)",
   "brand": null,
@@ -4366,49 +3891,6 @@
   "close": 1080,
   "hours": "10:00-18:00",
   "photos": 2
- },
- {
-  "id": "B0MG6HHUYG",
-  "name": "山海间民宿(珠海机场店)",
-  "brand": null,
-  "lng": 113.386506,
-  "lat": 22.024783,
-  "address": "三灶镇海澄上表机场住宅区第二十二栋1楼01室",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "住宿服务;住宿服务相关;住宿服务相关",
-  "tel": "15323619510",
-  "rating": 4.5,
-  "cost": null,
-  "tags": [
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0K295SK53",
-  "name": "布鲁得川粤私房菜",
-  "brand": null,
-  "lng": 113.160119,
-  "lat": 21.997522,
-  "address": "三虎大道999号平沙电子电器产业园D3栋布鲁得咖啡西餐厅",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;中餐厅;四川菜(川菜)",
-  "tel": "13509832563",
-  "rating": 4.5,
-  "cost": 81.0,
-  "tags": [
-   "早咖",
-   "夜咖"
-  ],
-  "open": 420,
-  "close": 1440,
-  "hours": "07:00-24:00",
-  "photos": 3
  },
  {
   "id": "B0LG7O6K9Z",
@@ -5163,25 +4645,6 @@
   "photos": 3
  },
  {
-  "id": "B0L0XULPX7",
-  "name": "海岛来信·摄影基地·咖啡厅",
-  "brand": null,
-  "lng": 113.351398,
-  "lat": 22.002852,
-  "address": "三灶镇木头冲路77号",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "生活服务;摄影冲印店;摄影冲印",
-  "tel": "",
-  "rating": 4.5,
-  "cost": 72.0,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
   "id": "B0L17U8V9N",
   "name": "漫咖啡MAAN COFFEE(南湾大又里店)",
   "brand": "漫咖啡",
@@ -5238,28 +4701,6 @@
   "open": 630,
   "close": 1050,
   "hours": "10:30-17:30",
-  "photos": 3
- },
- {
-  "id": "B0L1HCXYQG",
-  "name": "珠海金湾戴斯温德姆酒店(高栏港商都店)",
-  "brand": null,
-  "lng": 113.200997,
-  "lat": 22.014865,
-  "address": "高栏港经济区南水镇珠海大道9328号",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "住宿服务;住宿服务相关;住宿服务相关",
-  "tel": "0756-7711999",
-  "rating": 4.5,
-  "cost": null,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
   "photos": 3
  },
  {
@@ -5624,28 +5065,6 @@
   "photos": 3
  },
  {
-  "id": "B0K6JURT8E",
-  "name": "西千纪·中餐·咖啡·私房菜(万科城店)",
-  "brand": null,
-  "lng": 113.504356,
-  "lat": 22.270634,
-  "address": "凤山街道云峰路188号万科城上街15号铺",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "餐饮服务;中餐厅;中餐厅",
-  "tel": "",
-  "rating": 4.5,
-  "cost": 43.0,
-  "tags": [
-   "早咖",
-   "夜咖"
-  ],
-  "open": 450,
-  "close": 1380,
-  "hours": "07:30-23:00",
-  "photos": 3
- },
- {
   "id": "B0LKVL6AL9",
   "name": "观溯咖啡•GansoCoffee",
   "brand": null,
@@ -5724,28 +5143,6 @@
   "photos": 3
  },
  {
-  "id": "B0K1OU1TD7",
-  "name": "酷猫健身会所",
-  "brand": null,
-  "lng": 113.366704,
-  "lat": 22.136223,
-  "address": "金湾海景中心B区并宏大厦二楼",
-  "district": "金湾区",
-  "area": "金湾航空新城",
-  "type": "体育休闲服务;运动场馆;健身中心",
-  "tel": "",
-  "rating": 4.5,
-  "cost": 12.0,
-  "tags": [
-   "宠物友好",
-   "夜咖"
-  ],
-  "open": 540,
-  "close": 1320,
-  "hours": "09:00-22:00",
-  "photos": 3
- },
- {
   "id": "B02F402LX7",
   "name": "钟意西餐咖啡馆(情侣南路店)",
   "brand": null,
@@ -5764,27 +5161,6 @@
   "open": 630,
   "close": 60,
   "hours": "10:30-01:00",
-  "photos": 3
- },
- {
-  "id": "B0KKNH3YM1",
-  "name": "间葭Nail·Eyelash美甲美睫(前山店)",
-  "brand": null,
-  "lng": 113.521124,
-  "lat": 22.248459,
-  "address": "明珠南路1978-1号",
-  "district": "香洲区",
-  "area": "前山",
-  "type": "生活服务;美容美发店;美容美发店",
-  "tel": "",
-  "rating": 4.5,
-  "cost": 32.0,
-  "tags": [
-   "早咖"
-  ],
-  "open": 480,
-  "close": 1290,
-  "hours": "08:00-21:30",
   "photos": 3
  },
  {
@@ -5807,25 +5183,6 @@
   "open": 720,
   "close": 120,
   "hours": "12:00-02:00",
-  "photos": 3
- },
- {
-  "id": "B0J21UB6SQ",
-  "name": "隐浪·LATENT IMAGE STUDIO(暂停营业)",
-  "brand": null,
-  "lng": 113.531635,
-  "lat": 22.237124,
-  "address": "前山街道康寿街70号",
-  "district": "香洲区",
-  "area": "前山",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 4.5,
-  "cost": 28.0,
-  "tags": [],
-  "open": 780,
-  "close": 1260,
-  "hours": "13:00-21:00",
   "photos": 3
  },
  {
@@ -6476,29 +5833,6 @@
   "photos": 3
  },
  {
-  "id": "B0L3LAPFT4",
-  "name": "UNSTOPPABLE日咖夜酒烧烤吧",
-  "brand": null,
-  "lng": 113.448792,
-  "lat": 22.200429,
-  "address": "南屏镇广昌广兴街59号1层之1号",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "餐饮服务;餐饮相关场所;餐饮相关",
-  "tel": "13377568355",
-  "rating": 4.4,
-  "cost": 39.0,
-  "tags": [
-   "日咖夜酒",
-   "早咖",
-   "夜咖"
-  ],
-  "open": 420,
-  "close": 120,
-  "hours": "07:00-02:00",
-  "photos": 3
- },
- {
   "id": "B0MB57KU5Q",
   "name": "WIn咖啡",
   "brand": null,
@@ -6723,49 +6057,6 @@
   "close": 1140,
   "hours": "08:00-19:00",
   "photos": 3
- },
- {
-  "id": "B0GD0XA595",
-  "name": "初记港式美食(莲花山小区西区店)",
-  "brand": null,
-  "lng": 113.568114,
-  "lat": 22.24285,
-  "address": "建业一路26号",
-  "district": "香洲区",
-  "area": "吉大",
-  "type": "餐饮服务;中餐厅;广东菜(粤菜)|餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 4.4,
-  "cost": 28.0,
-  "tags": [
-   "早咖",
-   "夜咖"
-  ],
-  "open": 420,
-  "close": 1320,
-  "hours": "07:00-22:00",
-  "photos": 3
- },
- {
-  "id": "B0IR273AVM",
-  "name": "变色龙FITNESS&DANCING",
-  "brand": null,
-  "lng": 113.582394,
-  "lat": 22.308699,
-  "address": "神前路29号二楼G区商铺",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "科教文化服务;培训机构;培训机构",
-  "tel": "",
-  "rating": 4.4,
-  "cost": 32.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1320,
-  "hours": "10:00-22:00",
-  "photos": 2
  },
  {
   "id": "B0L0MA8ITQ",
@@ -7363,27 +6654,6 @@
   "photos": 3
  },
  {
-  "id": "B0L17Y780V",
-  "name": "珠海观琴精品民宿(横琴海洋王国店)",
-  "brand": null,
-  "lng": 113.498048,
-  "lat": 22.089425,
-  "address": "横琴镇海悦观琴精品民宿(珠海长隆旅游度假区店)",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;住宿服务相关;住宿服务相关",
-  "tel": "15992619889",
-  "rating": 4.4,
-  "cost": null,
-  "tags": [
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
   "id": "B0FFLMIJM1",
   "name": "瑞幸咖啡(横琴总部大厦店)",
   "brand": "瑞幸咖啡",
@@ -7587,44 +6857,6 @@
   "photos": 3
  },
  {
-  "id": "B0L395SLNZ",
-  "name": "米CōE·云贵米线&咖啡",
-  "brand": null,
-  "lng": 113.571402,
-  "lat": 22.270703,
-  "address": "光华街46号",
-  "district": "香洲区",
-  "area": "老香洲",
-  "type": "餐饮服务;快餐厅;快餐厅",
-  "tel": "",
-  "rating": 4.4,
-  "cost": 49.0,
-  "tags": [],
-  "open": 630,
-  "close": 1200,
-  "hours": "10:30-20:00",
-  "photos": 3
- },
- {
-  "id": "B0FFH2AYU6",
-  "name": "自由人汽车美容",
-  "brand": null,
-  "lng": 113.542225,
-  "lat": 22.121525,
-  "address": "粗沙环6",
-  "district": "香洲区",
-  "area": "横琴",
-  "type": "汽车服务;汽车养护/装饰;汽车养护",
-  "tel": "",
-  "rating": 4.4,
-  "cost": null,
-  "tags": [],
-  "open": 540,
-  "close": 1140,
-  "hours": "09:00-19:00",
-  "photos": 2
- },
- {
   "id": "B0IB9Z49IS",
   "name": "蔓蔓法式复古咖啡馆",
   "brand": null,
@@ -7662,27 +6894,6 @@
   "open": 600,
   "close": 1320,
   "hours": "10:00-22:00",
-  "photos": 3
- },
- {
-  "id": "B0J6JU9P6H",
-  "name": "赶早肠粉咖啡(柠溪店)",
-  "brand": null,
-  "lng": 113.556866,
-  "lat": 22.266408,
-  "address": "双竹街31号之二(翠竹新村东区西门旁)",
-  "district": "香洲区",
-  "area": "柠溪",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "13823089749",
-  "rating": 4.4,
-  "cost": 10.0,
-  "tags": [
-   "早咖"
-  ],
-  "open": 390,
-  "close": 840,
-  "hours": "06:30-14:00",
   "photos": 3
  },
  {
@@ -8316,27 +7527,6 @@
   "photos": 3
  },
  {
-  "id": "B0L27LL1HJ",
-  "name": "VALE STEAK",
-  "brand": null,
-  "lng": 113.540473,
-  "lat": 22.154154,
-  "address": "横琴华发商都北区A3015",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "18666920148",
-  "rating": 4.3,
-  "cost": 139.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 660,
-  "close": 1440,
-  "hours": "11:00-24:00",
-  "photos": 3
- },
- {
   "id": "B0JALC5KJP",
   "name": "Why点解咖啡馆",
   "brand": null,
@@ -8518,25 +7708,6 @@
   "photos": 3
  },
  {
-  "id": "B0IRZU3YTB",
-  "name": "佳记茶餐厅KAKEE (优特汇店)",
-  "brand": null,
-  "lng": 113.560851,
-  "lat": 22.278762,
-  "address": "银桦路88号格林春天",
-  "district": "香洲区",
-  "area": "老香洲",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "13138250510",
-  "rating": 4.3,
-  "cost": 23.0,
-  "tags": [],
-  "open": 600,
-  "close": 1230,
-  "hours": "10:00-20:30",
-  "photos": 3
- },
- {
   "id": "B0L045XVVY",
   "name": "光·COFFEE咖啡馆",
   "brand": null,
@@ -8577,27 +7748,6 @@
   "photos": 3
  },
  {
-  "id": "B0L3VHHABU",
-  "name": "加班奶茶店(新堂店)",
-  "brand": null,
-  "lng": 113.277964,
-  "lat": 22.173794,
-  "address": "井岸镇新堂11号综合楼A9A10号",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 4.3,
-  "cost": 15.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 720,
-  "close": 120,
-  "hours": "12:00-02:00",
-  "photos": 3
- },
- {
   "id": "B0H61YOH8Y",
   "name": "华丽西餐咖啡(金鼎店)",
   "brand": null,
@@ -8616,25 +7766,6 @@
   "open": 660,
   "close": 1320,
   "hours": "11:00-22:00",
-  "photos": 3
- },
- {
-  "id": "B0LBD5R9ME",
-  "name": "古古餐厅·意面·三明治·咖啡",
-  "brand": null,
-  "lng": 113.527216,
-  "lat": 22.265567,
-  "address": "人民西路799号12号商铺西苑酒店对面",
-  "district": "香洲区",
-  "area": "前山",
-  "type": "餐饮服务;快餐厅;快餐厅",
-  "tel": "13924022901",
-  "rating": 4.3,
-  "cost": 30.0,
-  "tags": [],
-  "open": 510,
-  "close": 1170,
-  "hours": "08:30-19:30",
   "photos": 3
  },
  {
@@ -9093,27 +8224,6 @@
   "open": null,
   "close": null,
   "hours": "",
-  "photos": 2
- },
- {
-  "id": "B0FFFZULQA",
-  "name": "溢学网咖",
-  "brand": null,
-  "lng": 113.377739,
-  "lat": 22.045066,
-  "address": "三灶镇琴石路中心村圣堂工业区综合楼一号楼",
-  "district": "金湾区",
-  "area": "三灶",
-  "type": "体育休闲服务;娱乐场所;网吧",
-  "tel": "13380602356",
-  "rating": 4.3,
-  "cost": null,
-  "tags": [
-   "24小时"
-  ],
-  "open": 0,
-  "close": 1440,
-  "hours": "24小时",
   "photos": 2
  },
  {
@@ -9614,48 +8724,6 @@
   "photos": 3
  },
  {
-  "id": "B0L6ASWET5",
-  "name": "野许是海|180度海景·伴山美宿(珠海金湾机场木头冲沙滩店)",
-  "brand": null,
-  "lng": 113.349785,
-  "lat": 22.00702,
-  "address": "三灶镇木头冲滨海庄园201号",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "住宿服务;住宿服务相关;住宿服务相关",
-  "tel": "",
-  "rating": 4.3,
-  "cost": null,
-  "tags": [
-   "海景"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0KGFS4AUL",
-  "name": "锋味Q咖啡奶茶果茶煲仔饭",
-  "brand": null,
-  "lng": 113.555555,
-  "lat": 22.269524,
-  "address": "兴业路1号",
-  "district": "香洲区",
-  "area": "柠溪",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "18933210312",
-  "rating": 4.3,
-  "cost": 14.0,
-  "tags": [
-   "早咖"
-  ],
-  "open": 420,
-  "close": 1200,
-  "hours": "07:00-20:00",
-  "photos": 2
- },
- {
   "id": "B0LG5R2187",
   "name": "锋坊咖啡(斗门店)",
   "brand": null,
@@ -9672,27 +8740,6 @@
   "open": 660,
   "close": 1200,
   "hours": "11:00-20:00",
-  "photos": 3
- },
- {
-  "id": "B0LRL7N33M",
-  "name": "Bae2•茶咖•糖水•小吃•绵绵冰",
-  "brand": null,
-  "lng": 113.552153,
-  "lat": 22.258148,
-  "address": "富柠街10号",
-  "district": "香洲区",
-  "area": "柠溪",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "13250070912",
-  "rating": 4.2,
-  "cost": 13.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1320,
-  "hours": "10:00-22:00",
   "photos": 3
  },
  {
@@ -9734,27 +8781,6 @@
   "open": 720,
   "close": 1380,
   "hours": "12:00-23:00",
-  "photos": 3
- },
- {
-  "id": "B0MU7L66SB",
-  "name": "ChillLand潮靓·茶饮小食",
-  "brand": null,
-  "lng": 113.519506,
-  "lat": 22.252571,
-  "address": "前山明珠南路金嘉创意谷7栋112号铺Chill Land潮靓",
-  "district": "香洲区",
-  "area": "前山",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "13928009268",
-  "rating": 4.2,
-  "cost": 20.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1320,
-  "hours": "10:00-22:00",
   "photos": 3
  },
  {
@@ -10557,133 +9583,6 @@
   "photos": 3
  },
  {
-  "id": "B0J1AH2ITO",
-  "name": "古茗(平沙钰海万国汇购物广场店)",
-  "brand": null,
-  "lng": 113.175397,
-  "lat": 22.096088,
-  "address": "美平三街309号钰海万国汇购物广场平沙店F1层",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "",
-  "rating": 4.2,
-  "cost": 16.0,
-  "tags": [
-   "早咖",
-   "夜咖"
-  ],
-  "open": 480,
-  "close": 1380,
-  "hours": "08:00-23:00",
-  "photos": 3
- },
- {
-  "id": "B0L0TXBWDK",
-  "name": "古茗(斗门莲洲镇店)",
-  "brand": null,
-  "lng": 113.206825,
-  "lat": 22.321525,
-  "address": "泰来路与新益路交叉口北100米",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;休闲餐饮场所;休闲餐饮场所",
-  "tel": "13559482428",
-  "rating": 4.2,
-  "cost": 15.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 570,
-  "close": 1350,
-  "hours": "09:30-22:30",
-  "photos": 3
- },
- {
-  "id": "B0L0BRVLBU",
-  "name": "古茗(斗门虎山市场店)",
-  "brand": null,
-  "lng": 113.163708,
-  "lat": 22.139583,
-  "address": "虎山村虎山市场北1、2号铺",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "18148828081",
-  "rating": 4.2,
-  "cost": 15.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 570,
-  "close": 1380,
-  "hours": "09:30-23:00",
-  "photos": 3
- },
- {
-  "id": "B0JRJRKU4E",
-  "name": "古茗(珠海斗门夏村店)",
-  "brand": null,
-  "lng": 113.154075,
-  "lat": 22.188025,
-  "address": "乾务镇夏村格创龙蟠坊一层6-1001A",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;休闲餐饮场所;休闲餐饮场所",
-  "tel": "13392973481",
-  "rating": 4.2,
-  "cost": 15.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1380,
-  "hours": "10:00-23:00",
-  "photos": 3
- },
- {
-  "id": "B0JRKC4CK2",
-  "name": "古茗(珠海老斗门店)",
-  "brand": null,
-  "lng": 113.196211,
-  "lat": 22.234763,
-  "address": "斗门镇新街22号一楼之四",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "13360764170",
-  "rating": 4.2,
-  "cost": 15.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 500,
-  "close": 120,
-  "hours": "08:20-02:00",
-  "photos": 3
- },
- {
-  "id": "B0J3HANFDJ",
-  "name": "古茗(珠海金湾高栏港店)",
-  "brand": null,
-  "lng": 113.199183,
-  "lat": 22.006343,
-  "address": "珠海大道9606号",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "",
-  "rating": 4.2,
-  "cost": 15.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 510,
-  "close": 1350,
-  "hours": "08:30-22:30",
-  "photos": 3
- },
- {
   "id": "B0LD67JAQL",
   "name": "咖机-主题咖啡店",
   "brand": null,
@@ -11278,68 +10177,6 @@
   "photos": 3
  },
  {
-  "id": "B02F402VWX",
-  "name": "文华酒店(珠海新香洲城轨明珠站店)",
-  "brand": null,
-  "lng": 113.525065,
-  "lat": 22.268485,
-  "address": "新香洲华润万家昌业路博雅医院旁103号34栋",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;宾馆酒店;宾馆酒店",
-  "tel": "",
-  "rating": 4.2,
-  "cost": null,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0J1N5HYMX",
-  "name": "旧仓(营地奶茶)",
-  "brand": null,
-  "lng": 113.270812,
-  "lat": 22.164579,
-  "address": "井岸镇西埔村坦湖口(原日升电镀厂里面)第89号铺位",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;餐饮相关场所;餐饮相关",
-  "tel": "",
-  "rating": 4.2,
-  "cost": 13.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 720,
-  "close": 60,
-  "hours": "12:00-01:00",
-  "photos": 3
- },
- {
-  "id": "B0HBXUROBV",
-  "name": "时光屋NextKitchen(由澳门特别行政区实施管辖)",
-  "brand": null,
-  "lng": 113.550269,
-  "lat": 22.12518,
-  "address": "中國澳門氹仔大學大馬路澳門大學中央教學樓E5及E6",
-  "district": "香洲区",
-  "area": "横琴",
-  "type": "餐饮服务;餐饮相关场所;餐饮相关",
-  "tel": "",
-  "rating": 4.2,
-  "cost": 40.0,
-  "tags": [],
-  "open": 540,
-  "close": 1260,
-  "hours": "09:00-21:00",
-  "photos": 3
- },
- {
   "id": "B0MD39G0W1",
   "name": "星巴克(珠光国际大厦店)",
   "brand": "星巴克",
@@ -11378,28 +10215,6 @@
   "open": 660,
   "close": 1200,
   "hours": "11:00-20:00",
-  "photos": 3
- },
- {
-  "id": "B0HAFOXXLN",
-  "name": "曲奇民宿简餐咖啡",
-  "brand": null,
-  "lng": 113.595872,
-  "lat": 22.354415,
-  "address": "前环路11号",
-  "district": "香洲区",
-  "area": "唐家湾",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "13923373944",
-  "rating": 4.2,
-  "cost": 44.0,
-  "tags": [
-   "酒店咖啡",
-   "夜咖"
-  ],
-  "open": 660,
-  "close": 360,
-  "hours": "11:00-06:00",
   "photos": 3
  },
  {
@@ -11445,49 +10260,6 @@
   "photos": 3
  },
  {
-  "id": "B0K1VUPBQL",
-  "name": "沪上阿姨·精选茶饮(珠海格力怡馨园店)",
-  "brand": null,
-  "lng": 113.186225,
-  "lat": 22.218375,
-  "address": "斗门镇怡馨园生活区YXY-004商铺",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;餐饮相关场所;餐饮相关",
-  "tel": "18928076903",
-  "rating": 4.2,
-  "cost": 14.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 510,
-  "close": 1350,
-  "hours": "08:30-22:30",
-  "photos": 3
- },
- {
-  "id": "B0KR9ZCPCX",
-  "name": "海阔天空全海景民宿",
-  "brand": null,
-  "lng": 113.585175,
-  "lat": 22.209225,
-  "address": "茂盛二路67号",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;住宿服务相关;住宿服务相关",
-  "tel": "",
-  "rating": 4.2,
-  "cost": null,
-  "tags": [
-   "海景",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
   "id": "B0FFK95879",
   "name": "灯塔咖啡(珠海爱情邮局店)",
   "brand": null,
@@ -11527,51 +10299,6 @@
   "open": 690,
   "close": 120,
   "hours": "11:30-02:00",
-  "photos": 3
- },
- {
-  "id": "B0G26OOIIT",
-  "name": "珠海横琴凯悦酒店·180渡天台酒吧",
-  "brand": null,
-  "lng": 113.517388,
-  "lat": 22.124795,
-  "address": "一微科技",
-  "district": "香洲区",
-  "area": "横琴",
-  "type": "餐饮服务;餐饮相关场所;餐饮相关",
-  "tel": "0756-2991234",
-  "rating": 4.2,
-  "cost": 57.0,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡",
-   "夜咖"
-  ],
-  "open": 1050,
-  "close": 1440,
-  "hours": "17:30-24:00",
-  "photos": 3
- },
- {
-  "id": "B0J19756C1",
-  "name": "珠海长琴岛度假酒店",
-  "brand": null,
-  "lng": 113.71519,
-  "lat": 22.142418,
-  "address": "大碌排村长琴岛游客票务服务中心1楼",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;住宿服务相关;住宿服务相关",
-  "tel": "0756-3262333",
-  "rating": 4.2,
-  "cost": null,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
   "photos": 3
  },
  {
@@ -12218,27 +10945,6 @@
   "close": 120,
   "hours": "07:30-02:00",
   "photos": 2
- },
- {
-  "id": "B0L0KUPHTP",
-  "name": "街角咖啡.茶饮.棋牌(尖峰店)",
-  "brand": null,
-  "lng": 113.301271,
-  "lat": 22.192914,
-  "address": "井岸镇尖峰前路395号",
-  "district": "斗门区",
-  "area": "斗门井岸",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 4.2,
-  "cost": 15.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 540,
-  "close": 1440,
-  "hours": "09:00-24:00",
-  "photos": 1
  },
  {
   "id": "B0L22H0245",
@@ -13317,111 +12023,6 @@
   "photos": 1
  },
  {
-  "id": "B0KAJA301L",
-  "name": "华莱士·全鸡汉堡(平沙新城店)",
-  "brand": null,
-  "lng": 113.135925,
-  "lat": 22.048475,
-  "address": "铭恩路与汇海路交叉口西40米",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;快餐厅;快餐厅",
-  "tel": "15018188856",
-  "rating": 4.1,
-  "cost": 18.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 540,
-  "close": 60,
-  "hours": "09:00-01:00",
-  "photos": 3
- },
- {
-  "id": "B0HU45LPNP",
-  "name": "华莱士·全鸡汉堡(珠海龙山店)",
-  "brand": null,
-  "lng": 113.197395,
-  "lat": 22.217879,
-  "address": "斗门镇八甲村新赤水坑队新村七巷7号(兴旺楼)",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;快餐厅;快餐厅",
-  "tel": "0756-6844488",
-  "rating": 4.1,
-  "cost": 18.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 540,
-  "close": 1440,
-  "hours": "09:00-24:00",
-  "photos": 3
- },
- {
-  "id": "B0L3UDH9KN",
-  "name": "华莱士·全鸡汉堡(荔山店)",
-  "brand": null,
-  "lng": 113.182201,
-  "lat": 22.146022,
-  "address": "乾务镇荔山村牌坊西侧富山时代广场B105铺",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;快餐厅;快餐厅",
-  "tel": "0756-5578604",
-  "rating": 4.1,
-  "cost": 18.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 570,
-  "close": 1350,
-  "hours": "09:30-22:30",
-  "photos": 3
- },
- {
-  "id": "B0KD5CTF91",
-  "name": "古茗(乾务东苑路店)",
-  "brand": null,
-  "lng": 113.227287,
-  "lat": 22.158829,
-  "address": "乾南北路与西苑路交叉口南20米",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;休闲餐饮场所;休闲餐饮场所",
-  "tel": "17825744404",
-  "rating": 4.1,
-  "cost": 15.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1380,
-  "hours": "10:00-23:00",
-  "photos": 3
- },
- {
-  "id": "B0K055ZMJ4",
-  "name": "古茗(斗门六乡店)",
-  "brand": null,
-  "lng": 113.282292,
-  "lat": 22.302657,
-  "address": "白蕉镇六乡大道1237号",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "18531838090",
-  "rating": 4.1,
-  "cost": 15.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1380,
-  "hours": "10:00-23:00",
-  "photos": 3
- },
- {
   "id": "B0MASCH1GU",
   "name": "喜乐coffee咖啡肠粉",
   "brand": null,
@@ -13502,28 +12103,6 @@
   "open": 450,
   "close": 1350,
   "hours": "07:30-22:30",
-  "photos": 3
- },
- {
-  "id": "B02F40PI0U",
-  "name": "大家乐(机场店)",
-  "brand": null,
-  "lng": 113.37668,
-  "lat": 22.008781,
-  "address": "珠海机场候机楼大厅2层",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;快餐厅;大家乐",
-  "tel": "0756-7783718",
-  "rating": 4.1,
-  "cost": 47.0,
-  "tags": [
-   "早咖",
-   "夜咖"
-  ],
-  "open": 390,
-  "close": 1350,
-  "hours": "06:30-22:30",
   "photos": 3
  },
  {
@@ -14779,25 +13358,6 @@
   "photos": 3
  },
  {
-  "id": "B0KRUDY6E5",
-  "name": "莫高小院",
-  "brand": null,
-  "lng": 113.348974,
-  "lat": 22.00949,
-  "address": "木头冲村二巷29号",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;中餐厅;中餐厅",
-  "tel": "",
-  "rating": 4.1,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
   "id": "B0MRMSSURF",
   "name": "跳跳の豆豆·咖啡·拼豆",
   "brand": null,
@@ -14944,25 +13504,6 @@
   "photos": 2
  },
  {
-  "id": "B0MGL1O4WZ",
-  "name": "A&JARTHOUSE",
-  "brand": null,
-  "lng": 113.607243,
-  "lat": 22.351591,
-  "address": "香洲区高新区保利五月花三期商铺清晏巷5号",
-  "district": "香洲区",
-  "area": "唐家湾",
-  "type": "体育休闲服务;娱乐场所;酒吧",
-  "tel": "13427727918",
-  "rating": 4.0,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
   "id": "B0M6BAGJOM",
   "name": "CUBIC3三立方咖啡(珠海横琴店)",
   "brand": null,
@@ -15047,28 +13588,6 @@
   "open": 450,
   "close": 1290,
   "hours": "07:30-21:30",
-  "photos": 3
- },
- {
-  "id": "B0K345YFL6",
-  "name": "RELX悦刻(斗门招商花园城店)",
-  "brand": null,
-  "lng": 113.329325,
-  "lat": 22.207875,
-  "address": "白蕉镇招商花园2楼新海利饭店旁",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "购物服务;购物相关场所;购物相关场所",
-  "tel": "15913237821",
-  "rating": 4.0,
-  "cost": null,
-  "tags": [
-   "院子/户外",
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1320,
-  "hours": "10:00-22:00",
   "photos": 3
  },
  {
@@ -15460,48 +13979,6 @@
   "photos": 2
  },
  {
-  "id": "B0FFITIHXV",
-  "name": "华莱士·全鸡汉堡(下金龙店)",
-  "brand": null,
-  "lng": 113.198356,
-  "lat": 22.005965,
-  "address": "南水镇金龙路2号第首花园项目5栋1层121号商铺",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;快餐厅;快餐厅",
-  "tel": "0756-7718662",
-  "rating": 4.0,
-  "cost": 18.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 570,
-  "close": 1320,
-  "hours": "09:30-22:00",
-  "photos": 3
- },
- {
-  "id": "B0MA7C2KQL",
-  "name": "古茗(金湾美平市场店)",
-  "brand": null,
-  "lng": 113.189781,
-  "lat": 22.101727,
-  "address": "平塘路254号",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "15916256846",
-  "rating": 4.0,
-  "cost": 15.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 495,
-  "close": 1350,
-  "hours": "08:15-22:30",
-  "photos": 3
- },
- {
   "id": "B0K1RX2A26",
   "name": "啡你不可咖啡馆(井岸店)",
   "brand": null,
@@ -15541,27 +14018,6 @@
   "open": 600,
   "close": 1320,
   "hours": "10:00-22:00",
-  "photos": 3
- },
- {
-  "id": "B0JANLJ2H6",
-  "name": "喆文创商店CHITSTORE(北山店)",
-  "brand": null,
-  "lng": 113.513183,
-  "lat": 22.221292,
-  "address": "北山北接13号",
-  "district": "香洲区",
-  "area": "南屏",
-  "type": "购物服务;便民商店/便利店;便民商店/便利店",
-  "tel": "18023051814",
-  "rating": 4.0,
-  "cost": 25.0,
-  "tags": [
-   "早咖"
-  ],
-  "open": 450,
-  "close": 1230,
-  "hours": "07:30-20:30",
   "photos": 3
  },
  {
@@ -15605,28 +14061,6 @@
   "close": 1380,
   "hours": "09:00-23:00",
   "photos": 2
- },
- {
-  "id": "B0JUHO4PZS",
-  "name": "尚品度假酒店(珠海机场店)",
-  "brand": null,
-  "lng": 113.396325,
-  "lat": 22.069943,
-  "address": "金海岸大道东54号商铺(新海利金湾金湾店旁边)",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "住宿服务;宾馆酒店;宾馆酒店",
-  "tel": "0756-7688998",
-  "rating": 4.0,
-  "cost": null,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
  },
  {
   "id": "B0LBSDJZQX",
@@ -16083,27 +14517,6 @@
   "close": null,
   "hours": "",
   "photos": 0
- },
- {
-  "id": "B0L0DUNO9R",
-  "name": "沪上阿姨·精选茶饮(珠海高栏商都店)",
-  "brand": null,
-  "lng": 113.206025,
-  "lat": 22.012225,
-  "address": "南水镇南港西路596号2栋1层2-A002-1号",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;休闲餐饮场所;休闲餐饮场所",
-  "tel": "13560400743",
-  "rating": 4.0,
-  "cost": 14.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1320,
-  "hours": "10:00-22:00",
-  "photos": 3
  },
  {
   "id": "B0MD97Q2Q6",
@@ -16613,27 +15026,6 @@
   "photos": 1
  },
  {
-  "id": "B0K1DDI8FW",
-  "name": "鑫月湾民宿",
-  "brand": null,
-  "lng": 113.583625,
-  "lat": 22.209575,
-  "address": "茂盛二路67号港珠澳未来城三栋1101室",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;住宿服务相关;住宿服务相关",
-  "tel": "13265111515",
-  "rating": 4.0,
-  "cost": null,
-  "tags": [
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
   "id": "B0MBKUQKC4",
   "name": "1C Cafe·意思精品咖啡(香洲店)",
   "brand": null,
@@ -16857,28 +15249,6 @@
   "close": null,
   "hours": "",
   "photos": 2
- },
- {
-  "id": "B0L6GHFLE8",
-  "name": "LK² Coffee tea (咖啡·茶饮)",
-  "brand": null,
-  "lng": 113.536433,
-  "lat": 22.226452,
-  "address": "夏湾街道婆石村婆石二街15号",
-  "district": "香洲区",
-  "area": "拱北",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 3.9,
-  "cost": 13.0,
-  "tags": [
-   "早咖",
-   "夜咖"
-  ],
-  "open": 360,
-  "close": 150,
-  "hours": "06:00-02:30",
-  "photos": 1
  },
  {
   "id": "B0LRO6UM0E",
@@ -17373,48 +15743,6 @@
   "photos": 2
  },
  {
-  "id": "B0FFFOKXGN",
-  "name": "华莱士·全鸡汉堡(乾务店)",
-  "brand": null,
-  "lng": 113.228756,
-  "lat": 22.156166,
-  "address": "乾务镇乾南中路79号农行对面",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;快餐厅;快餐厅",
-  "tel": "13680317388",
-  "rating": 3.9,
-  "cost": 18.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 540,
-  "close": 120,
-  "hours": "09:00-02:00",
-  "photos": 3
- },
- {
-  "id": "B0FFIVRIXL",
-  "name": "华莱士·全鸡汉堡(虎山店)",
-  "brand": null,
-  "lng": 113.163966,
-  "lat": 22.139447,
-  "address": "乾务镇虎山村市场北商铺103-104",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;快餐厅;快餐厅",
-  "tel": "17606668347",
-  "rating": 3.9,
-  "cost": 18.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 540,
-  "close": 60,
-  "hours": "09:00-01:00",
-  "photos": 3
- },
- {
   "id": "B0KASHQ1A0",
   "name": "原派三明治&咖啡(金山软件园店)",
   "brand": null,
@@ -17535,27 +15863,6 @@
   "close": 1080,
   "hours": "10:00-18:00",
   "photos": 1
- },
- {
-  "id": "B0MDLXMEBB",
-  "name": "囍记HEY餐厅(北山店)",
-  "brand": null,
-  "lng": 113.513796,
-  "lat": 22.221564,
-  "address": "南屏镇北山正街北四巷9号之八(北山大院许愿巷旁)",
-  "district": "香洲区",
-  "area": "南屏",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "13380626421",
-  "rating": 3.9,
-  "cost": 22.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 660,
-  "close": 1320,
-  "hours": "11:00-22:00",
-  "photos": 3
  },
  {
   "id": "B0K0UGTX9K",
@@ -17891,27 +16198,6 @@
   "photos": 3
  },
  {
-  "id": "B0FFHX93M1",
-  "name": "横琴听墨·民宿(珠海长隆旅游度假区店)",
-  "brand": null,
-  "lng": 113.501217,
-  "lat": 22.093272,
-  "address": "横琴新区深井村16号",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "住宿服务;旅馆招待所;旅馆招待所",
-  "tel": "",
-  "rating": 3.9,
-  "cost": null,
-  "tags": [
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
   "id": "B0I10786N9",
   "name": "欢喜coffee",
   "brand": null,
@@ -17933,69 +16219,6 @@
   "photos": 2
  },
  {
-  "id": "B0LRB5NFVK",
-  "name": "沪上阿姨·精选茶饮(珠海斗门虎山市场店)",
-  "brand": null,
-  "lng": 113.164056,
-  "lat": 22.138701,
-  "address": "乾务镇虎山市场西面新建商铺115号",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;休闲餐饮场所;休闲餐饮场所",
-  "tel": "19510777206",
-  "rating": 3.9,
-  "cost": 14.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 510,
-  "close": 1410,
-  "hours": "08:30-23:30",
-  "photos": 3
- },
- {
-  "id": "B0LDRS9GXB",
-  "name": "沪上阿姨·精选茶饮(珠海钰海万国汇广场店)",
-  "brand": null,
-  "lng": 113.175854,
-  "lat": 22.096808,
-  "address": "平沙镇美平三街309号3栋1层317-1号",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "13392536851",
-  "rating": 3.9,
-  "cost": 14.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1320,
-  "hours": "10:00-22:00",
-  "photos": 3
- },
- {
-  "id": "B0LGCHT333",
-  "name": "沪上阿姨·精选茶饮(珠海高栏港店)",
-  "brand": null,
-  "lng": 113.156125,
-  "lat": 22.028425,
-  "address": "三虎大道",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "",
-  "rating": 3.9,
-  "cost": 14.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1320,
-  "hours": "10:00-22:00",
-  "photos": 1
- },
- {
   "id": "B0KARLEW96",
   "name": "派梵咖啡馆(再生时代大厦店)",
   "brand": null,
@@ -18012,30 +16235,6 @@
   "open": 600,
   "close": 1200,
   "hours": "10:00-20:00",
-  "photos": 3
- },
- {
-  "id": "B0G1VSA204",
-  "name": "海湾大酒店加咖啡西餐厅",
-  "brand": null,
-  "lng": 113.56552,
-  "lat": 22.23075,
-  "address": "水湾路245号海湾大酒店2层",
-  "district": "香洲区",
-  "area": "拱北",
-  "type": "餐饮服务;餐饮相关场所;餐饮相关",
-  "tel": "",
-  "rating": 3.9,
-  "cost": 159.0,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡",
-   "早咖",
-   "夜咖"
-  ],
-  "open": 390,
-  "close": 1380,
-  "hours": "06:30-23:00",
   "photos": 3
  },
  {
@@ -18463,25 +16662,6 @@
   "photos": 3
  },
  {
-  "id": "B0IUCKDRGY",
-  "name": "苏霏尔餐室(唐家店)",
-  "brand": null,
-  "lng": 113.594411,
-  "lat": 22.362504,
-  "address": "",
-  "district": "香洲区",
-  "area": "唐家湾",
-  "type": "餐饮服务;中餐厅;中餐厅",
-  "tel": "13411456724",
-  "rating": 3.9,
-  "cost": 28.0,
-  "tags": [],
-  "open": 660,
-  "close": 1200,
-  "hours": "11:00-20:00",
-  "photos": 3
- },
- {
   "id": "B0IUUBI8XS",
   "name": "荔知接霞咖啡",
   "brand": null,
@@ -18539,27 +16719,6 @@
   "close": 840,
   "hours": "10:30-14:00",
   "photos": 3
- },
- {
-  "id": "B0LKNDPTBY",
-  "name": "镜-镜湖酒廊(珠海凤凰湾悦榕庄店)",
-  "brand": null,
-  "lng": 113.602275,
-  "lat": 22.312725,
-  "address": "港湾大道与泉星东路交叉口南380米",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 3.9,
-  "cost": 86.0,
-  "tags": [
-   "日咖夜酒"
-  ],
-  "open": 660,
-  "close": 1140,
-  "hours": "11:00-19:00",
-  "photos": 0
  },
  {
   "id": "B0KKO52CVL",
@@ -18829,25 +16988,6 @@
   "photos": 1
  },
  {
-  "id": "B0LRHU7OPI",
-  "name": "MASTER(时代保利中环广场店)",
-  "brand": null,
-  "lng": 113.518425,
-  "lat": 22.172225,
-  "address": "中环街126号二楼商铺",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "体育休闲服务;娱乐场所;酒吧",
-  "tel": "",
-  "rating": 3.8,
-  "cost": 23.0,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 0
- },
- {
   "id": "B0LRXAYXWT",
   "name": "NOWWA挪瓦咖啡(易站珠海香洲中环店)",
   "brand": "挪瓦咖啡",
@@ -18885,27 +17025,6 @@
   "open": null,
   "close": null,
   "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0FFGP7ZO8",
-  "name": "The Green Party(珠海华发商都店)",
-  "brand": null,
-  "lng": 113.509119,
-  "lat": 22.224792,
-  "address": "明达路华发商都A馆2层",
-  "district": "香洲区",
-  "area": "南屏",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "13527282070",
-  "rating": 3.8,
-  "cost": null,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1320,
-  "hours": "10:00-22:00",
   "photos": 3
  },
  {
@@ -19071,27 +17190,6 @@
   "open": null,
   "close": null,
   "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0I63GVR90",
-  "name": "华莱士·全鸡汉堡(高栏商都店)",
-  "brand": null,
-  "lng": 113.206574,
-  "lat": 22.012066,
-  "address": "南水镇南港西路596号1栋1层1001",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;快餐厅;快餐厅",
-  "tel": "18177523568",
-  "rating": 3.8,
-  "cost": 18.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 540,
-  "close": 60,
-  "hours": "09:00-01:00",
   "photos": 3
  },
  {
@@ -19275,25 +17373,6 @@
   "close": 1080,
   "hours": "08:00-18:00",
   "photos": 3
- },
- {
-  "id": "B0MUJXUPRW",
-  "name": "星晴StarShine·咖啡·柠檬茶(珠海店)",
-  "brand": null,
-  "lng": 113.122525,
-  "lat": 22.065775,
-  "address": "海泉湾路与海悦路交叉口西北160米",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;餐饮相关场所;餐饮相关",
-  "tel": "",
-  "rating": 3.8,
-  "cost": 13.0,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 0
  },
  {
   "id": "B0MR7DW7IA",
@@ -19668,27 +17747,6 @@
   "close": 1320,
   "hours": "08:00-22:00",
   "photos": 3
- },
- {
-  "id": "B0JKNZA5YM",
-  "name": "茶遇(白蕉店)",
-  "brand": null,
-  "lng": 113.30723,
-  "lat": 22.222791,
-  "address": "白蕉镇金坑中苑(金坑中路南)",
-  "district": "斗门区",
-  "area": "斗门井岸",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "13532264452",
-  "rating": 3.8,
-  "cost": 11.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1320,
-  "hours": "10:00-22:00",
-  "photos": 1
  },
  {
   "id": "B0MU57U2RI",
@@ -20121,27 +18179,6 @@
   "photos": 3
  },
  {
-  "id": "B0L2MCYHSX",
-  "name": "一叶(咖啡·面包·茶饮)",
-  "brand": null,
-  "lng": 113.184175,
-  "lat": 22.094175,
-  "address": "平沙镇升平大道中海泉华庭南门地面停车场",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 3.7,
-  "cost": 19.0,
-  "tags": [
-   "有烘焙"
-  ],
-  "open": 630,
-  "close": 1020,
-  "hours": "10:30-17:00",
-  "photos": 1
- },
- {
   "id": "B0MDP5L7S6",
   "name": "一洲cafe",
   "brand": null,
@@ -20297,25 +18334,6 @@
   "open": null,
   "close": null,
   "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0IG4Z0KPK",
-  "name": "四少奶茶馆",
-  "brand": null,
-  "lng": 113.595166,
-  "lat": 22.357317,
-  "address": "山房路与龙岗街交叉口西100米",
-  "district": "香洲区",
-  "area": "唐家湾",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "13727037918",
-  "rating": 3.7,
-  "cost": 31.0,
-  "tags": [],
-  "open": 540,
-  "close": 1080,
-  "hours": "09:00-18:00",
   "photos": 3
  },
  {
@@ -20565,25 +18583,6 @@
   "photos": 1
  },
  {
-  "id": "B0FFKVZ8SB",
-  "name": "玉川茶堂(万事得商业街店)",
-  "brand": null,
-  "lng": 113.556869,
-  "lat": 22.225128,
-  "address": "拱北粤海东路1119-19号",
-  "district": "香洲区",
-  "area": "拱北",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "",
-  "rating": 3.7,
-  "cost": 12.0,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 2
- },
- {
   "id": "B0KDPU5FRV",
   "name": "珠海市咖夫啡尔咖啡有限公司",
   "brand": null,
@@ -20682,47 +18681,6 @@
   "open": 420,
   "close": 1080,
   "hours": "07:00-18:00",
-  "photos": 0
- },
- {
-  "id": "B0J2U1YROB",
-  "name": "璃上酒店·咖啡",
-  "brand": null,
-  "lng": 113.586514,
-  "lat": 22.249467,
-  "address": "九洲大道东与海滨南路交叉口东100米",
-  "district": "香洲区",
-  "area": "吉大",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 3.7,
-  "cost": 41.0,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 0
- },
- {
-  "id": "B0LRBMLDI0",
-  "name": "盾皇咖啡奶茶原料批发仓库",
-  "brand": null,
-  "lng": 113.508045,
-  "lat": 22.288331,
-  "address": "南溪路与福田路交叉口东南140米",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "公司企业;公司;公司",
-  "tel": "18037343099",
-  "rating": 3.7,
-  "cost": null,
-  "tags": [],
-  "open": 540,
-  "close": 1140,
-  "hours": "09:00-19:00",
   "photos": 0
  },
  {
@@ -21247,27 +19205,6 @@
   "photos": 3
  },
  {
-  "id": "B0KKFLR1NW",
-  "name": "有柠",
-  "brand": null,
-  "lng": 113.195186,
-  "lat": 22.236385,
-  "address": "斗门镇南门村毓秀7巷5号",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "13232282761",
-  "rating": 3.6,
-  "cost": 13.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 660,
-  "close": 1380,
-  "hours": "11:00-23:00",
-  "photos": 3
- },
- {
   "id": "B0K0XLR9ME",
   "name": "树下咖啡",
   "brand": null,
@@ -21782,46 +19719,6 @@
   "photos": 1
  },
  {
-  "id": "B0M6T75BJM",
-  "name": "illy咖啡(东澳岛尾浪茶社店)",
-  "brand": null,
-  "lng": 113.715675,
-  "lat": 22.020275,
-  "address": "东澳岛游客服务中心东北侧",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 3.5,
-  "cost": 28.0,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 0
- },
- {
-  "id": "B0LK6AJOXR",
-  "name": "中国邮政报刊亭(中电大厦店)",
-  "brand": null,
-  "lng": 113.570416,
-  "lat": 22.245192,
-  "address": "九洲大道中与吉莲路交叉口西80米",
-  "district": "香洲区",
-  "area": "吉大",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 3.5,
-  "cost": null,
-  "tags": [
-   "早咖"
-  ],
-  "open": 480,
-  "close": 1260,
-  "hours": "08:00-21:00",
-  "photos": 2
- },
- {
   "id": "B0I2LRAHQW",
   "name": "乔克·CIAO CAKE&COFFEE",
   "brand": null,
@@ -21921,25 +19818,6 @@
   "photos": 0
  },
  {
-  "id": "B0FFHKQE6B",
-  "name": "地中海美食街咖啡屋",
-  "brand": null,
-  "lng": 113.115329,
-  "lat": 22.065079,
-  "address": "平沙镇海泉湾度假区",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;餐饮相关场所;餐饮相关",
-  "tel": "",
-  "rating": 3.5,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 0
- },
- {
   "id": "B0J1VS8FMM",
   "name": "夏屿咖啡",
   "brand": null,
@@ -22016,25 +19894,6 @@
   "close": null,
   "hours": "",
   "photos": 0
- },
- {
-  "id": "B0FFKX2GG5",
-  "name": "悠间尚居",
-  "brand": null,
-  "lng": 113.501337,
-  "lat": 22.092678,
-  "address": "横琴镇长隆大道深井村21号",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "商务住宅;商务住宅相关;商务住宅相关",
-  "tel": "",
-  "rating": 3.5,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
  },
  {
   "id": "B0KKHR8DA2",
@@ -22214,25 +20073,6 @@
   "close": 1420,
   "hours": "10:30-23:40",
   "photos": 3
- },
- {
-  "id": "B0L3K9BXM1",
-  "name": "甜觅时光餐饮屋",
-  "brand": null,
-  "lng": 113.172682,
-  "lat": 22.094821,
-  "address": "平沙镇培蕾街231号商铺",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;中餐厅;中餐厅",
-  "tel": "13702777550",
-  "rating": 3.5,
-  "cost": 24.0,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 1
  },
  {
   "id": "B0L6HRINGY",
@@ -22585,25 +20425,6 @@
   "photos": 3
  },
  {
-  "id": "B0J29R6B23",
-  "name": "周末咖啡(柠檬茶·小吃·湾仔店)",
-  "brand": null,
-  "lng": 113.527308,
-  "lat": 22.192695,
-  "address": "桂园路9号(紫麟健康美容院旁)",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 3.4,
-  "cost": 24.0,
-  "tags": [],
-  "open": 600,
-  "close": 1200,
-  "hours": "10:00-20:00",
-  "photos": 3
- },
- {
   "id": "B0IUOUAUOD",
   "name": "壹杯咖啡",
   "brand": null,
@@ -22802,28 +20623,6 @@
   "photos": 2
  },
  {
-  "id": "B0IUDOJ7V1",
-  "name": "珠海荷包岛假日酒店",
-  "brand": null,
-  "lng": 113.167997,
-  "lat": 21.85729,
-  "address": "荷包岛内(东侧)",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "住宿服务;住宿服务相关;住宿服务相关",
-  "tel": "15115489812",
-  "rating": 3.4,
-  "cost": null,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 3
- },
- {
   "id": "B0MRPLK95S",
   "name": "瑞秋咖啡馆",
   "brand": null,
@@ -22841,27 +20640,6 @@
   "close": null,
   "hours": "",
   "photos": 1
- },
- {
-  "id": "B0J1172AX2",
-  "name": "甜舍之旅蛋糕定制营地(横琴商业步行街店)",
-  "brand": null,
-  "lng": 113.509862,
-  "lat": 22.128152,
-  "address": "横琴粤澳深度合作区星享横琴天沐酒店咖啡厅",
-  "district": "香洲区",
-  "area": "横琴",
-  "type": "体育休闲服务;休闲场所;休闲场所",
-  "tel": "15323988666",
-  "rating": 3.4,
-  "cost": null,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 780,
-  "close": 1380,
-  "hours": "13:00-23:00",
-  "photos": 2
  },
  {
   "id": "B0MGKXL6MK",
@@ -23121,68 +20899,6 @@
   "photos": 3
  },
  {
-  "id": "B0LRPXS0J1",
-  "name": "丰巢快递柜",
-  "brand": null,
-  "lng": 113.157975,
-  "lat": 21.997925,
-  "address": "布鲁得咖啡西餐厅西侧220米",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "生活服务;物流速递;物流速递",
-  "tel": "",
-  "rating": 3.3,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 0
- },
- {
-  "id": "B0MBZOD7OH",
-  "name": "云咖啡篮球场",
-  "brand": null,
-  "lng": 113.181525,
-  "lat": 22.147675,
-  "address": "时雨内科诊所西侧130米",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "体育休闲服务;运动场馆;篮球场馆",
-  "tel": "",
-  "rating": 3.3,
-  "cost": 11.0,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 1
- },
- {
-  "id": "B0GUFOHD64",
-  "name": "大堂酒廊·下午茶(横琴凯悦酒店)",
-  "brand": null,
-  "lng": 113.517592,
-  "lat": 22.124708,
-  "address": "一微科技",
-  "district": "香洲区",
-  "area": "横琴",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 3.3,
-  "cost": 40.0,
-  "tags": [
-   "日咖夜酒",
-   "酒店咖啡",
-   "早咖",
-   "夜咖"
-  ],
-  "open": 390,
-  "close": 1380,
-  "hours": "06:30-23:00",
-  "photos": 1
- },
- {
   "id": "B0MGJCBXSH",
   "name": "序咖",
   "brand": null,
@@ -23392,25 +21108,6 @@
   "photos": 1
  },
  {
-  "id": "B0LUSC5ODZ",
-  "name": "黔糯糯贵味冰浆",
-  "brand": null,
-  "lng": 113.543425,
-  "lat": 22.237375,
-  "address": "九洲大道西2108号兰埔花园25栋14号铺之二",
-  "district": "香洲区",
-  "area": "前山",
-  "type": "餐饮服务;餐饮相关场所;餐饮相关",
-  "tel": "15992658033",
-  "rating": 3.3,
-  "cost": 13.0,
-  "tags": [],
-  "open": 600,
-  "close": 1260,
-  "hours": "10:00-21:00",
-  "photos": 3
- },
- {
   "id": "B0MGP11GKS",
   "name": "COMMA逗好咖啡(狮山店)",
   "brand": null,
@@ -23601,28 +21298,6 @@
   "photos": 0
  },
  {
-  "id": "B0HKRLSB4M",
-  "name": "发达猫·咖啡&柠檬茶(北师店)",
-  "brand": null,
-  "lng": 113.529902,
-  "lat": 22.347822,
-  "address": "唐家湾镇金凤路18号北京师范大学珠海校区海华苑8栋171号铺位",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "13302861497",
-  "rating": 3.2,
-  "cost": 13.0,
-  "tags": [
-   "宠物友好",
-   "夜咖"
-  ],
-  "open": 600,
-  "close": 1320,
-  "hours": "10:00-22:00",
-  "photos": 0
- },
- {
   "id": "B0MRURMO3N",
   "name": "咖啡和你",
   "brand": null,
@@ -23764,25 +21439,6 @@
   "open": null,
   "close": null,
   "hours": "",
-  "photos": 3
- },
- {
-  "id": "B0LATM4I70",
-  "name": "珠海市高新区芳芳家茶饮店",
-  "brand": null,
-  "lng": 113.60984,
-  "lat": 22.370458,
-  "address": "唐家金云路288号后环邻里荟2楼香山悦书吧吧台",
-  "district": "香洲区",
-  "area": "唐家湾",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "13798968929",
-  "rating": 3.2,
-  "cost": 17.0,
-  "tags": [],
-  "open": 600,
-  "close": 1260,
-  "hours": "10:00-21:00",
   "photos": 3
  },
  {
@@ -24098,27 +21754,6 @@
   "photos": 1
  },
  {
-  "id": "B0MDV7OA8H",
-  "name": "二十七度餐厅(金湾高尔夫店)",
-  "brand": null,
-  "lng": 113.370575,
-  "lat": 22.102425,
-  "address": "天和恒跃体育公园西北侧170米",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": 3.1,
-  "cost": 59.0,
-  "tags": [
-   "早咖"
-  ],
-  "open": 390,
-  "close": 1110,
-  "hours": "06:30-18:30",
-  "photos": 0
- },
- {
   "id": "B0MRB6930W",
   "name": "囍记咖啡",
   "brand": null,
@@ -24277,27 +21912,6 @@
   "close": 1320,
   "hours": "08:00-22:00",
   "photos": 1
- },
- {
-  "id": "B0KDZHQA2J",
-  "name": "花田書下民宿咖啡·小愈机器人睡眠吧(金湾华发商都店)",
-  "brand": null,
-  "lng": 113.357564,
-  "lat": 22.120017,
-  "address": "三灶镇乐仪路83号3楼315商铺(湖城大境12栋315)",
-  "district": "金湾区",
-  "area": "其他",
-  "type": "住宿服务;旅馆招待所;旅馆招待所",
-  "tel": "13242208628",
-  "rating": 3.1,
-  "cost": null,
-  "tags": [
-   "酒店咖啡"
-  ],
-  "open": 600,
-  "close": 1260,
-  "hours": "10:00-21:00",
-  "photos": 3
  },
  {
   "id": "B0M67ZWRZT",
@@ -24495,27 +22109,6 @@
   "photos": 1
  },
  {
-  "id": "B0MR1CE10Z",
-  "name": "IKOI BAR小憩吧",
-  "brand": null,
-  "lng": 113.556994,
-  "lat": 22.225021,
-  "address": "粤海东路万森文化街A101号铺",
-  "district": "香洲区",
-  "area": "拱北",
-  "type": "体育休闲服务;娱乐场所;酒吧",
-  "tel": "",
-  "rating": 3.0,
-  "cost": null,
-  "tags": [
-   "日咖夜酒"
-  ],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 1
- },
- {
   "id": "B0MGYU6IBB",
   "name": "NNCAFE诺诺咖啡(中山大学店)",
   "brand": null,
@@ -24591,25 +22184,6 @@
   "open": 600,
   "close": 1320,
   "hours": "10:00-22:00",
-  "photos": 1
- },
- {
-  "id": "B0MUPCETCA",
-  "name": "健身汉堡·咖啡",
-  "brand": null,
-  "lng": 113.583777,
-  "lat": 22.253334,
-  "address": "广东省珠海市香洲区海滨南路56号",
-  "district": "香洲区",
-  "area": "吉大",
-  "type": "餐饮服务;快餐厅;快餐厅",
-  "tel": "18165509228",
-  "rating": 3.0,
-  "cost": 50.0,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
   "photos": 1
  },
  {
@@ -24727,27 +22301,6 @@
   "close": null,
   "hours": "",
   "photos": 1
- },
- {
-  "id": "B0LR4HP2GS",
-  "name": "柠茶吨吨",
-  "brand": null,
-  "lng": 113.551283,
-  "lat": 22.259204,
-  "address": "柠溪路68号一楼7号铺",
-  "district": "香洲区",
-  "area": "柠溪",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "",
-  "rating": 3.0,
-  "cost": 12.0,
-  "tags": [
-   "夜咖"
-  ],
-  "open": 540,
-  "close": 1350,
-  "hours": "09:00-22:30",
-  "photos": 3
  },
  {
   "id": "B0LDJYX0AR",
@@ -24969,25 +22522,6 @@
   "close": null,
   "hours": "",
   "photos": 0
- },
- {
-  "id": "B0MUHLQCDF",
-  "name": "之助饮品小食屋",
-  "brand": null,
-  "lng": 113.338487,
-  "lat": 22.136024,
-  "address": "白藤湖幸福东路133号201",
-  "district": "斗门区",
-  "area": "红旗",
-  "type": "餐饮服务;冷饮店;冷饮店",
-  "tel": "",
-  "rating": 2.9,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 1
  },
  {
   "id": "B0IKZ5UT56",
@@ -26205,82 +23739,6 @@
   "photos": 0
  },
  {
-  "id": "B0MUT6JE7N",
-  "name": "2 coffee地上停车场",
-  "brand": null,
-  "lng": 113.523675,
-  "lat": 22.232875,
-  "address": "前河北路与环宇路交叉口南240米",
-  "district": "香洲区",
-  "area": "前山",
-  "type": "交通设施服务;停车场;公共停车场",
-  "tel": "",
-  "rating": null,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 0
- },
- {
-  "id": "B0MUJMS3VD",
-  "name": "南屏文化广场(东北门)",
-  "brand": null,
-  "lng": 113.508969,
-  "lat": 22.22107,
-  "address": "南湾北路辅路与珠海大道辅路交叉口西南60米",
-  "district": "香洲区",
-  "area": "南屏",
-  "type": "餐饮服务;咖啡厅;咖啡厅",
-  "tel": "",
-  "rating": null,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 0
- },
- {
-  "id": "B0GKYAHLI7",
-  "name": "哥德堡咖啡停车场",
-  "brand": null,
-  "lng": 113.351085,
-  "lat": 22.049323,
-  "address": "映月路与大雅路交叉口东北120米",
-  "district": "金湾区",
-  "area": "三灶",
-  "type": "交通设施服务;停车场;公共停车场",
-  "tel": "",
-  "rating": null,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 0
- },
- {
-  "id": "B0FFHU5MMR",
-  "name": "悦·咖啡专用车场",
-  "brand": null,
-  "lng": 113.598358,
-  "lat": 22.357502,
-  "address": "港湾大道与八一路交叉口西60米",
-  "district": "香洲区",
-  "area": "唐家湾",
-  "type": "交通设施服务;停车场;停车场相关",
-  "tel": "",
-  "rating": null,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 0
- },
- {
   "id": "B0M64CJFJ8",
   "name": "珠海市回念咖啡食品有限公司九洲大道西分公司",
   "brand": null,
@@ -26300,25 +23758,6 @@
   "photos": 0
  },
  {
-  "id": "B0LKS5IH25",
-  "name": "珠海市奥维斯五金制品有限公司",
-  "brand": null,
-  "lng": 113.174265,
-  "lat": 22.211523,
-  "address": "黄杨大道2013号",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "公司企业;公司;公司",
-  "tel": "",
-  "rating": null,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 1
- },
- {
   "id": "B0MGB1UYFZ",
   "name": "珠海横琴零加咖啡有限公司",
   "brand": null,
@@ -26328,63 +23767,6 @@
   "district": "香洲区",
   "area": "其他",
   "type": "公司企业;公司;公司",
-  "tel": "",
-  "rating": null,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 0
- },
- {
-  "id": "B0LUA7J7W5",
-  "name": "珠海高新区青鸟北附实验学校停车场",
-  "brand": null,
-  "lng": 113.635148,
-  "lat": 22.393036,
-  "address": "公园里Book Cafe西北侧80米",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "交通设施服务;停车场;公共停车场",
-  "tel": "",
-  "rating": null,
-  "cost": null,
-  "tags": [],
-  "open": null,
-  "close": null,
-  "hours": "",
-  "photos": 0
- },
- {
-  "id": "B0MA3DZDM0",
-  "name": "老屋咖啡那州店停车场",
-  "brand": null,
-  "lng": 113.503176,
-  "lat": 22.354822,
-  "address": "原那州小学西南侧290米",
-  "district": "香洲区",
-  "area": "其他",
-  "type": "交通设施服务;停车场;公共停车场",
-  "tel": "",
-  "rating": null,
-  "cost": null,
-  "tags": [],
-  "open": 570,
-  "close": 1110,
-  "hours": "09:30-18:30",
-  "photos": 3
- },
- {
-  "id": "B0MBSCEBO3",
-  "name": "道路停车位",
-  "brand": null,
-  "lng": 113.188486,
-  "lat": 22.272584,
-  "address": "上洲村拾陆巷咖啡馆东侧50米",
-  "district": "斗门区",
-  "area": "其他",
-  "type": "交通设施服务;停车场;路边停车场",
   "tel": "",
   "rating": null,
   "cost": null,
