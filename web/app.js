@@ -913,7 +913,11 @@
           st.dx = tdx; st.dy = tdy; st.tdx = tdx; st.tdy = tdy;
           st.side = side; st.flip = 0; st.mRun = false;
         } else if (st.side !== side) {
-          if (st.flip === 0) {
+          /* 连换两次边（200ms 内又换回去）时，flip 可能正停在 2（正在淡入）。
+             这时不能只更新目标位置 —— 等淡入走完 flip 归 0，就会从旧位置
+             一路滑到新位置，正是要避免的那种「从圆点上碾过去」。
+             所以只要不是正在淡出（flip !== 1），就重新起一次淡出。 */
+          if (st.flip !== 1) {
             st.flip = 1;
             fadeTo(st, 0, now, LABEL_FLIP_OUT_MS);
           }
