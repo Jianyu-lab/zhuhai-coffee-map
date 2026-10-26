@@ -180,6 +180,42 @@
     return m < 1000 ? Math.round(m) + 'm' : (m / 1000).toFixed(1) + 'km';
   }
 
+  /* ── cubic-bezier(x1,y1,x2,y2) → f(t) ──────────────────────────────
+     和浏览器实现 CSS `cubic-bezier()` 用的是同一套算法：三次贝塞尔曲线的
+     x(u)/y(u) 都是参数方程，给定 t 要先解 x(u)=t 反求 u，再取 y(u)。
+     先用牛顿迭代（快），斜率太小或发散就退回二分（稳）。
+     只建一次，之后每个元素每帧只做一次多项式求值。
+     canvas 里没法用 CSS transition，所以曲线得自己算 —— 这是把
+     Material / Fluent 那套"时长 + 缓动曲线"搬到 canvas 上的最小实现。 */
+  function bezier(x1, y1, x2, y2) {
+    const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+    const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    const sx = (u) => ((ax * u + bx) * u + cx) * u;
+    const sy = (u) => ((ay * u + by) * u + cy) * u;
+    const dx = (u) => (3 * ax * u + 2 * bx) * u + cx;
+    return function (t) {
+      if (t <= 0) return 0;
+      if (t >= 1) return 1;
+      let u = t;
+      for (let i = 0; i < 8; i++) {
+        const err = sx(u) - t;
+        if (Math.abs(err) < 1e-6) return sy(u);
+        const d = dx(u);
+        if (Math.abs(d) < 1e-6) break;
+        u -= err / d;
+      }
+      let lo = 0, hi = 1;
+      u = t;
+      for (let i = 0; i < 22; i++) {
+        const x = sx(u);
+        if (Math.abs(x - t) < 1e-6) break;
+        if (x < t) lo = u; else hi = u;
+        u = (lo + hi) / 2;
+      }
+      return sy(u);
+    };
+  }
+
   /* 当前距离档的米数（0 = 「全部」，不裁） */
   function distLimit() {
     return (DIST_LEVELS.find(([k]) => k === state.dist) || [])[1] || 0;
@@ -297,30 +333,74 @@
          r 半径（1 家 ↔ 多家的圆点/圆环之间平滑长大缩小）
          n 成员数（用浮点插值，取整后才显示）
 
-       两个时间常数分开走，因为两件事的观感要求相反：
-         FADE_TAU 透明度 —— 慢。这是用户唯一能明确「看见」的过渡，
-                            320ms 时间常数 ≈ 1.3s 淡入到底，肉眼清楚。
-         ANIM_TAU 半径/成员数 —— 快。跟着缩放走的东西拖太久会发飘。
-       淡出分两档，都比淡入快得多 —— 淡入是"请你看这个新点"，可以慢；
-       淡出是"它已经不该在了"，慢一帧就多一帧噪音：
-         FADE_OUT_TAU 70ms   —— 平移出视口的桶，快收，否则拖残影。
-         FADE_OUT_SLOW 110ms —— 被筛选掉的桶，仍然要能看出"它退场了"，
-                                但 260ms 那版实测 845ms 才淡完，太拖。 */
+       两件事的驱动方式不同，是刻意的：
+         a 透明度 —— 「时长 + 缓动曲线」。它是一段有始有终的动画，
+                      用户要能看出"什么时候淡完"，所以给固定时长、到点即止。
+         r/n/位置 —— 指数逼近。它们每帧都在改目标（成员数、质心），
+                      要的是"跟随"而不是"演完一段"，给固定时长会一顿一顿。
+       曲线本身见下面的 fadeTo / fadeStep，取的是 Material 官方令牌。 */
     const anim = new Map();
     let lastT = 0;
     let prevView = null;      // 上一帧视野，用来判断这一帧是不是在拖动/缩放
     let lastViewMoveT = 0;    // 上一次视野变化的时刻，给「刚动过」留个尾巴
     let settleUntil = 0;      // 结构变化后的自续帧截止时间，防止空转
-    const ANIM_TAU = 130;
-    const FADE_TAU = 320;
-    const FADE_OUT_TAU = 70;
-    const FADE_OUT_SLOW = 110;
-    /* 标签淡出单独一档，比圆点还快。
-       圆点淡出是"看见刚才那个点走了"，可以慢；文字淡出是"这行字还赖着不走"，
-       而且淡出期间它已经不参与占位了，下一帧可能就有新标签补到同一格，
-       两行字叠在一起会糊。55ms 时间常数 ≈ 165ms 淡完 —— 大约 10 帧，
-       仍然看得出是"淡"出去而不是硬切，但不会留下残影。 */
-    const LABEL_OUT_TAU = 55;
+    const ANIM_TAU = 130;     // 半径 / 成员数 / 质心的指数时间常数
+
+    /* ── 透明度：时长 + 贝塞尔，不再用指数逼近 ──────────────────────
+       原来 a += (t-a)*(1-e^{-dt/τ})。数学上连续，观感却是"头两帧冲过去，
+       剩下大半秒在 0.98 上磨" —— 它永远到不了 1，尾巴又长又看不出变化，
+       等于白烧帧，也让"淡出很慢"这个感觉一直存在。
+       现在按设计系统里成熟的那套做（Material 3 / Fluent 2 都是这个思路）：
+       一个**时长** + 一条 **cubic-bezier**，到点就是终点；中途改目标就从
+       当前值重新起跑，且剩余距离越短用时越短。
+       曲线取 Material 的官方令牌（m3.material.io/styles/motion/easing-and-duration）：
+         进场 cubic-bezier(0.4, 0, 0.2, 1)  标准缓入缓出 —— 两头都软，慢而明显
+         退场 cubic-bezier(0.3, 0, 1, 1)    标准加速   —— 起步软、离场干脆
+       注意 Material 3 现在主推 spring（motion physics），但它自己写明
+       缓动曲线这套仍用于 transitions，所以这里用曲线是稳的选择。 */
+    const FADE_IN_MS = 620;
+    const FADE_OUT_MS = 170;
+    const FADE_OUT_FAST_MS = 110;   // 拖出视口，不许留尾巴
+    const LABEL_IN_MS = 380;
+    const LABEL_OUT_MS = 120;
+    const EASE_IN = bezier(0.4, 0, 0.2, 1);
+    const EASE_OUT = bezier(0.3, 0, 1, 1);
+
+    /* 启动一次透明度过渡。st 上挂五个字段：aFrom / aTo / aT0 / aDur / aRun。
+       已经在去同一个目标就什么都不做 —— 每帧都会调，不能每次都重置计时。 */
+    function fadeTo(st, to, now, dur) {
+      if (st.aTo === to) {
+        if (st.aRun) return;
+        if (st.a === to) return;
+      }
+      if (!st.aRun && Math.abs(st.a - to) < 0.002) { st.a = to; st.aTo = to; return; }
+      /* 用时按「剩余距离」折算，不是死给满时长：
+         从 0 淡到 1 走满 620ms；从 0.7 接着淡到 1 只走 186ms；
+         从 0.3 退回 0 只走 51ms。否则一个快淡完的点被改目标，
+         会突然又慢下来重新演一遍，看着像"卡了一下"。
+         下限 40ms（约 2.5 帧），再短就不如直接跳了。 */
+      const d = Math.max(40, dur * Math.max(0.2, Math.abs(to - st.a)));
+      st.aFrom = st.a;
+      st.aTo = to;
+      st.aT0 = now;
+      st.aDur = d;
+      st.aRun = true;
+      /* 自己续帧。静止时没有 mapmove，主循环靠 settleUntil 决定要不要再出帧；
+         这里不把窗口顶开，过渡就会停在半路（比如一个从 0.7 接着淡入的桶，
+         它没走"新建"那条路，没人给它设窗口）。 */
+      settleUntil = Math.max(settleUntil, now + d + 200);
+    }
+
+    /* 推进一帧，返回当前透明度 */
+    function fadeStep(st, now) {
+      if (!st.aRun) return st.a;
+      const p = (now - st.aT0) / st.aDur;
+      if (p >= 1) { st.a = st.aTo; st.aRun = false; return st.a; }
+      if (p <= 0) return st.a;
+      st.a = st.aFrom + (st.aTo - st.aFrom) * (st.aTo > st.aFrom ? EASE_IN : EASE_OUT)(p);
+      return st.a;
+    }
+
     // 上一帧的「店 → 视觉状态」，用来判断一个桶到底是不是「新冒出来的」。
     // 少了它，地图平移时圆点跨过分桶格子边界（键变了、店没变）也会被当成
     // 新点重新淡入一遍 —— 那正是之前满屏闪动的成因，等于把 bug 又引回来。
@@ -400,19 +480,14 @@
       // 全局淡入已经下放到「每个簇、每个标签各管自己的透明度」，
       // 这里恒为 1（原来是 (now-born)/200，换一次筛选就整层闪暗 200ms）。
       const alpha = 1;
-      // 帧间隔按实际时间算，掉帧时缓动不会变慢；上限 64ms 防止切标签页回来猛跳。
-      // 但"静止很久后重新起帧"要单独处理：那时 lastT 是几百毫秒前的，按 64ms 封顶
-      // 仍然会让透明度一帧掉 45%（tau=110 时），看着像"啪"一下闪没。这种情形按
-      // 一帧算，动画多走两帧收尾，比首帧突跳好看得多。
+      // 半径/成员数/质心仍按帧间隔做指数逼近，掉帧时不会变慢。
+      // 上限 64ms 防止切标签页回来猛跳；"静止很久后重新起帧"单独按一帧算，
+      // 否则一帧就把半径/质心顶到位，看着像"啪"一下换掉。
       let dtRaw = lastT ? now - lastT : 16;
       if (dtRaw > 200) dtRaw = 16;
       const dt = Math.min(64, dtRaw);
       lastT = now;
-      const ease = 1 - Math.exp(-dt / ANIM_TAU);        // 半径、成员数
-      const easeA = 1 - Math.exp(-dt / FADE_TAU);       // 淡入
-      const easeOut = 1 - Math.exp(-dt / FADE_OUT_TAU); // 淡出（出视口）
-      const easeOutSlow = 1 - Math.exp(-dt / FADE_OUT_SLOW); // 淡出（被筛掉）
-      const easeLabOut = 1 - Math.exp(-dt / LABEL_OUT_TAU);  // 标签淡出（永远快）
+      const ease = 1 - Math.exp(-dt / ANIM_TAU);        // 半径、成员数、质心
 
       // 底图压暗只在"标签真的画出来"时生效，否则热力图/缩小时会白白变暗
       syncDim(z);
@@ -420,7 +495,7 @@
       // 热力图模式或结果为空：不画店点，但定位点要留着
       if (!data.length) {
         // 结果被筛空：圆点没了，标签也得跟着淡出，不能凭空消失
-        drawLabels(EMPTY, alpha, easeA, easeLabOut, ease, true);
+        drawLabels(EMPTY, alpha, now, ease, true);
         ctx.globalAlpha = 1;
         drawMe(z);
         if (labelBusy && now < settleUntil) schedule();
@@ -522,9 +597,10 @@
               ? { a: pv.a, r: Math.min(pv.r, tgtR), n: pv.n, tgtR, tgtN: b.n, glng: tglng, glat: tglat }
               : { a: 0, r: tgtR * 0.55, n: b.n, tgtR, tgtN: b.n, glng: tglng, glat: tglat };
             anim.set(k, st);
-            if (!pv) settleUntil = now + 2400;   // 淡入要 1.3s 才到底，窗口得留够
+            if (!pv) settleUntil = now + FADE_IN_MS + 400;
           }
-          st.a += (1 - st.a) * easeA;
+          fadeTo(st, 1, now, FADE_IN_MS);
+          fadeStep(st, now);
           st.r += (tgtR - st.r) * ease;
           st.n += (b.n - st.n) * ease;
           // 单点不插值成员数。簇散成单点时继承来的 n 可能还是 5，
@@ -595,9 +671,11 @@
 
           const inside = st.glng >= sw.lng && st.glng <= ne.lng &&
                          st.glat >= sw.lat && st.glat <= ne.lat;
-          st.a += (0 - st.a) * (inside ? easeOutSlow : easeOut);
-          if (st.a < 0.05) { anim.delete(k); return; }
-          settleUntil = Math.max(settleUntil, now + (inside ? 1200 : 400));
+          const outMs = inside ? FADE_OUT_MS : FADE_OUT_FAST_MS;
+          fadeTo(st, 0, now, outMs);
+          fadeStep(st, now);
+          if (!st.aRun) { anim.delete(k); return; }   // 已经淡到 0，收摊
+          settleUntil = Math.max(settleUntil, now + outMs + 200);
           let q = null;
           try { q = map.lngLatToContainer([st.glng, st.glat]); } catch (e) { anim.delete(k); return; }
           if (!q) { anim.delete(k); return; }
@@ -612,11 +690,11 @@
 
         // 静止时不再有 mapmove，过渡没收敛就得自己续帧，
         // 否则新出现的簇会永远停在半透明、改过成员的簇停在旧半径。
-        // 阈值取 0.985 而不是 0.99：淡入时间常数放到 320ms 后，
-        // 收尾那段每帧只涨零点几个百分点，卡在 0.99 会白烧几十帧。
+        // 透明度看 aRun（有没有在跑一段过渡），不再用 a<0.985 这种阈值猜 ——
+        // 定时长的过渡到点就是 1，猜阈值只会白烧几十帧。
         let busy = false;
         anim.forEach((st) => {
-          if (st.a < 0.985) busy = true;
+          if (st.aRun) busy = true;
           else if (Math.abs(st.r - st.tgtR) > 0.12) busy = true;
           else if (Math.abs(st.n - st.tgtN) > 0.06) busy = true;
           // 质心还在滑（成员刚变过），也得继续出帧，否则会停在半路
@@ -644,9 +722,10 @@
               ? { a: pv.a, r: Math.min(pv.r, dr), x: it.x, y: it.y }
               : { a: 0, r: dr * 0.55, x: it.x, y: it.y };
             singleAnim.set(s, st);
-            if (!pv) settleUntil = now + 2400;
+            if (!pv) settleUntil = now + FADE_IN_MS + 400;
           }
-          st.a += (1 - st.a) * easeA;
+          fadeTo(st, 1, now, FADE_IN_MS);
+          fadeStep(st, now);
           st.r += (dr - st.r) * ease;
           st.x = it.x; st.y = it.y; st.live = true;
           curSingle.set(s, st);
@@ -661,9 +740,11 @@
           st.live = false;
           const inside = s.lng >= sw.lng && s.lng <= ne.lng &&
                          s.lat >= sw.lat && s.lat <= ne.lat;
-          st.a += (0 - st.a) * (inside ? easeOutSlow : easeOut);
-          if (st.a < 0.05) { singleAnim.delete(s); return; }
-          settleUntil = Math.max(settleUntil, now + (inside ? 1200 : 400));
+          const outMs = inside ? FADE_OUT_MS : FADE_OUT_FAST_MS;
+          fadeTo(st, 0, now, outMs);
+          fadeStep(st, now);
+          if (!st.aRun) { singleAnim.delete(s); return; }
+          settleUntil = Math.max(settleUntil, now + outMs + 200);
           ctx.globalAlpha = alpha * st.a * dim(s._d);
           drawDot(st.x, st.y, s, st.r, false);
         });
@@ -672,7 +753,7 @@
 
         let busyS = false;
         singleAnim.forEach((st) => {
-          if (st.a < 0.985 || Math.abs(st.r - dr) > 0.12) busyS = true;
+          if (st.aRun || Math.abs(st.r - dr) > 0.12) busyS = true;
         });
         if (busyS && now < settleUntil) schedule();
       }
@@ -682,9 +763,9 @@
       // 标签压在圆点之上；蓝点（我自己）最后画，保证永远可见。
       // 标签关掉/缩得太小时也走一遍，让已经画出来的标签淡出而不是凭空消失。
       if (labelOn && z >= LABEL_MIN_Z && lab.length) {
-        drawLabels(lab, alpha, easeA, easeLabOut, ease, viewBusy);
+        drawLabels(lab, alpha, now, ease, viewBusy);
       } else {
-        drawLabels(EMPTY, alpha, easeA, easeLabOut, ease, true);
+        drawLabels(EMPTY, alpha, now, ease, true);
       }
       drawMeCore(z);
       if (labelBusy && now < settleUntil) schedule();
@@ -743,11 +824,12 @@
     /* 标签也要淡入淡出。
        之前是每帧重排完直接画：位置一变、或者被更近的店挤掉，就是「啪」
        一下没了，跟圆点的柔和过渡完全不搭。这里给每个标签存一份透明度：
-       放得下就向 1 缓动（目标值还要压上它那个圆点自己的透明度，标签才会
-       跟着点一起浮出来），放不下就向 0 缓动，淡到看不见才删。
+       放得下就向 1 过渡，放不下就向 0 过渡，淡到 0 才删。
+       标签的进场比圆点短（380ms vs 620ms）：文字一旦可读就该立刻清晰，
+       跟着圆点一起慢慢浮出来反而像没渲染完。
        掉队的标签不是钉在原地，而是继续贴着自己的圆点飘 —— 否则地图一拖，
        残影似的几行字会留在半空。 */
-    function drawLabels(list, alpha, easeIn, easeOut, easePos, viewBusy) {
+    function drawLabels(list, alpha, now, easePos, viewBusy) {
       // 近的优先占位；没有定位就按评分和图片数排
       list.sort((a, b) => {
         if (me) {
@@ -802,9 +884,8 @@
           st.dy += (tdy - st.dy) * easePos;
         }
         st.tdx = tdx; st.tdy = tdy;
-        // 目标透明度压上圆点自己的透明度：点还在淡入时字不该先亮起来
-        const tgt = it.a == null ? 1 : Math.min(1, it.a);
-        st.a += (tgt - st.a) * easeIn;
+        fadeTo(st, 1, now, LABEL_IN_MS);
+        fadeStep(st, now);
         st.box = box; st.L = L; st.s = it.s;
         st.live = true;
 
@@ -823,15 +904,16 @@
       labelAnim.forEach((st, id) => {
         if (seenL.has(id)) return;
         st.live = false;
-        st.a += (0 - st.a) * easeOut;
-        if (st.a < 0.05) { labelAnim.delete(id); return; }
+        fadeTo(st, 0, now, LABEL_OUT_MS);
+        fadeStep(st, now);
+        if (!st.aRun) { labelAnim.delete(id); return; }
         let q = null;
         try { q = map.lngLatToContainer([st.s.lng, st.s.lat]); } catch (e) { labelAnim.delete(id); return; }
         if (!q) { labelAnim.delete(id); return; }
         const box = { x: q.x + st.dx, y: q.y + st.dy, w: st.box.w, h: st.box.h };
         // 这一格已经被本帧的新标签占了就不画，否则两行字叠在一起更难认
         if (!fits(box, placed)) return;
-        settleUntil = Math.max(settleUntil, performance.now() + 1400);
+        settleUntil = Math.max(settleUntil, now + LABEL_OUT_MS + 200);
         ctx.globalAlpha = alpha * st.a;
         drawPill(box, st.L, st.s);
       });
@@ -839,15 +921,15 @@
       lastLabels = n;
       ctx.globalAlpha = 1;
 
-      // 标签淡入淡出也得自己续帧：静止时没有 mapmove，否则字会停在半透明
+      // 标签过渡也得自己续帧：静止时没有 mapmove，否则字会停在半透明
       // 或者停在换边换到一半的位置
       let lb = false;
       labelAnim.forEach((st) => {
-        if (st.a < 0.985) lb = true;
+        if (st.aRun) lb = true;
         else if (st.live && Math.abs(st.dx - st.tdx) + Math.abs(st.dy - st.tdy) > 0.15) lb = true;
       });
       labelBusy = lb;
-      if (lb) settleUntil = Math.max(settleUntil, performance.now() + 2400);
+      if (lb) settleUntil = Math.max(settleUntil, now + 600);
     }
 
     function drawPill(b, L, s) {
@@ -1065,7 +1147,7 @@
         const out = [];
         anim.forEach((st, k) => out.push({
           k, a: st.a, r: st.r, n: st.n, tgtR: st.tgtR, tgtN: st.tgtN,
-          live: st.live, x: st.cx, y: st.cy,
+          live: st.live, run: !!st.aRun, x: st.cx, y: st.cy,
           gx: st.glng, gy: st.glat, tgx: st.tglng, tgy: st.tglat,
         }));
         return out;
@@ -1075,7 +1157,7 @@
       debugLabels() {
         const out = [];
         labelAnim.forEach((st, id) => out.push({
-          id, a: st.a, live: st.live,
+          id, a: st.a, live: st.live, run: !!st.aRun,
           dx: st.dx, dy: st.dy, tdx: st.tdx, tdy: st.tdy,
         }));
         return out;
