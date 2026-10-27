@@ -2002,16 +2002,34 @@
 
     $('#rank-collapse').onclick = () => {
       $('#rank').classList.add('collapsed');
-      if (document.getElementById('rank-open')) return;
-      /* 类名必须带 lg-glass：圆角和底色都是 .lg-glass 给的，只有 .tool 的话
-         会退化成浏览器默认的灰方块（方角、系统字体、无背景），跟旁边的胶囊差一大截。 */
-      const b = document.createElement('button');
-      b.id = 'rank-open';
-      b.className = 'tool lg-glass';
-      b.title = '展开排行面板';
-      b.textContent = '‹ 排行';
-      b.onclick = () => { $('#rank').classList.remove('collapsed'); b.remove(); };
-      document.body.appendChild(b);
+      // 和左面板同一个节奏：等 280ms 再挂按钮。挂早了它会凭空浮在
+      // 还在往右滑的面板上（z-index 25 > 面板的 19），看着像多贴了一块玻璃。
+      setTimeout(() => {
+        // 展开时按钮是「淡出 240ms 后再摘」，这期间它还在 DOM 里。
+        // 若在这 240ms 内又点了收起，老按钮会挡住新建（原来直接 return 就没了）。
+        // 只有带 .in 的才算「正在用」，其余一律当残留清掉。
+        const old = document.getElementById('rank-open');
+        if (old) {
+          if (old.classList.contains('in')) return;
+          old.remove();
+        }
+        /* 类名必须带 lg-glass：圆角和底色都是 .lg-glass 给的，只有 .tool 的话
+           会退化成浏览器默认的灰方块（方角、系统字体、无背景），跟旁边的胶囊差一大截。 */
+        const b = document.createElement('button');
+        b.id = 'rank-open';
+        b.className = 'tool lg-glass';
+        b.title = '展开排行面板';
+        b.textContent = '‹ 排行';
+        b.onclick = () => {
+          $('#rank').classList.remove('collapsed');
+          // 先撤 .in 让它缩回去淡掉，再摘 DOM —— 直接 remove() 是凭空消失一块玻璃
+          b.classList.remove('in');
+          setTimeout(() => b.remove(), 240);
+        };
+        document.body.appendChild(b);
+        // append 和加类在同一帧里不会有过渡，得等一帧（双层 rAF 更稳）
+        requestAnimationFrame(() => requestAnimationFrame(() => b.classList.add('in')));
+      }, 280);
     };
 
     // 小屏/中等宽度默认收起右面板，避免把地图挤没；宽屏再放出来
@@ -2129,8 +2147,14 @@
   $('#collapse').onclick = () => {
     $('#panel').classList.add('collapsed');
     document.body.classList.add('pcollapsed');   // 工具栏跟着挪到最左边
+    // 面板滑出 320ms，按钮 280ms 后开始淡入，正好接住，不留空档
     setTimeout(() => {
-      if (document.getElementById('panel-open')) return;
+      // 同 rank-open：展开时按钮淡出 240ms 才摘，这期间别把残留当成「已在用」
+      const old = document.getElementById('panel-open');
+      if (old) {
+        if (old.classList.contains('in')) return;
+        old.remove();
+      }
       // 同 rank-open：带 lg-glass 才有圆角和底色，否则是个灰方块
       const b = document.createElement('button');
       b.id = 'panel-open';
@@ -2140,10 +2164,12 @@
       b.onclick = () => {
         $('#panel').classList.remove('collapsed');
         document.body.classList.remove('pcollapsed');
-        b.remove();
+        b.classList.remove('in');
+        setTimeout(() => b.remove(), 240);
       };
       document.body.appendChild(b);
-    }, 300);
+      requestAnimationFrame(() => requestAnimationFrame(() => b.classList.add('in')));
+    }, 280);
   };
 
   $('#btn-bound').onclick = () => {

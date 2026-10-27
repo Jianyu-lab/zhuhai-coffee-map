@@ -312,13 +312,25 @@ footer .warn{color:#9A7B5C}
    这几个按钮不带 data-glass（原因见 index.html 的注释）：引擎的 SVG 折射在
    小胶囊上会把边缘外的暗底吸进来，沿圆角糊出一圈 2px 黑边，特别显脏。
    所以磨砂自己写，只保留 .lg-glass 的 tint 底色 + 高光层。 */
-#toolbar{position:absolute;left:372px;top:16px;z-index:15;display:flex;flex-direction:column;gap:6px}
+#toolbar{position:absolute;left:372px;top:16px;z-index:15;display:flex;flex-direction:column;gap:6px;
+  /* 面板滑出是 320ms 贝塞尔，工具栏之前是**瞬间**跳过去的：点收起的那一帧，
+     五个胶囊已经贴到最左边，压在还在往外滑的面板上，像两个不相干的动作。
+     同一条曲线同一条时长，工具栏才会被面板"带"出去。 */
+  transition:left .32s cubic-bezier(.4,0,.2,1),top .32s cubic-bezier(.4,0,.2,1)}
 body.pcollapsed #toolbar{left:16px;top:58px}
 /* 面板收起后浮出来的「展开」按钮。材质直接复用 .tool + .lg-glass，
-   和工具栏那几个是同一套；位置在这里定，别写在 JS 的 cssText 里。 */
-#panel-open,#rank-open{position:absolute;top:16px;z-index:25}
-#panel-open{left:16px}
-#rank-open{right:16px}
+   和工具栏那几个是同一套；位置在这里定，别写在 JS 的 cssText 里。
+   出现/消失也走贝塞尔：之前是 appendChild 之后直接怼上去、点一下 remove()，
+   凭空多一块玻璃又凭空少一块，和旁边滑动的面板完全不搭。
+   注意 id 选择器的特异性压过 .tool，所以 .tool 那四条悬停过渡要在这里重写一遍，
+   否则这两个按钮的 hover 会变回硬切。 */
+#panel-open,#rank-open{position:absolute;top:16px;z-index:25;
+  opacity:0;transform:scale(.88);pointer-events:none;
+  transition:background .18s,color .16s,border-color .16s,box-shadow .18s,
+    opacity .2s cubic-bezier(.4,0,.2,1),transform .26s cubic-bezier(.4,0,.2,1)}
+#panel-open{left:16px;transform-origin:left center}
+#rank-open{right:16px;transform-origin:right center}
+#panel-open.in,#rank-open.in{opacity:1;transform:none;pointer-events:auto}
 .tool{--lg-radius:var(--r-pill);padding:8px 13px;font-size:11.5px;cursor:pointer;font-family:inherit;
   color:var(--dim);transition:background .18s,color .16s,border-color .16s,box-shadow .18s;
   text-align:center;font-weight:600;
