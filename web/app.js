@@ -315,8 +315,6 @@
     center: [113.37, 22.21],
     viewMode: '2D',
     zooms: [9, 19],
-    // 必须在这里关：高德的 doubleClickZoom 会把中心算成 NaN，见下面 dblclick 的注释
-    doubleClickZoom: false,
   });
   window.__map = map;
   map.on('complete', () => ld.map());   // 底图首帧渲染完成
@@ -1199,7 +1197,6 @@
       setData(list) { data = list; schedule(); },
       setLabels(v) { labelOn = !!v; schedule(); },
       getLabels() { return labelOn; },
-      getMinLabelZoom() { return LABEL_MIN_Z; },   // 外面自动开标签要用同一档门限
       getLabelCount() { return lastLabels; },
       setHover(it) {
         const key = it ? (it.type === 'dot' ? it.s.id : 'c' + it.x + it.y) : null;
@@ -1485,9 +1482,6 @@
 
   map.on('mouseout', () => { layer.clearHover(); showTip(null); });
 
-  // 簇点击自己会放大，双击别再加一级
-  let clusterZoomAt = 0;
-
   map.on('click', (e) => {
     if (!e.pixel) return;
     const it = layer.hitTest(e.pixel.x, e.pixel.y);
@@ -1500,25 +1494,11 @@
         it.items.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         openCard(it.items[0]);
       } else {
-        clusterZoomAt = performance.now();
         map.setZoomAndCenter(target, [it.lng, it.lat]);
       }
     } else {
       openCard(it.s);
     }
-  });
-
-  /* 高德自带的 doubleClickZoom 在这张图上会把中心点算成 NaN ——
-     实测双击一次之后 map.getCenter() 就抛 "Invalid Object: LngLat(NaN, NaN)"，
-     之后滚轮、拖拽、双击全部失灵，地图等于死掉（间隔 60ms 和 120ms 的两次点击
-     都能复现，跟是不是自动化无关）。关掉它，自己放大一级。
-     setStatus 里关不干净，必须在构造参数里给 doubleClickZoom:false。 */
-  map.on('dblclick', (e) => {
-    if (!e.lnglat) return;
-    if (performance.now() - clusterZoomAt < 500) return;   // 刚才那一簇已经放大过了
-    const z = Math.min(map.getZoom() + 1, 19);
-    if (z - map.getZoom() < 0.2) return;
-    map.setZoomAndCenter(z, [e.lnglat.getLng(), e.lnglat.getLat()], false, 260);
   });
 
   // AMap 在缩放动画结束时不一定再触发 zoom，必须同时监听 zoomend / moveend，
@@ -1537,23 +1517,6 @@
     $('#btn-label').classList.toggle('sub', on && map.getZoom() < 14.0);
   };
   ['zoomend', 'moveend'].forEach((ev) => map.on(ev, syncLabelBtn));
-
-  /* 放大到「标签画得出来」那一档就自动把标签打开 —— 用户既然放到街道级，
-     要的就是店名，不该还要再点一次按钮。缩回去再自动关掉，回到全市视角
-     时不该糊一屏名字。两个门限留 0.6 级回差（14.0 开 / 13.4 关），
-     否则停在 14 附近轻微缩放会来回闪。
-     手动点过一次「标签」之后 labelAuto 就关掉，用户显式选择优先 ——
-     他想在全市尺度看名字（按钮会飞过去），或者就是想关掉，都不该被抢。 */
-  let labelAuto = true;
-  const LABEL_OFF_Z = 13.4;
-  const autoLabels = () => {
-    if (!labelAuto) return;
-    const z = map.getZoom();
-    const on = layer.getLabels();
-    if (!on && z >= layer.getMinLabelZoom()) { layer.setLabels(true); syncLabelBtn(); }
-    else if (on && z < LABEL_OFF_Z) { layer.setLabels(false); syncLabelBtn(); }
-  };
-  ['zoomend', 'moveend'].forEach((ev) => map.on(ev, autoLabels));
 
   let rt = null;
   window.addEventListener('resize', () => {
@@ -2248,7 +2211,6 @@
   map.on('zoomend', syncDistScope);
 
   $('#btn-label').onclick = () => {
-    labelAuto = false;           // 点过就交给用户，缩放不再自动开关
     const on = !layer.getLabels();
     layer.setLabels(on);
     syncLabelBtn();
@@ -2282,14 +2244,6 @@
     else if (state.dist === '全部') state.dist = '1km';
     renderDist(); apply();
   };
-
-  // 调试用：标签自动开关的状态。自动化验证靠它判断"放大到 14 级有没有自动打开"。
-  window.__labels = () => ({
-    on: layer.getLabels(),
-    auto: labelAuto,
-    zoom: +map.getZoom().toFixed(2),
-    count: layer.getLabelCount(),
-  });
 
   // 调试用：距离档的生效状态。自动化验证靠它判断"拖走以后档位有没有让路"。
   window.__dist = () => {
