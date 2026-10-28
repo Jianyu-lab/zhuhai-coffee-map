@@ -315,6 +315,8 @@
     center: [113.37, 22.21],
     viewMode: '2D',
     zooms: [9, 19],
+    // 必须在这里关：高德的 doubleClickZoom 会把中心算成 NaN，见下面 dblclick 的注释
+    doubleClickZoom: false,
   });
   window.__map = map;
   map.on('complete', () => ld.map());   // 底图首帧渲染完成
@@ -1483,6 +1485,9 @@
 
   map.on('mouseout', () => { layer.clearHover(); showTip(null); });
 
+  // 簇点击自己会放大，双击别再加一级
+  let clusterZoomAt = 0;
+
   map.on('click', (e) => {
     if (!e.pixel) return;
     const it = layer.hitTest(e.pixel.x, e.pixel.y);
@@ -1495,11 +1500,25 @@
         it.items.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         openCard(it.items[0]);
       } else {
+        clusterZoomAt = performance.now();
         map.setZoomAndCenter(target, [it.lng, it.lat]);
       }
     } else {
       openCard(it.s);
     }
+  });
+
+  /* 高德自带的 doubleClickZoom 在这张图上会把中心点算成 NaN ——
+     实测双击一次之后 map.getCenter() 就抛 "Invalid Object: LngLat(NaN, NaN)"，
+     之后滚轮、拖拽、双击全部失灵，地图等于死掉（间隔 60ms 和 120ms 的两次点击
+     都能复现，跟是不是自动化无关）。关掉它，自己放大一级。
+     setStatus 里关不干净，必须在构造参数里给 doubleClickZoom:false。 */
+  map.on('dblclick', (e) => {
+    if (!e.lnglat) return;
+    if (performance.now() - clusterZoomAt < 500) return;   // 刚才那一簇已经放大过了
+    const z = Math.min(map.getZoom() + 1, 19);
+    if (z - map.getZoom() < 0.2) return;
+    map.setZoomAndCenter(z, [e.lnglat.getLng(), e.lnglat.getLat()], false, 260);
   });
 
   // AMap 在缩放动画结束时不一定再触发 zoom，必须同时监听 zoomend / moveend，
