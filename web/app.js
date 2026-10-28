@@ -1197,6 +1197,7 @@
       setData(list) { data = list; schedule(); },
       setLabels(v) { labelOn = !!v; schedule(); },
       getLabels() { return labelOn; },
+      getMinLabelZoom() { return LABEL_MIN_Z; },   // 外面自动开标签要用同一档门限
       getLabelCount() { return lastLabels; },
       setHover(it) {
         const key = it ? (it.type === 'dot' ? it.s.id : 'c' + it.x + it.y) : null;
@@ -1517,6 +1518,23 @@
     $('#btn-label').classList.toggle('sub', on && map.getZoom() < 14.0);
   };
   ['zoomend', 'moveend'].forEach((ev) => map.on(ev, syncLabelBtn));
+
+  /* 放大到「标签画得出来」那一档就自动把标签打开 —— 用户既然放到街道级，
+     要的就是店名，不该还要再点一次按钮。缩回去再自动关掉，回到全市视角
+     时不该糊一屏名字。两个门限留 0.6 级回差（14.0 开 / 13.4 关），
+     否则停在 14 附近轻微缩放会来回闪。
+     手动点过一次「标签」之后 labelAuto 就关掉，用户显式选择优先 ——
+     他想在全市尺度看名字（按钮会飞过去），或者就是想关掉，都不该被抢。 */
+  let labelAuto = true;
+  const LABEL_OFF_Z = 13.4;
+  const autoLabels = () => {
+    if (!labelAuto) return;
+    const z = map.getZoom();
+    const on = layer.getLabels();
+    if (!on && z >= layer.getMinLabelZoom()) { layer.setLabels(true); syncLabelBtn(); }
+    else if (on && z < LABEL_OFF_Z) { layer.setLabels(false); syncLabelBtn(); }
+  };
+  ['zoomend', 'moveend'].forEach((ev) => map.on(ev, autoLabels));
 
   let rt = null;
   window.addEventListener('resize', () => {
@@ -2211,6 +2229,7 @@
   map.on('zoomend', syncDistScope);
 
   $('#btn-label').onclick = () => {
+    labelAuto = false;           // 点过就交给用户，缩放不再自动开关
     const on = !layer.getLabels();
     layer.setLabels(on);
     syncLabelBtn();
@@ -2244,6 +2263,14 @@
     else if (state.dist === '全部') state.dist = '1km';
     renderDist(); apply();
   };
+
+  // 调试用：标签自动开关的状态。自动化验证靠它判断"放大到 14 级有没有自动打开"。
+  window.__labels = () => ({
+    on: layer.getLabels(),
+    auto: labelAuto,
+    zoom: +map.getZoom().toFixed(2),
+    count: layer.getLabelCount(),
+  });
 
   // 调试用：距离档的生效状态。自动化验证靠它判断"拖走以后档位有没有让路"。
   window.__dist = () => {
